@@ -3,6 +3,9 @@
 
 class SSEQ {
 
+public:
+	SSEQ(const std::string &fileName);
+	SSEQ(std::unique_ptr<BinaryReadStream> stream);
 };
 
 #endif

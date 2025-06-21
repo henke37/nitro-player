@@ -4,6 +4,11 @@
 #include "../substream.h"
 #include "../binaryReader.h"
 
+#include "sseq.h"
+#include "strm.h"
+#include "sbnk.h"
+#include "swar.h"
+
 #include <nds/arm9/sassert.h>
 
 SDatFile::SDatFile(const std::string &fileName) {
@@ -15,6 +20,13 @@ SDatFile::SDatFile(std::unique_ptr<BinaryReadStream> stream) {
 	sassert(stream, "no sdat stream?");
 	mainStream = std::move(stream);
 	Load();
+}
+
+std::unique_ptr<SSEQ> SDatFile::OpenSequence(unsigned int sequenceId) {
+	auto &info = sequenceInfos[sequenceId];
+	if(!info) return std::unique_ptr<SSEQ>();
+
+	return std::make_unique<SSEQ>(this->OpenFile(info->fatId));
 }
 
 void SDatFile::Load() {
@@ -92,7 +104,7 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 	{
 		std::vector<std::uint32_t> recordPositions = readChunkPositions(0);
 		sequenceInfos.reserve(recordPositions.size());
-		return;
+
 		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
 			std::uint32_t offset = *itr;
 			if(offset == 0) {
@@ -111,7 +123,92 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 			record->player = reader.readByte();
 			sequenceInfos.emplace_back(std::move(record));
 		}
-		printf("Loaded %u seqInfos", sequenceInfos.size());
+		printf("Loaded %u sequence infos\n", sequenceInfos.size());
+	}
+
+	{
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(2);
+		bankInfos.reserve(recordPositions.size());
+
+		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
+			std::uint32_t offset = *itr;
+			if(offset == 0) {
+				bankInfos.emplace_back(nullptr);
+				continue;
+			}
+			reader.setPos(offset);
+
+			std::unique_ptr<BankInfoRecord> record = std::make_unique<BankInfoRecord>();
+			record->fatId = reader.readLEShort();
+			for(unsigned int swarIndex = 0; swarIndex < 4; ++swarIndex) {
+				record->swars[swarIndex] = reader.readLEShort();
+			}
+			bankInfos.emplace_back(std::move(record));
+		}
+		printf("Loaded %u bank infos\n", bankInfos.size());
+	}
+
+	{
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(3);
+		waveArchInfos.reserve(recordPositions.size());
+
+		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
+			std::uint32_t offset = *itr;
+			if(offset == 0) {
+				waveArchInfos.emplace_back(nullptr);
+				continue;
+			}
+			reader.setPos(offset);
+
+			std::unique_ptr<WaveArchiveInfoRecord> record = std::make_unique<WaveArchiveInfoRecord>();
+			record->fatId = reader.readLEShort();
+			waveArchInfos.emplace_back(std::move(record));
+		}
+		printf("Loaded %u wave arch infos\n", waveArchInfos.size());
+	}
+
+	{
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(4);
+		playerInfos.reserve(recordPositions.size());
+
+		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
+			std::uint32_t offset = *itr;
+			if(offset == 0) {
+				playerInfos.emplace_back(nullptr);
+				continue;
+			}
+			reader.setPos(offset);
+
+			std::unique_ptr<PlayerInfoRecord> record = std::make_unique<PlayerInfoRecord>();
+			record->maxSequences = reader.readByte();
+			record->channelMask = reader.readLEShort();
+			record->heapSize = reader.readLELong();
+			playerInfos.emplace_back(std::move(record));
+		}
+		printf("Loaded %u player infos\n", playerInfos.size());
+	}
+
+	{
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(4);
+		streamInfos.reserve(recordPositions.size());
+
+		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
+			std::uint32_t offset = *itr;
+			if(offset == 0) {
+				streamInfos.emplace_back(nullptr);
+				continue;
+			}
+			reader.setPos(offset);
+
+			std::unique_ptr<StreamInfoRecord> record = std::make_unique<StreamInfoRecord>();
+			record->fatId = reader.readLEShort();
+			record->vol = reader.readByte();
+			record->priority = reader.readByte();
+			record->player = reader.readByte();
+			record->forceStereo = reader.readByte()!=0;
+			streamInfos.emplace_back(std::move(record));
+		}
+		printf("Loaded %u stream infos\n", streamInfos.size());
 	}
 }
 
