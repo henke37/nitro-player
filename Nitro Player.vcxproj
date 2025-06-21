@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{1544AC75-F0AA-5D78-03B3-47B5FA262362}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;ARM9;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>D:\devkitPro\libnds\include;D:\devkitPro\devkitARM\arm-none-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakePreprocessorDefinitions>_DEBUG;ARM9;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <IncludePath>D:\msys64\opt\wonderful\toolchain\gcc-arm-none-eabi\arm-none-eabi\include;D:\msys64\opt\wonderful\thirdparty\blocksds\core\libs\libnds\include</IncludePath>
+    <AdditionalOptions>/std:c++20</AdditionalOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;ARM9;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>D:\devkitPro\libnds\include;D:\devkitPro\devkitARM\arm-none-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakePreprocessorDefinitions>NDEBUG;ARM9;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>D:\devkitPro\libnds\include;D:\devkitPro\devkitARM\arm-none-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="arm7\source\main.c" />
+    <ClCompile Include="arm9\source\animationCell.cpp" />
+    <ClCompile Include="arm9\source\animationFrame.cpp" />
+    <ClCompile Include="arm9\source\animationPlayer.cpp" />
+    <ClCompile Include="arm9\source\binaryReader.cpp" />
+    <ClCompile Include="arm9\source\binaryStream.cpp" />
+    <ClCompile Include="arm9\source\binaryWriter.cpp" />
+    <ClCompile Include="arm9\source\bitIterator.cpp" />
+    <ClCompile Include="arm9\source\buttonMan.cpp" />
+    <ClCompile Include="arm9\source\cardBackupStream.cpp" />
+    <ClCompile Include="arm9\source\cellDisplay.cpp" />
+    <ClCompile Include="arm9\source\charSet.cpp" />
+    <ClCompile Include="arm9\source\darkMagic.cpp" />
+    <ClCompile Include="arm9\source\fileStream.cpp" />
+    <ClCompile Include="arm9\source\fixedMath.cpp" />
+    <ClCompile Include="arm9\source\fontRenderer.cpp" />
+    <ClCompile Include="arm9\source\gameMode.cpp" />
+    <ClCompile Include="arm9\source\gbaSram.cpp" />
+    <ClCompile Include="arm9\source\gui.cpp" />
+    <ClCompile Include="arm9\source\hblankBatcher.cpp" />
+    <ClCompile Include="arm9\source\localeMan.cpp" />
+    <ClCompile Include="arm9\source\main.cpp" />
+    <ClCompile Include="arm9\source\memoryStream.cpp" />
+    <ClCompile Include="arm9\source\nanr.cpp" />
+    <ClCompile Include="arm9\source\ncer.cpp" />
+    <ClCompile Include="arm9\source\ncgr.cpp" />
+    <ClCompile Include="arm9\source\nclr.cpp" />
+    <ClCompile Include="arm9\source\nftr.cpp" />
+    <ClCompile Include="arm9\source\nineslice.cpp" />
+    <ClCompile Include="arm9\source\nscr.cpp" />
+    <ClCompile Include="arm9\source\oamMan.cpp" />
+    <ClCompile Include="arm9\source\palMan.cpp" />
+    <ClCompile Include="arm9\source\pixelCanvas.cpp" />
+    <ClCompile Include="arm9\source\point.cpp" />
+    <ClCompile Include="arm9\source\poke.cpp" />
+    <ClCompile Include="arm9\source\poke.itcm.cpp" />
+    <ClCompile Include="arm9\source\quickFullscreen.cpp" />
+    <ClCompile Include="arm9\source\rect.cpp" />
+    <ClCompile Include="arm9\source\sectionedFile.cpp" />
+    <ClCompile Include="arm9\source\strutils.cpp" />
+    <ClCompile Include="arm9\source\substream.cpp" />
+    <ClCompile Include="arm9\source\tileMan.cpp" />
+    <ClCompile Include="arm9\source\tileMapMirror.cpp" />
+    <ClCompile Include="arm9\source\tilePos.cpp" />
+    <ClCompile Include="arm9\source\vblankBatcher.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="arm9\source\animationCell.h" />
+    <ClInclude Include="arm9\source\animationFrame.h" />
+    <ClInclude Include="arm9\source\animationPlayer.h" />
+    <ClInclude Include="arm9\source\binaryReader.h" />
+    <ClInclude Include="arm9\source\binaryStream.h" />
+    <ClInclude Include="arm9\source\binaryWriter.h" />
+    <ClInclude Include="arm9\source\bitFieldPoke.h" />
+    <ClInclude Include="arm9\source\bitIterator.h" />
+    <ClInclude Include="arm9\source\buttonMan.h" />
+    <ClInclude Include="arm9\source\cardBackupStream.h" />
+    <ClInclude Include="arm9\source\cellDisplay.h" />
+    <ClInclude Include="arm9\source\charSet.h" />
+    <ClInclude Include="arm9\source\consts.h" />
+    <ClInclude Include="arm9\source\corruptionTrap.h" />
+    <ClInclude Include="arm9\source\darkMagic.h" />
+    <ClInclude Include="arm9\source\fileStream.h" />
+    <ClInclude Include="arm9\source\fixedMath.h" />
+    <ClInclude Include="arm9\source\fontRenderer.h" />
+    <ClInclude Include="arm9\source\gameMode.h" />
+    <ClInclude Include="arm9\source\gbaSram.h" />
+    <ClInclude Include="arm9\source\globals.h" />
+    <ClInclude Include="arm9\source\gui.h" />
+    <ClInclude Include="arm9\source\hblankBatcher.h" />
+    <ClInclude Include="arm9\source\localeMan.h" />
+    <ClInclude Include="arm9\source\memoryStream.h" />
+    <ClInclude Include="arm9\source\nanr.h" />
+    <ClInclude Include="arm9\source\ncer.h" />
+    <ClInclude Include="arm9\source\ncgr.h" />
+    <ClInclude Include="arm9\source\nclr.h" />
+    <ClInclude Include="arm9\source\nftr.h" />
+    <ClInclude Include="arm9\source\nineslice.h" />
+    <ClInclude Include="arm9\source\nscr.h" />
+    <ClInclude Include="arm9\source\oamMan.h" />
+    <ClInclude Include="arm9\source\palMan.h" />
+    <ClInclude Include="arm9\source\palSet.h" />
+    <ClInclude Include="arm9\source\pixelCanvas.h" />
+    <ClInclude Include="arm9\source\point.h" />
+    <ClInclude Include="arm9\source\poke.h" />
+    <ClInclude Include="arm9\source\quickFullscreen.h" />
+    <ClInclude Include="arm9\source\rect.h" />
+    <ClInclude Include="arm9\source\registerOverride.h" />
+    <ClInclude Include="arm9\source\sectionedFile.h" />
+    <ClInclude Include="arm9\source\strutils.h" />
+    <ClInclude Include="arm9\source\substream.h" />
+    <ClInclude Include="arm9\source\tcm.h" />
+    <ClInclude Include="arm9\source\tileMan.h" />
+    <ClInclude Include="arm9\source\tileMapMirror.h" />
+    <ClInclude Include="arm9\source\tilePos.h" />
+    <ClInclude Include="arm9\source\vblankBatcher.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
