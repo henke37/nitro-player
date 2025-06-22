@@ -49,8 +49,24 @@ private:
 	std::vector<std::unique_ptr<SequenceInfoRecord>> sequenceInfos;
 	std::vector<std::unique_ptr<BankInfoRecord>> bankInfos;
 	std::vector<std::unique_ptr<WaveArchiveInfoRecord>> waveArchInfos;
+	std::vector<std::unique_ptr<SequenceArchiveRecord>> sequenceArchInfos;
 	std::vector<std::unique_ptr<PlayerInfoRecord>> playerInfos;
 	std::vector<std::unique_ptr<StreamInfoRecord>> streamInfos;
+	std::vector<std::unique_ptr<GroupInfoRecord>> groupInfos;
+
+	struct SequenceArchiveNames {
+		std::string archiveName;
+		std::vector<std::string> sequenceNames;
+	};
+
+	std::vector<std::string> sequenceNames;
+	std::vector<SequenceArchiveNames> sequenceArchiveNames;
+	std::vector<std::string> bankNames;
+	std::vector<std::string> waveArchiveNames;
+	std::vector<std::string> playerNames;
+	std::vector<std::string> groupNames;
+	std::vector<std::string> streamPlayerNames;
+	std::vector<std::string> streamNames;
 
 	void parseSymb(std::uint32_t offset, std::uint32_t size);
 	void parseInfo(std::uint32_t offset, std::uint32_t size);

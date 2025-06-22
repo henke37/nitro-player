@@ -74,6 +74,77 @@ void SDatFile::parseSymb(std::uint32_t offset, std::uint32_t size) {
 
 	std::string signature = reader.readString(4);
 	sassert(signature == "SYMB", "bad SYMB signature");
+
+	reader.skip(4);
+
+	std::uint32_t seqSymbPtr = reader.readLELong();
+	std::uint32_t seqArchSymbPtr = reader.readLELong();
+	std::uint32_t bankSymbPtr= reader.readLELong();
+	std::uint32_t waveArchSymbPtr = reader.readLELong();
+	std::uint32_t playerSymbPtr = reader.readLELong();
+	std::uint32_t groupSymbPtr = reader.readLELong();
+	std::uint32_t player2SymbPtr = reader.readLELong();
+	std::uint32_t streamSymbPtr = reader.readLELong();
+
+	auto parseSymbSubRec = [&](std::uint32_t ptr) {
+		std::vector<std::string> names;
+		reader.setPos(ptr);
+
+		std::uint32_t nameCount = reader.readLELong();
+		names.reserve(nameCount);
+
+		for(std::uint32_t nameIndex = 0; nameIndex < nameCount; ++nameIndex) {
+			std::uint32_t strPos = reader.readLELong();
+
+			if(strPos == 0) {
+				names.emplace_back();
+				continue;
+			}
+
+			std::uint32_t pos = reader.getPos();
+
+			//printf("%lu %lu\n", pos, strPos);
+
+			reader.setPos(strPos);
+			names.emplace_back(reader.readZeroTermString());
+			reader.setPos(pos);
+		}
+		return names;
+	};
+
+	sequenceNames = parseSymbSubRec(seqSymbPtr);
+	bankNames = parseSymbSubRec(bankSymbPtr);
+	waveArchiveNames = parseSymbSubRec(waveArchSymbPtr);
+	playerNames = parseSymbSubRec(playerSymbPtr);
+	groupNames = parseSymbSubRec(groupSymbPtr);
+	streamPlayerNames = parseSymbSubRec(player2SymbPtr);
+	streamNames = parseSymbSubRec(streamSymbPtr);
+
+	{
+		reader.setPos(seqArchSymbPtr);
+		std::uint32_t archNameCount = reader.readLELong();
+		sequenceArchiveNames.reserve(archNameCount);
+
+		for(std::uint32_t archiveIndex = 0; archiveIndex < archNameCount; ++archiveIndex) {
+			std::uint32_t archNamePos = reader.readLELong();
+			std::uint32_t seqListPos = reader.readLELong();
+
+			std::uint32_t nextPos = reader.getPos();
+
+			SequenceArchiveNames archNames;
+
+			if(archNamePos) {
+				reader.setPos(archNamePos);
+				archNames.archiveName = reader.readZeroTermString();
+			}
+			if(seqListPos) {
+				archNames.sequenceNames = parseSymbSubRec(seqListPos);
+			}
+			sequenceArchiveNames.push_back(std::move(archNames));
+
+			reader.setPos(nextPos);
+		}
+	}
 }
 
 void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
@@ -123,7 +194,7 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 			record->player = reader.readByte();
 			sequenceInfos.emplace_back(std::move(record));
 		}
-		printf("Loaded %u sequence infos\n", sequenceInfos.size());
+		//printf("Loaded %u sequence infos\n", sequenceInfos.size());
 	}
 
 	{
@@ -145,7 +216,7 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 			}
 			bankInfos.emplace_back(std::move(record));
 		}
-		printf("Loaded %u bank infos\n", bankInfos.size());
+		//printf("Loaded %u bank infos\n", bankInfos.size());
 	}
 
 	{
@@ -164,7 +235,7 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 			record->fatId = reader.readLEShort();
 			waveArchInfos.emplace_back(std::move(record));
 		}
-		printf("Loaded %u wave arch infos\n", waveArchInfos.size());
+		//printf("Loaded %u wave arch infos\n", waveArchInfos.size());
 	}
 
 	{
@@ -185,11 +256,11 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 			record->heapSize = reader.readLELong();
 			playerInfos.emplace_back(std::move(record));
 		}
-		printf("Loaded %u player infos\n", playerInfos.size());
+		//printf("Loaded %u player infos\n", playerInfos.size());
 	}
 
 	{
-		std::vector<std::uint32_t> recordPositions = readChunkPositions(4);
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(7);
 		streamInfos.reserve(recordPositions.size());
 
 		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
@@ -208,7 +279,51 @@ void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 			record->forceStereo = reader.readByte()!=0;
 			streamInfos.emplace_back(std::move(record));
 		}
-		printf("Loaded %u stream infos\n", streamInfos.size());
+		//printf("Loaded %u stream infos\n", streamInfos.size());
+	}
+
+	{
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(3);
+		sequenceArchInfos.reserve(recordPositions.size());
+
+		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
+			std::uint32_t offset = *itr;
+			if(offset == 0) {
+				sequenceArchInfos.emplace_back(nullptr);
+				continue;
+			}
+			reader.setPos(offset);
+
+			std::unique_ptr<SequenceArchiveRecord> record = std::make_unique<SequenceArchiveRecord>();
+			record->fatId = reader.readLEShort();
+			sequenceArchInfos.emplace_back(std::move(record));
+		}
+		//printf("Loaded %u sequence arch infos\n", sequenceArchInfos.size());
+	}
+
+	{
+		std::vector<std::uint32_t> recordPositions = readChunkPositions(5);
+		groupInfos.reserve(recordPositions.size());
+
+		for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
+			std::uint32_t offset = *itr;
+			if(offset == 0) {
+				groupInfos.emplace_back(nullptr);
+				continue;
+			}
+			reader.setPos(offset);
+
+			std::unique_ptr<GroupInfoRecord> record = std::make_unique<GroupInfoRecord>();
+			std::uint32_t elementCount = reader.readLELong();
+			record->elements.reserve(elementCount);
+			for(std::uint32_t elementIndex = 0; elementIndex < elementCount; ++elementIndex) {
+				std::uint16_t type = reader.readLEShort();
+				std::uint16_t id = reader.readLEShort();
+				record->elements.emplace_back(static_cast<GroupInfoRecord::ElementType>(type), id);
+			}
+			groupInfos.emplace_back(std::move(record));
+		}
+		//printf("Loaded %u group infos\n", groupInfos.size());
 	}
 }
 
