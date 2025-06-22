@@ -19,15 +19,20 @@ public:
 	SDatFile(const std::string &fileName);
 	SDatFile(std::unique_ptr<BinaryReadStream> stream);
 
-	std::unique_ptr<SBNK> OpenBank(unsigned int bankId);
-	std::unique_ptr<STRM> OpenStream(unsigned int streamId);
-	std::unique_ptr<SSEQ> OpenSequence(unsigned int sequenceId);
-	std::unique_ptr<SWAR> OpenWaveArchive(unsigned int archiveId);
+	std::unique_ptr<STRM> OpenStream(unsigned int streamId) const;
+	std::unique_ptr<SWAR> OpenWaveArchive(unsigned int archiveId) const;
 
-	std::unique_ptr<SBNK> OpenBank(std::string bankName);
-	std::unique_ptr<STRM> OpenStream(std::string streamName);
-	std::unique_ptr<SSEQ> OpenSequence(std::string sequenceName);
-	std::unique_ptr<SWAR> OpenWaveArchive(std::string archiveName);
+	std::unique_ptr<SBNK> OpenBank(const std::unique_ptr<BankInfoRecord>&) const;
+	std::unique_ptr<STRM> OpenStream(const std::unique_ptr<StreamInfoRecord>&) const;
+	std::unique_ptr<SSEQ> OpenSequence(const std::unique_ptr<SequenceInfoRecord> &) const;
+	std::unique_ptr<SWAR> OpenWaveArchive(const std::unique_ptr<WaveArchiveInfoRecord> &) const;
+
+	const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(unsigned int sequenceId) const;
+	const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(const std::string &sequenceName) const;
+	const std::unique_ptr<BankInfoRecord> &GetBankInfo(unsigned int bankId) const;
+	const std::unique_ptr<BankInfoRecord> &GetBankInfo(const std::string &bankName) const;
+	const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(unsigned int archiveId) const;
+	const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(const std::string &archiveName) const;
 
 private:
 

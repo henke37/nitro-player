@@ -22,11 +22,39 @@ SDatFile::SDatFile(std::unique_ptr<BinaryReadStream> stream) {
 	Load();
 }
 
-std::unique_ptr<SSEQ> SDatFile::OpenSequence(unsigned int sequenceId) {
-	auto &info = sequenceInfos[sequenceId];
+std::unique_ptr<SBNK> SDatFile::OpenBank(const std::unique_ptr<BankInfoRecord> &info) const {
+	if(!info) return std::unique_ptr<SBNK>();
+
+	return std::make_unique<SBNK>(this->OpenFile(info->fatId));
+}
+
+std::unique_ptr<SSEQ> SDatFile::OpenSequence(const std::unique_ptr<SequenceInfoRecord> &info) const {
 	if(!info) return std::unique_ptr<SSEQ>();
 
 	return std::make_unique<SSEQ>(this->OpenFile(info->fatId));
+}
+std::unique_ptr<SWAR> SDatFile::OpenWaveArchive(const std::unique_ptr<WaveArchiveInfoRecord> &info) const {
+	if(!info) return std::unique_ptr<SWAR>();
+
+	return std::make_unique<SWAR>(this->OpenFile(info->fatId));
+}
+std::unique_ptr<SWAR> SDatFile::OpenWaveArchive(unsigned int archiveId) const {
+	auto &info = waveArchInfos[archiveId];
+	if(!info) return std::unique_ptr<SWAR>();
+
+	return std::make_unique<SWAR>(this->OpenFile(info->fatId));
+}
+
+const std::unique_ptr<SequenceInfoRecord> &SDatFile::GetSequenceInfo(unsigned int sequenceId) const {
+	return sequenceInfos[sequenceId];
+}
+
+const std::unique_ptr<SequenceInfoRecord> &SDatFile::GetSequenceInfo(const std::string &sequenceName) const {
+	for(std::size_t sequenceId = 0; sequenceId < sequenceNames.size(); ++sequenceId) {
+		if(sequenceName != sequenceNames[sequenceId]) continue;
+		return sequenceInfos[sequenceId];
+	}
+	sassert(0, "Unknown sequence \"%s\"!", sequenceName.c_str());
 }
 
 void SDatFile::Load() {
