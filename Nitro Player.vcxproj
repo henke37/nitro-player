@@ -112,6 +112,11 @@
     <ClCompile Include="arm9\source\nclr.cpp" />
     <ClCompile Include="arm9\source\nftr.cpp" />
     <ClCompile Include="arm9\source\nineslice.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\sbnk.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\sdatFile.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\sequencePlayer.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\sseq.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\swar.cpp" />
     <ClCompile Include="arm9\source\nscr.cpp" />
     <ClCompile Include="arm9\source\oamMan.cpp" />
     <ClCompile Include="arm9\source\palMan.cpp" />
@@ -124,6 +129,7 @@
     <ClCompile Include="arm9\source\sectionedFile.cpp" />
     <ClCompile Include="arm9\source\strutils.cpp" />
     <ClCompile Include="arm9\source\substream.cpp" />
+    <ClCompile Include="arm9\source\testMode.cpp" />
     <ClCompile Include="arm9\source\tileMan.cpp" />
     <ClCompile Include="arm9\source\tileMapMirror.cpp" />
     <ClCompile Include="arm9\source\tilePos.cpp" />
@@ -161,6 +167,13 @@
     <ClInclude Include="arm9\source\nclr.h" />
     <ClInclude Include="arm9\source\nftr.h" />
     <ClInclude Include="arm9\source\nineslice.h" />
+    <ClInclude Include="arm9\source\nitroComposer\infoRecords.h" />
+    <ClInclude Include="arm9\source\nitroComposer\sbnk.h" />
+    <ClInclude Include="arm9\source\nitroComposer\sdatFile.h" />
+    <ClInclude Include="arm9\source\nitroComposer\sequencePlayer.h" />
+    <ClInclude Include="arm9\source\nitroComposer\sseq.h" />
+    <ClInclude Include="arm9\source\nitroComposer\strm.h" />
+    <ClInclude Include="arm9\source\nitroComposer\swar.h" />
     <ClInclude Include="arm9\source\nscr.h" />
     <ClInclude Include="arm9\source\oamMan.h" />
     <ClInclude Include="arm9\source\palMan.h" />
@@ -175,6 +188,7 @@
     <ClInclude Include="arm9\source\strutils.h" />
     <ClInclude Include="arm9\source\substream.h" />
     <ClInclude Include="arm9\source\tcm.h" />
+    <ClInclude Include="arm9\source\testMode.h" />
     <ClInclude Include="arm9\source\tileMan.h" />
     <ClInclude Include="arm9\source\tileMapMirror.h" />
     <ClInclude Include="arm9\source\tilePos.h" />
