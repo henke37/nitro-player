@@ -15,7 +15,12 @@ public:
 	void Update() override;
 private:
 
+	void LoadSequence(const std::string &sequenceName);
+	void LoadSequence(unsigned int sequenceId);
+
 	std::unique_ptr<SDatFile> sdat;
+
+	SequencePlayer seqPlayer;
 };
 
 #endif

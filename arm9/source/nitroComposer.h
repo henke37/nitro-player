@@ -6,5 +6,6 @@
 #include "nitroComposer/sbnk.h"
 #include "nitroComposer/sseq.h"
 #include "nitroComposer/strm.h"
+#include "nitroComposer/sequencePlayer.h"
 
 #endif

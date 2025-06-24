@@ -57,6 +57,14 @@ const std::unique_ptr<SequenceInfoRecord> &SDatFile::GetSequenceInfo(const std::
 	sassert(0, "Unknown sequence \"%s\"!", sequenceName.c_str());
 }
 
+const std::unique_ptr<BankInfoRecord> &SDatFile::GetBankInfo(unsigned int bankId) const {
+	return bankInfos[bankId];
+}
+
+const std::unique_ptr<WaveArchiveInfoRecord> &SDatFile::GetWaveArchiveInfo(unsigned int archiveId) const {
+	return waveArchInfos[archiveId];
+}
+
 void SDatFile::Load() {
 	BinaryReader reader(mainStream.get(), false);
 
@@ -93,7 +101,8 @@ void SDatFile::Load() {
 
 std::unique_ptr<BinaryReadStream> SDatFile::OpenFile(unsigned int fileId) const {
 	sassert(fileId < fat.size(), "File %u past end of FAT", fileId);
-	return std::unique_ptr<BinaryReadStream>();
+	auto &record = fat[fileId];
+	return std::make_unique<SubStream>(mainStream.get(), record.offset, record.size, false);
 }
 
 void SDatFile::parseSymb(std::uint32_t offset, std::uint32_t size) {
