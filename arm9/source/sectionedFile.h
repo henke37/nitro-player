@@ -13,9 +13,6 @@ public:
 	SectionedFile(std::unique_ptr<BinaryReadStream> &&stream);
 	~SectionedFile();
 	
-	std::unique_ptr<BinaryReadStream> getSectionData(const std::string &sectionName) const;
-	std::unique_ptr<BinaryReadStream> getSectionData(size_t sectionOffset) const;
-	
 	class Section {
 	public:
 		std::string name;
@@ -24,6 +21,10 @@ public:
 		
 		Section(std::string name, size_t size, size_t offset) : name(name), size(size), offset(offset) {}
 	};
+
+	std::unique_ptr<BinaryReadStream> getSectionData(const std::string &sectionName) const;
+	std::unique_ptr<BinaryReadStream> getSectionData(size_t sectionOffset) const;
+	std::unique_ptr<BinaryReadStream> getSectionData(const SectionedFile::Section *) const;
 	
 	const SectionedFile::Section *getSectionInfo(const std::string &sectionName) const;
 	const SectionedFile::Section *getSectionInfo(size_t sectionOffset) const;
@@ -34,8 +35,6 @@ private:
 	std::vector<Section> sections;
 	
 	void readSectionHeaders();
-	
-	std::unique_ptr<BinaryReadStream> readSectionData(const Section *sect) const;
 	
 	std::unique_ptr<BinaryReadStream> stream;
 };

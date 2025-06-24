@@ -23,6 +23,7 @@ public:
 	uint16_t readBEShort();
 	int16_t readLESignedShort();
 	int16_t readBESingedShort();
+	uint32_t readLE24Bit();
 	uint32_t readLELong();
 	uint32_t readBELong();
 	int32_t readLESingedLong();

@@ -62,6 +62,15 @@ int16_t BinaryReader::readLESignedShort() {
 	return (int16_t)readLEShort();
 }
 
+uint32_t BinaryReader::readLE24Bit() {
+	uint8_t buf[3];
+
+	size_t readSize = stream->read(buf, 3);
+	assert(readSize == 3);
+
+	return buf[0] | (buf[1] << 8) | (buf[2] << 16);
+}
+
 uint32_t BinaryReader::readLELong() {
 	uint8_t buf[4];
 	

@@ -39,7 +39,7 @@ std::unique_ptr<BinaryReadStream> SectionedFile::getSectionData(size_t sectionOf
 	
 	if(!sect) return nullptr;
 	
-	return readSectionData(sect);
+	return getSectionData(sect);
 }
 
 std::unique_ptr<BinaryReadStream> SectionedFile::getSectionData(const std::string &sectionName) const {
@@ -47,10 +47,10 @@ std::unique_ptr<BinaryReadStream> SectionedFile::getSectionData(const std::strin
 	
 	if(!sect) return nullptr;
 	
-	return readSectionData(sect);
+	return getSectionData(sect);
 }
 
-std::unique_ptr<BinaryReadStream> SectionedFile::readSectionData(const Section *sect) const {
+std::unique_ptr<BinaryReadStream> SectionedFile::getSectionData(const Section *sect) const {
 	return std::make_unique<SubStream>(stream.get(), sect->offset, sect->size, false);
 }
 
