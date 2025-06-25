@@ -65,6 +65,39 @@ const std::unique_ptr<WaveArchiveInfoRecord> &SDatFile::GetWaveArchiveInfo(unsig
 	return waveArchInfos[archiveId];
 }
 
+std::string SDatFile::GetNameForBank(unsigned int bankId) const {
+	if(bankId >= bankNames.size()) {
+		return std::string("BANK_") + std::to_string(bankId);
+	}
+	std::string name = bankNames.at(bankId);
+	if(name.empty()) {
+		return std::string("BANK_") + std::to_string(bankId);
+	}
+	return name;
+}
+
+std::string SDatFile::GetNameForWaveArchive(unsigned int archiveId) const {
+	if(archiveId >= bankNames.size()) {
+		return std::string("WAVE_") + std::to_string(archiveId);
+	}
+	std::string name = bankNames.at(archiveId);
+	if(name.empty()) {
+		return std::string("WAVE_") + std::to_string(archiveId);
+	}
+	return name;
+}
+
+std::string SDatFile::GetNameForSequence(unsigned int sequenceId) const {
+	if(sequenceId >= sequenceNames.size()) {
+		return std::string("SEQ_") + std::to_string(sequenceId);
+	}
+	std::string name = sequenceNames.at(sequenceId);
+	if(name.empty()) {
+		return std::string("SEQ_") + std::to_string(sequenceId);
+	}
+	return name;
+}
+
 void SDatFile::Load() {
 	BinaryReader reader(mainStream.get(), false);
 

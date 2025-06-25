@@ -49,4 +49,5 @@ void SequencePlayer::LoadBank(unsigned int bankId) {
 		}
 	}
 	sbnk = sdat->OpenBank(bankInfo);
+	//printf("Loaded bank %s.\n", sdat->GetNameForBank(bankId).c_str());
 }
