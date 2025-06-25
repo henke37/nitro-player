@@ -44,8 +44,17 @@ public:
 
 	class NoiseInstrument : public LeafInstrument {};
 
-	class SplitInstrument : public BaseInstrument {};
-	class Drumkit : public BaseInstrument {};
+	class SplitInstrument : public BaseInstrument {
+	public:
+		std::uint8_t regions[8];
+		std::unique_ptr<BaseInstrument> subInstruments[8];
+	};
+	class Drumkit : public BaseInstrument {
+	public:
+		uint8_t minNote;
+		uint8_t maxNote;
+		std::vector<std::unique_ptr<BaseInstrument>> subInstruments;
+	};
 
 private:
 	SectionedFile sections;

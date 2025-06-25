@@ -29,7 +29,6 @@ void SBNK::Parse() {
 
 		auto offset = reader.readLE24Bit();
 		offset -= section->offset;
-		printf("%i %li\n", type, offset);
 
 		auto pos = reader.getPos();
 
@@ -48,8 +47,7 @@ std::unique_ptr<SBNK::BaseInstrument> SBNK::ParseInstrument(BinaryReader &reader
 	switch(type) {
 	case 0:
 		return std::unique_ptr<SBNK::BaseInstrument>();
-	case 1:
-	{
+	case 1:	{
 		std::unique_ptr<PCMInstrument> pcm = std::make_unique<PCMInstrument>();
 		pcm->type = InstrumentType::PCM;
 		pcm->wave = reader.readLEShort();
@@ -63,8 +61,7 @@ std::unique_ptr<SBNK::BaseInstrument> SBNK::ParseInstrument(BinaryReader &reader
 		pcm->pan = reader.readByte();
 		return std::move(pcm);
 	} break;
-	case 2:
-	{
+	case 2:	{
 		std::unique_ptr<PulseInstrument> pulse = std::make_unique<PulseInstrument>();
 		pulse->type = InstrumentType::Pulse;
 		pulse->duty = reader.readLEShort();
@@ -77,8 +74,7 @@ std::unique_ptr<SBNK::BaseInstrument> SBNK::ParseInstrument(BinaryReader &reader
 		pulse->pan = reader.readByte();
 		return std::move(pulse);
 	} break;
-	case 3:
-	{
+	case 3: {
 		std::unique_ptr<NoiseInstrument> noise = std::make_unique<NoiseInstrument>();
 		noise->type = InstrumentType::Noise;
 
@@ -91,9 +87,39 @@ std::unique_ptr<SBNK::BaseInstrument> SBNK::ParseInstrument(BinaryReader &reader
 		return std::move(noise);
 	} break;
 
-	case 16:
-	case 17:
-		return std::unique_ptr<SBNK::BaseInstrument>();
+	case 16: {
+		std::unique_ptr<Drumkit> drums = std::make_unique<Drumkit>();
+		drums->type = InstrumentType::Drumkit;
+		drums->minNote = reader.readByte();
+		drums->maxNote = reader.readByte();
+		auto noteCount = drums->maxNote - drums->minNote + 1;
+		drums->subInstruments.reserve(noteCount);
+		for(std::uint8_t note = drums->minNote; note < drums->maxNote + 1; ++note) {
+			uint8_t subType = reader.readByte();
+			reader.skip(1);
+			auto subInstrument = ParseInstrument(reader, subType);
+			drums->subInstruments.emplace_back(std::move(subInstrument));
+		}
+
+		return std::move(drums);
+	} break;
+	case 17: {
+		std::unique_ptr<SBNK::SplitInstrument> split = std::make_unique<SplitInstrument>();
+		split->type = InstrumentType::Split;
+
+		for(unsigned int region = 0; region < 8; ++region) {
+			split->regions[region] = reader.readByte();
+		}
+
+		for(unsigned int region = 0; region < 8; ++region) {
+			uint8_t subType = reader.readByte();
+			reader.skip(1);
+			auto subInstrument = ParseInstrument(reader, subType);
+			split->subInstruments[region]=std::move(subInstrument);
+		}
+
+		return split;
+	}
 	default:
 		sassert(0, "Unknown instrument type %i", type);
 	}
