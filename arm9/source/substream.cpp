@@ -32,6 +32,8 @@ size_t SubStream::read(uint8_t *buf, size_t size) {
 	if(size > remaining) {
 		size=remaining;
 	}
+
+	if(size == 0) return 0;
 	
 	size_t readSize=realStream->read(buf, size);
 	
