@@ -29,6 +29,10 @@
 ---------------------------------------------------------------------------------*/
 #include <nds.h>
 
+#include "nitrocomposer/sequencePlayer.h"
+
+SequencePlayer sequencePlayer;
+
 void VblankHandler(void) {
 }
 
@@ -59,8 +63,6 @@ int main() {
 
 	SetYtrigger(80);
 
-	installSoundFIFO();
-
 	installSystemFIFO();
 
 	irqSet(IRQ_VCOUNT, VcountHandler);
@@ -68,7 +70,9 @@ int main() {
 
 	irqEnable( IRQ_VBLANK | IRQ_VCOUNT);
 	
-	setPowerButtonCB(powerButtonCB);   
+	setPowerButtonCB(powerButtonCB);
+
+	sequencePlayer.Init();
 
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {

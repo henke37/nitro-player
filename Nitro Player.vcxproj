@@ -22,6 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{1544AC75-F0AA-5D78-03B3-47B5FA262362}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>ARM9</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -83,7 +84,6 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="arm7\source\main.c" />
     <ClCompile Include="arm9\source\animationCell.cpp" />
     <ClCompile Include="arm9\source\animationFrame.cpp" />
     <ClCompile Include="arm9\source\animationPlayer.cpp" />
