@@ -36,12 +36,12 @@ void SequencePlayer::ISR() {
 
 void SequencePlayer::Tick() {
 
-	for(unsigned int trackIndex = 0; trackIndex < 16; ++trackIndex) {
+	for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
 		auto &track = tracks[trackIndex];
 		track.Tick();
 	}
 
-	for(unsigned int voiceIndex = 0; voiceIndex < 16; ++voiceIndex) {
+	for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
 		auto &voice = voices[voiceIndex];
 		voice.Tick();
 	}

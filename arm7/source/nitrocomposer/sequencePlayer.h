@@ -24,8 +24,8 @@ private:
 
 		VoiceState state = VoiceState::Free;
 	};
-
-	Voice voices[16];
+	static constexpr unsigned int voiceCount = 16;
+	Voice voices[voiceCount];
 
 	class Track {
 	public:
@@ -36,8 +36,8 @@ private:
 	private:
 		bool isPlaying;
 	};
-
-	Track tracks[16];
+	static constexpr unsigned int trackCount = 16;
+	Track tracks[trackCount];
 
 	void setupFifo();
 	static void fifoDatagramHandler(int num_bytes, void *userdata);
