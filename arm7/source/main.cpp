@@ -31,8 +31,6 @@
 
 #include "nitrocomposer/sequencePlayer.h"
 
-SequencePlayer sequencePlayer;
-
 void VblankHandler(void) {
 }
 
