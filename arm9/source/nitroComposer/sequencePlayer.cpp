@@ -2,6 +2,8 @@
 
 #include <nds/arm9/sassert.h>
 
+#include "nitroComposer/ipc.h"
+
 SequencePlayer::SequencePlayer() : sdat(nullptr) {}
 
 SequencePlayer::~SequencePlayer() {}

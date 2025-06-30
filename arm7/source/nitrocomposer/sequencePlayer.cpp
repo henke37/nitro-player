@@ -4,6 +4,8 @@
 #include <nds/timers.h>
 #include <nds/interrupts.h>
 
+#include "nitroComposer/ipc.h"
+
 SequencePlayer sequencePlayer;
 
 const size_t fifoBuffSize=32;
@@ -11,6 +13,14 @@ const size_t fifoBuffSize=32;
 void SequencePlayer::Init() {
 	setupFifo();
 	setupTimer();
+}
+
+void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
+	variables[var] = val;
+}
+
+std::int16_t SequencePlayer::GetVar(std::uint8_t var) const {
+	return variables[var];
 }
 
 void SequencePlayer::setupFifo() {

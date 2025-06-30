@@ -1,6 +1,8 @@
 #ifndef NITROCOMPOSER_SEQUENCEPLAYER_H
 #define NITROCOMPOSER_SEQUENCEPLAYER_H
 
+#include "nitroComposer/ipc.h"
+
 #include "sseq.h"
 #include "sbnk.h"
 #include "swar.h"
