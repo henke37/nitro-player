@@ -1,6 +1,7 @@
 #include "sequencePlayer.h"
 
 #include <nds/arm9/sassert.h>
+#include <nds/fifocommon.h>
 
 #include "nitroComposer/ipc.h"
 
@@ -52,4 +53,35 @@ void SequencePlayer::LoadBank(unsigned int bankId) {
 	}
 	sbnk = sdat->OpenBank(bankInfo);
 	//printf("Loaded bank %s.\n", sdat->GetNameForBank(bankId).c_str());
+}
+
+
+void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
+	std::unique_ptr<SetVarIPC> buff = std::make_unique<SetVarIPC>();
+	buff->command = BaseIPC::CommandType::SetVar;
+	buff->var = var;
+	buff->val = val;
+
+	fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8*)buff.get());
+}
+std::int16_t SequencePlayer::GetVar(std::uint8_t var) const {
+	std::unique_ptr<GetVarIPC> buff = std::make_unique<GetVarIPC>();
+	buff->command = BaseIPC::CommandType::GetVar;
+	buff->var = var;
+
+	fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
+
+	fifoWaitValue32(FIFO_NITRO_COMPOSER);
+
+	return static_cast<std::int16_t> (fifoGetValue32(FIFO_NITRO_COMPOSER));
+
+}
+
+void SequencePlayer::SetMainVolume(std::uint8_t volume) {
+
+	std::unique_ptr<SetMainVolumeIPC> buff = std::make_unique<SetMainVolumeIPC>();
+	buff->command = BaseIPC::CommandType::SetMainVolume;
+	buff->volume = volume;
+
+	fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
 }

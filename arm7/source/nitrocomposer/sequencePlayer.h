@@ -70,6 +70,8 @@ private:
 	void setupTimer();
 	static void ISR();
 
+	std::uint8_t tempo;
+	std::uint8_t mainVolume;
 
 	std::uint8_t *commandBuffer;
 };

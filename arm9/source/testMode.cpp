@@ -9,6 +9,8 @@ void TestMode::Load() {
 	printf("Sdat loaded ok.\n");
 
 	LoadSequence(2);// "BGM02DS_REQ");
+
+	printf("Getvar: %hi\n", seqPlayer.GetVar(1));
 }
 
 void TestMode::LoadSequence(const std::string &sequenceName) {

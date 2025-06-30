@@ -21,6 +21,11 @@ public:
 
 	void LoadBank(unsigned int bankId);
 
+	void SetVar(std::uint8_t var, std::int16_t val);
+	std::int16_t GetVar(std::uint8_t var) const;
+
+	void SetMainVolume(std::uint8_t volume);
+
 private:
 	const SDatFile *sdat;
 

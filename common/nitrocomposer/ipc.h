@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#define FIFO_NITRO_COMPOSER FIFO_USER_01
+
 struct BaseIPC {
 	enum class CommandType {
 		Invalid,
@@ -18,25 +20,25 @@ struct BaseIPC {
 	CommandType command;
 };
 
-struct PlayTrack : BaseIPC {
+struct PlayTrackIPC : BaseIPC {
 	std::uint8_t *commands;
 	std::uint32_t length;
 };
 
-struct SetMainVolume : BaseIPC {
+struct SetMainVolumeIPC : BaseIPC {
 	std::uint8_t volume;
 };
 
-struct SetTempo : BaseIPC {
+struct SetTempoIPC : BaseIPC {
 	std::uint8_t tempo;
 };
 
-struct SetVar : BaseIPC {
+struct SetVarIPC : BaseIPC {
 	std::uint8_t var;
 	std::int16_t val;
 };
 
-struct GetVar : BaseIPC {
+struct GetVarIPC : BaseIPC {
 	std::uint8_t var;
 };
 
