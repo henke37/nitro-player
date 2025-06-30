@@ -8,34 +8,37 @@
 #include "swar.h"
 #include "sdatFile.h"
 
-class SequencePlayer {
-public:
-	SequencePlayer();
-	~SequencePlayer();
+namespace NitroComposer {
 
-	void SetSdat(const SDatFile *sdat);
+	class SequencePlayer {
+	public:
+		SequencePlayer();
+		~SequencePlayer();
 
-	void LoadSequence(unsigned int sequenceId);
-	void LoadSequence(const std::string &sequenceName);
-	void LoadSequence(const std::unique_ptr<SequenceInfoRecord> &);
+		void SetSdat(const SDatFile *sdat);
 
-	void LoadBank(unsigned int bankId);
+		void LoadSequence(unsigned int sequenceId);
+		void LoadSequence(const std::string &sequenceName);
+		void LoadSequence(const std::unique_ptr<SequenceInfoRecord> &);
 
-	void SetVar(std::uint8_t var, std::int16_t val);
-	std::int16_t GetVar(std::uint8_t var) const;
+		void LoadBank(unsigned int bankId);
 
-	void SetMainVolume(std::uint8_t volume);
+		void SetVar(std::uint8_t var, std::int16_t val);
+		std::int16_t GetVar(std::uint8_t var) const;
 
-private:
-	const SDatFile *sdat;
+		void SetMainVolume(std::uint8_t volume);
 
-	std::unique_ptr<SSEQ> sseq;
-	unsigned int loadedBankIndex = 0xFFFFFFFF;
-	std::unique_ptr<SBNK> sbnk;
-	std::unique_ptr<SWAR> swars[4];
+	private:
+		const SDatFile *sdat;
 
-	std::uint16_t channelMask;
+		std::unique_ptr<SSEQ> sseq;
+		unsigned int loadedBankIndex = 0xFFFFFFFF;
+		std::unique_ptr<SBNK> sbnk;
+		std::unique_ptr<SWAR> swars[4];
 
-};
+		std::uint16_t channelMask;
 
+	};
+
+}
 #endif

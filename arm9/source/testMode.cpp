@@ -4,7 +4,7 @@ TestMode::TestMode() {}
 TestMode::~TestMode() {}
 
 void TestMode::Load() {
-	sdat = std::make_unique<SDatFile>("sound_data.sdat");
+	sdat = std::make_unique<NitroComposer::SDatFile>("sound_data.sdat");
 	seqPlayer.SetSdat(sdat.get());
 	printf("Sdat loaded ok.\n");
 

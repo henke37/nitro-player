@@ -3,15 +3,19 @@
 
 #include "../sectionedFile.h"
 
-class SSEQ {
+namespace NitroComposer {
 
-public:
-	SSEQ(const std::string &fileName);
-	SSEQ(std::unique_ptr<BinaryReadStream> &&stream);
+	class SSEQ {
 
-	std::unique_ptr<BinaryReadStream> GetCommandStream() const;
-private:
-	SectionedFile sections;
-};
+	public:
+		SSEQ(const std::string &fileName);
+		SSEQ(std::unique_ptr<BinaryReadStream> &&stream);
+
+		std::unique_ptr<BinaryReadStream> GetCommandStream() const;
+	private:
+		SectionedFile sections;
+	};
+
+}
 
 #endif

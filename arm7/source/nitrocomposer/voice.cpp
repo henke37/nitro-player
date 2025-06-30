@@ -1,5 +1,9 @@
 #include "sequencePlayer.h"
 
-SequencePlayer::Voice::Voice() {}
+namespace NitroComposer {
 
-void SequencePlayer::Voice::Tick() {}
+	SequencePlayer::Voice::Voice() {}
+
+	void SequencePlayer::Voice::Tick() {}
+
+}

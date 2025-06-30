@@ -18,9 +18,9 @@ private:
 	void LoadSequence(const std::string &sequenceName);
 	void LoadSequence(unsigned int sequenceId);
 
-	std::unique_ptr<SDatFile> sdat;
+	std::unique_ptr<NitroComposer::SDatFile> sdat;
 
-	SequencePlayer seqPlayer;
+	NitroComposer::SequencePlayer seqPlayer;
 };
 
 #endif

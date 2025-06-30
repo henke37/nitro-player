@@ -68,7 +68,7 @@ int main() {
 	
 	setPowerButtonCB(powerButtonCB);
 
-	sequencePlayer.Init();
+	NitroComposer::sequencePlayer.Init();
 
 	// Keep the ARM7 mostly idle
 	while (!exitflag) {
