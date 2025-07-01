@@ -44,6 +44,10 @@ namespace NitroComposer {
 		std::uint8_t var;
 	};
 
+	struct LoadBankIPC : BaseIPC {
+
+	};
+
 }
 
 #endif

@@ -43,18 +43,18 @@ namespace NitroComposer {
 		u8 fifoBuffer[fifoBuffSize];
 		fifoGetDatamsg(FIFO_USER_01, fifoBuffSize, fifoBuffer);
 
-		auto ipc = reinterpret_cast<NitroComposer::BaseIPC *>(fifoBuffer);
+		auto ipc = reinterpret_cast<BaseIPC *>(fifoBuffer);
 
 		switch(ipc->command) {
 		case BaseIPC::CommandType::SetVar:
 		{
-			NitroComposer::SetVarIPC *setVarIpc = static_cast<NitroComposer::SetVarIPC *>(ipc);
+			SetVarIPC *setVarIpc = static_cast<SetVarIPC *>(ipc);
 			SetVar(setVarIpc->var, setVarIpc->val);
 		} break;
 
 		case BaseIPC::CommandType::GetVar:
 		{
-			NitroComposer::GetVarIPC *getVarIpc = static_cast<NitroComposer::GetVarIPC *>(ipc);
+			GetVarIPC *getVarIpc = static_cast<GetVarIPC *>(ipc);
 			std::int16_t val = GetVar(getVarIpc->var);
 			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, val);
 			assert(success);
@@ -62,13 +62,18 @@ namespace NitroComposer {
 
 		case BaseIPC::CommandType::SetTempo:
 		{
-			NitroComposer::SetTempoIPC *setTempoIpc = static_cast<NitroComposer::SetTempoIPC *>(ipc);
+			SetTempoIPC *setTempoIpc = static_cast<SetTempoIPC *>(ipc);
 			this->tempo = setTempoIpc->tempo;
 		} break;
 		case BaseIPC::CommandType::SetMainVolume:
 		{
-			NitroComposer::SetMainVolumeIPC *setMainVolumeIpc = static_cast<NitroComposer::SetMainVolumeIPC *>(ipc);
+			SetMainVolumeIPC *setMainVolumeIpc = static_cast<SetMainVolumeIPC *>(ipc);
 			this->mainVolume = setMainVolumeIpc->volume;
+		} break;
+
+		case BaseIPC::CommandType::LoadBank:
+		{
+			LoadBankIPC *loadBankIpc = static_cast<LoadBankIPC *>(ipc);
 		} break;
 
 		default:
