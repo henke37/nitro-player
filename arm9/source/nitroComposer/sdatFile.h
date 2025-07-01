@@ -7,7 +7,7 @@
 
 #include "../binaryStream.h"
 
-#include "infoRecords.h"
+#include "nitroComposer/infoRecords.h"
 
 namespace NitroComposer {
 
