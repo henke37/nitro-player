@@ -169,7 +169,6 @@
     <ClInclude Include="arm9\source\nclr.h" />
     <ClInclude Include="arm9\source\nftr.h" />
     <ClInclude Include="arm9\source\nineslice.h" />
-    <ClInclude Include="arm9\source\nitroComposer\infoRecords.h" />
     <ClInclude Include="arm9\source\nitroComposer\sbnk.h" />
     <ClInclude Include="arm9\source\nitroComposer\sdatFile.h" />
     <ClInclude Include="arm9\source\nitroComposer\sequencePlayer.h" />
@@ -195,6 +194,8 @@
     <ClInclude Include="arm9\source\tileMapMirror.h" />
     <ClInclude Include="arm9\source\tilePos.h" />
     <ClInclude Include="arm9\source\vblankBatcher.h" />
+    <ClInclude Include="common\nitrocomposer\bank.h" />
+    <ClInclude Include="common\nitrocomposer\infoRecords.h" />
     <ClInclude Include="common\nitrocomposer\ipc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -41,8 +41,6 @@ namespace NitroComposer {
 
 			reader.setPos(pos);
 		}
-
-		printf("Loaded %u instruments.\n", instruments.size());
 	}
 
 	std::unique_ptr<SBNK::BaseInstrument> SBNK::ParseInstrument(BinaryReader &reader, std::uint8_t type) {
