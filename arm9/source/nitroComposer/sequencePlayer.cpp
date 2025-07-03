@@ -38,6 +38,21 @@ namespace NitroComposer {
 	void SequencePlayer::LoadSequence(const std::unique_ptr<SequenceInfoRecord> &sequenceInfo) {
 		LoadBank(sequenceInfo->bankId);
 		sseq = sdat->OpenSequence(sequenceInfo);
+
+		auto stream = sseq->GetCommandStream();
+		size_t dataLen = stream->getLength();
+
+		sequenceData = std::make_unique<std::uint8_t[]>(dataLen);
+		auto readLen = stream->read(sequenceData.get(), dataLen);
+
+		sassert(readLen == dataLen, "failed reading sequence data");
+
+		std::unique_ptr<PlayTrackIPC> buff = std::make_unique<PlayTrackIPC>();
+		buff->command = BaseIPC::CommandType::PlaySequence;
+		buff->sequenceData = sequenceData.get();
+		buff->length = dataLen;
+
+		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)buff.get());
 	}
 
 	void SequencePlayer::LoadBank(unsigned int bankId) {
@@ -55,6 +70,12 @@ namespace NitroComposer {
 		}
 		sbnk = sdat->OpenBank(bankInfo);
 		//printf("Loaded bank %s.\n", sdat->GetNameForBank(bankId).c_str());
+
+		std::unique_ptr<LoadBankIPC> buff = std::make_unique<LoadBankIPC>();
+		buff->command = BaseIPC::CommandType::LoadBank;
+		buff->bank = sbnk.get();
+
+		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
 	}
 
 

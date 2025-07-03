@@ -3,6 +3,9 @@
 
 #include <cstdint>
 
+#include "nitroComposer/infoRecords.h"
+#include "nitroComposer/bank.h"
+
 namespace NitroComposer {
 
 #define FIFO_NITRO_COMPOSER FIFO_USER_01
@@ -23,7 +26,7 @@ namespace NitroComposer {
 	};
 
 	struct PlayTrackIPC : BaseIPC {
-		std::uint8_t *commands;
+		std::uint8_t *sequenceData;
 		std::uint32_t length;
 	};
 
@@ -45,7 +48,7 @@ namespace NitroComposer {
 	};
 
 	struct LoadBankIPC : BaseIPC {
-
+		const InstrumentBank *bank;
 	};
 
 }

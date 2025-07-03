@@ -38,6 +38,7 @@ namespace NitroComposer {
 
 		std::uint16_t channelMask;
 
+		std::unique_ptr<std::uint8_t[]> sequenceData;
 	};
 
 }

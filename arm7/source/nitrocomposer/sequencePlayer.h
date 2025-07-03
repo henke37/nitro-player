@@ -5,6 +5,8 @@
 
 namespace NitroComposer {
 
+	class InstrumentBank;
+
 	class SequencePlayer {
 	public:
 		void Init();
@@ -75,7 +77,9 @@ namespace NitroComposer {
 		std::uint8_t tempo;
 		std::uint8_t mainVolume;
 
-		std::uint8_t *commandBuffer;
+		const InstrumentBank *bank;
+
+		std::uint8_t *sequenceData;
 	};
 
 	extern SequencePlayer sequencePlayer;

@@ -3,6 +3,7 @@
 #include <nds/fifocommon.h>
 #include <nds/timers.h>
 #include <nds/interrupts.h>
+#include <nds/arm7/console.h>
 
 #include <cassert>
 
@@ -74,6 +75,16 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::LoadBank:
 		{
 			LoadBankIPC *loadBankIpc = static_cast<LoadBankIPC *>(ipc);
+			this->bank = loadBankIpc->bank;
+
+			consolePrintf("Loaded %d instruments\n", this->bank->instruments.size());
+			consoleFlush();
+		} break;
+
+		case BaseIPC::CommandType::PlaySequence:
+		{
+			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
+			this->sequenceData = playTrackIpc->sequenceData;
 		} break;
 
 		default:
