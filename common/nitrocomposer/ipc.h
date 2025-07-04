@@ -13,6 +13,7 @@ namespace NitroComposer {
 	struct BaseIPC {
 		enum class CommandType {
 			Invalid,
+			PowerOn,
 			LoadBank,
 			PlaySequence,
 			StopSequence,

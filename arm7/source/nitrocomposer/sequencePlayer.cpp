@@ -4,6 +4,8 @@
 #include <nds/timers.h>
 #include <nds/interrupts.h>
 #include <nds/arm7/console.h>
+#include <nds/system.h>
+#include <nds/arm7/audio.h>
 
 #include <cassert>
 
@@ -16,12 +18,11 @@ namespace NitroComposer {
 	const size_t fifoBuffSize = 32;
 
 	void SequencePlayer::Init() {
-		setupFifo();
-		setupTimer();
-
 		for(unsigned int var = 0; var < numVariables; ++var) {
 			variables[var] = -1;
 		}
+
+		setupFifo();
 	}
 
 	void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
@@ -30,6 +31,11 @@ namespace NitroComposer {
 
 	std::int16_t SequencePlayer::GetVar(std::uint8_t var) const {
 		return variables[var];
+	}
+
+	void SequencePlayer::PlaySequence(const std::uint8_t *sequenceData) {
+		this->sequenceData = sequenceData;
+		this->tempo = 120;
 	}
 
 	void SequencePlayer::setupFifo() {
@@ -47,6 +53,14 @@ namespace NitroComposer {
 		auto ipc = reinterpret_cast<BaseIPC *>(fifoBuffer);
 
 		switch(ipc->command) {
+
+		case BaseIPC::CommandType::PowerOn:
+		{
+			enableSound();
+
+			setupTimer();
+		} break;
+
 		case BaseIPC::CommandType::SetVar:
 		{
 			SetVarIPC *setVarIpc = static_cast<SetVarIPC *>(ipc);
@@ -70,6 +84,7 @@ namespace NitroComposer {
 		{
 			SetMainVolumeIPC *setMainVolumeIpc = static_cast<SetMainVolumeIPC *>(ipc);
 			this->mainVolume = setMainVolumeIpc->volume;
+			REG_MASTER_VOLUME = setMainVolumeIpc->volume;
 		} break;
 
 		case BaseIPC::CommandType::LoadBank:
@@ -84,7 +99,7 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::PlaySequence:
 		{
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
-			this->sequenceData = playTrackIpc->sequenceData;
+			PlaySequence(playTrackIpc->sequenceData);
 		} break;
 
 		default:

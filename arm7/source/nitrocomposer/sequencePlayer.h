@@ -14,6 +14,8 @@ namespace NitroComposer {
 		void SetVar(std::uint8_t var, std::int16_t val);
 		std::int16_t GetVar(std::uint8_t var) const;
 
+		void PlaySequence(const std::uint8_t *sequenceData);
+
 	private:
 		void Tick();
 
@@ -79,7 +81,7 @@ namespace NitroComposer {
 
 		const InstrumentBank *bank;
 
-		std::uint8_t *sequenceData;
+		const std::uint8_t *sequenceData;
 	};
 
 	extern SequencePlayer sequencePlayer;

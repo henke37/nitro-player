@@ -2,12 +2,23 @@
 
 #include <nds/arm9/sassert.h>
 #include <nds/fifocommon.h>
+#include <nds/system.h>
 
 #include "nitroComposer/ipc.h"
 
 namespace NitroComposer {
 
-	SequencePlayer::SequencePlayer() : sdat(nullptr) {}
+	SequencePlayer::SequencePlayer() : sdat(nullptr) {
+		ipcPowerOn();
+
+		powerOn(PM_SOUND_AMP);
+	}
+
+	void SequencePlayer::ipcPowerOn() {
+		std::unique_ptr<BaseIPC> buff = std::make_unique<BaseIPC>();
+		buff->command = BaseIPC::CommandType::PowerOn;
+		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
+	}
 
 	SequencePlayer::~SequencePlayer() {}
 
