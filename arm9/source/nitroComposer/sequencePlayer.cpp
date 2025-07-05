@@ -85,8 +85,11 @@ namespace NitroComposer {
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadBankIPC), (u8 *)buff.get());
 	}
 
-	void SequencePlayer::LoadWaveArchive(unsigned int slot, unsigned int archiveId) {
+	void SequencePlayer::LoadWaveArchive(unsigned int slot, std::uint16_t archiveId) {
 		auto &loadedArchive = loadedWaveArchives[slot];
+
+		if(loadedArchive.archiveId == archiveId) return;
+
 		loadedArchive.Reset();
 
 		if(archiveId >= 0xFFFF) {
@@ -100,6 +103,7 @@ namespace NitroComposer {
 
 		auto &info = sdat->GetWaveArchiveInfo(archiveId);
 		LoadWaveArchiveData(slot, info);
+		loadedArchive.archiveId = archiveId;
 
 		std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
 		buff->command = BaseIPC::CommandType::LoadWaveArchive;

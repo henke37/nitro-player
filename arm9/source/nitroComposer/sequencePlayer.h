@@ -22,7 +22,7 @@ namespace NitroComposer {
 		void LoadSequence(const std::unique_ptr<SequenceInfoRecord> &);
 
 		void LoadBank(unsigned int bankId);
-		void LoadWaveArchive(unsigned int slot, unsigned int archiveId);
+		void LoadWaveArchive(unsigned int slot, std::uint16_t archiveId);
 		void LoadWaveArchiveData(unsigned int slot, const std::unique_ptr<WaveArchiveInfoRecord> &info);
 
 		void SetVar(std::uint8_t var, std::int16_t val);

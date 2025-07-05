@@ -37,6 +37,8 @@ namespace NitroComposer {
 
 	struct LoadedWaveArchive {
 		std::vector<LoadedWave> waves;
+		std::uint16_t archiveId;
+
 		void Reset();
 	};
 

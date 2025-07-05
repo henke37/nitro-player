@@ -54,7 +54,7 @@ namespace NitroComposer {
 			std::uint8_t ComputeVolume() const;
 			std::uint8_t ComputePan() const;
 
-			std::unique_ptr<InstrumentBank::LeafInstrument> currentInstrument;
+			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
 		};
 		static constexpr unsigned int voiceCount = 16;

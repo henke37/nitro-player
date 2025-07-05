@@ -17,6 +17,7 @@ LoadedWave::~LoadedWave() {
 
 void LoadedWaveArchive::Reset() {
 	waves.clear();
+	archiveId = 0xFFFF;
 }
 
 }
