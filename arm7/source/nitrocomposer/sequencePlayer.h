@@ -16,6 +16,8 @@ namespace NitroComposer {
 
 		void PlaySequence(const std::uint8_t *sequenceData);
 
+		unsigned int FindFreeVoice();
+
 	private:
 		void Tick();
 
@@ -29,11 +31,20 @@ namespace NitroComposer {
 
 		class Voice {
 		public:
-			Voice();
+			void Init(unsigned int voiceIndex);
 
 			void Tick();
 
+			bool IsPulseVoice() const { return voiceIndex >= 8 && voiceIndex <= 13; }
+			bool IsNoiseVoice() const { return voiceIndex >= 14; }
+
 			VoiceState state = VoiceState::Free;
+		private:
+			unsigned int voiceIndex;
+			void ConfigureControlRegisters();
+			void ConfigureVolumeRegister();
+			void ConfigurePanRegister();
+			void ConfigureTimerRegister();
 		};
 		static constexpr unsigned int voiceCount = 16;
 		Voice voices[voiceCount];

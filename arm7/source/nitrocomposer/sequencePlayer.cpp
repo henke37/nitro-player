@@ -22,6 +22,10 @@ namespace NitroComposer {
 			variables[var] = -1;
 		}
 
+		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
+			voices[voiceIndex].Init(voiceIndex);
+		}
+
 		setupFifo();
 	}
 
@@ -36,6 +40,11 @@ namespace NitroComposer {
 	void SequencePlayer::PlaySequence(const std::uint8_t *sequenceData) {
 		this->sequenceData = sequenceData;
 		this->tempo = 120;
+	}
+
+	unsigned int SequencePlayer::FindFreeVoice() {
+		//TODO: do this properly
+		return 0;
 	}
 
 	void SequencePlayer::setupFifo() {
