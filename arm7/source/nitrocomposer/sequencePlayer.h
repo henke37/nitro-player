@@ -2,6 +2,7 @@
 #define NITROCOMPOSER_SEQUENCEPLAYER_H
 
 #include "nitroComposer/bank.h"
+#include "nitroComposer/wave.h"
 
 #include <cstdint>
 #include <memory>
@@ -21,6 +22,8 @@ namespace NitroComposer {
 
 		unsigned int FindFreeVoice();
 
+		const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
+
 	private:
 		void Tick();
 
@@ -34,7 +37,7 @@ namespace NitroComposer {
 
 		class Voice {
 		public:
-			void Init(unsigned int voiceIndex);
+			void Init(unsigned int voiceIndex, SequencePlayer *player);
 
 			void Tick();
 
@@ -46,10 +49,13 @@ namespace NitroComposer {
 			unsigned int voiceIndex;
 			void ConfigureControlRegisters();
 			void ConfigureVolumeRegister();
-			void ConfigurePanRegister();
 			void ConfigureTimerRegister();
 
-			std::unique_ptr<InstrumentBank::BaseInstrument> currentInstrument;
+			std::uint8_t ComputeVolume() const;
+			std::uint8_t ComputePan() const;
+
+			std::unique_ptr<InstrumentBank::LeafInstrument> currentInstrument;
+			SequencePlayer *player;
 		};
 		static constexpr unsigned int voiceCount = 16;
 		Voice voices[voiceCount];

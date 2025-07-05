@@ -23,7 +23,7 @@ namespace NitroComposer {
 		}
 
 		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
-			voices[voiceIndex].Init(voiceIndex);
+			voices[voiceIndex].Init(voiceIndex, this);
 		}
 
 		setupFifo();
