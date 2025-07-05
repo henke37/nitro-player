@@ -105,6 +105,17 @@ namespace NitroComposer {
 			consoleFlush();
 		} break;
 
+		case BaseIPC::CommandType::LoadWaveArchive:
+		{
+			LoadWaveArchiveIPC *loadWaveArchiveIpc = static_cast<LoadWaveArchiveIPC *>(ipc);
+			this->waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
+
+			if(!loadWaveArchiveIpc->archive) break;
+
+			consolePrintf("Loaded bank %d with %d waves\n", loadWaveArchiveIpc->slot, loadWaveArchiveIpc->archive->waves.size());
+			consoleFlush();
+		} break;
+
 		case BaseIPC::CommandType::PlaySequence:
 		{
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);

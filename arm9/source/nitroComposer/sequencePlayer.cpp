@@ -28,7 +28,7 @@ namespace NitroComposer {
 		sseq.reset();
 		sbnk.reset();
 		for(unsigned int swarIndex = 0; swarIndex < 4; ++swarIndex) {
-			swars[swarIndex].reset();
+			loadedWaveArchives[swarIndex].Reset();
 		}
 
 		this->sdat = sdat;
@@ -73,11 +73,7 @@ namespace NitroComposer {
 		auto &bankInfo = sdat->GetBankInfo(bankId);
 		sassert(bankInfo, "No bank info");
 		for(unsigned int swarIndex = 0; swarIndex < 4; ++swarIndex) {
-			if(bankInfo->swars[swarIndex] == 0xFFFF) {
-				swars[swarIndex].reset();
-			} else {
-				swars[swarIndex] = sdat->OpenWaveArchive(bankInfo->swars[swarIndex]);
-			}
+			LoadWaveArchive(swarIndex, bankInfo->swars[swarIndex]);
 		}
 		sbnk = sdat->OpenBank(bankInfo);
 		//printf("Loaded bank %s.\n", sdat->GetNameForBank(bankId).c_str());
@@ -86,7 +82,52 @@ namespace NitroComposer {
 		buff->command = BaseIPC::CommandType::LoadBank;
 		buff->bank = sbnk.get();
 
-		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
+		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadBankIPC), (u8 *)buff.get());
+	}
+
+	void SequencePlayer::LoadWaveArchive(unsigned int slot, unsigned int archiveId) {
+		auto &loadedArchive = loadedWaveArchives[slot];
+		loadedArchive.Reset();
+
+		if(archiveId >= 0xFFFF) {
+			std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
+			buff->command = BaseIPC::CommandType::LoadWaveArchive;
+			buff->slot = slot;
+			buff->archive = nullptr;
+			fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
+			return;
+		}
+
+		auto &info = sdat->GetWaveArchiveInfo(archiveId);
+		LoadWaveArchiveData(slot, info);
+
+		std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
+		buff->command = BaseIPC::CommandType::LoadWaveArchive;
+		buff->slot = slot;
+		buff->archive = &loadedArchive;
+		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
+	}
+
+	void SequencePlayer::LoadWaveArchiveData(unsigned int slot, const std::unique_ptr<WaveArchiveInfoRecord> &info) {
+		auto &loadedArchive = loadedWaveArchives[slot];
+		auto swar = sdat->OpenWaveArchive(info);
+		auto waveCount = swar->GetWaveCount();
+		loadedArchive.waves.reserve(waveCount);
+
+		for(unsigned int waveIndex = 0; waveIndex < waveCount; ++waveIndex) {
+			auto &info = swar->GetWaveMetaData(waveIndex);
+
+			LoadedWave loadedWave = info;
+
+			auto stream = swar->GetWaveData(info);
+			auto dataLen = stream->getLength();
+			loadedWave.waveData = malloc(dataLen);
+			sassert(loadedWave.waveData, "Not enough ram for wave data!");
+			auto readLen = stream->read((uint8_t *)loadedWave.waveData, dataLen);
+			sassert(readLen == dataLen, "Only read %d/%d bytes!", readLen, dataLen);
+
+			loadedArchive.waves.emplace_back(std::move(loadedWave));
+		}
 	}
 
 

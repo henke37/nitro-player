@@ -5,6 +5,7 @@
 
 #include "nitroComposer/infoRecords.h"
 #include "nitroComposer/bank.h"
+#include "nitroComposer/wave.h"
 
 namespace NitroComposer {
 
@@ -15,6 +16,7 @@ namespace NitroComposer {
 			Invalid,
 			PowerOn,
 			LoadBank,
+			LoadWaveArchive,
 			PlaySequence,
 			StopSequence,
 			SetTempo,
@@ -52,6 +54,11 @@ namespace NitroComposer {
 		const InstrumentBank *bank;
 	};
 
+
+	struct LoadWaveArchiveIPC : BaseIPC {
+		std::uint8_t slot;
+		const LoadedWaveArchive *archive;
+	};
 }
 
 #endif

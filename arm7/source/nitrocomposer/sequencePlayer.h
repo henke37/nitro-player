@@ -1,11 +1,14 @@
 #ifndef NITROCOMPOSER_SEQUENCEPLAYER_H
 #define NITROCOMPOSER_SEQUENCEPLAYER_H
 
+#include "nitroComposer/bank.h"
+
 #include <cstdint>
+#include <memory>
 
 namespace NitroComposer {
 
-	class InstrumentBank;
+	class LoadedWaveArchive;
 
 	class SequencePlayer {
 	public:
@@ -45,6 +48,8 @@ namespace NitroComposer {
 			void ConfigureVolumeRegister();
 			void ConfigurePanRegister();
 			void ConfigureTimerRegister();
+
+			std::unique_ptr<InstrumentBank::BaseInstrument> currentInstrument;
 		};
 		static constexpr unsigned int voiceCount = 16;
 		Voice voices[voiceCount];
@@ -91,6 +96,7 @@ namespace NitroComposer {
 		std::uint8_t mainVolume;
 
 		const InstrumentBank *bank;
+		const LoadedWaveArchive *waveArchs[4];
 
 		const std::uint8_t *sequenceData;
 	};

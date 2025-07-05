@@ -15,12 +15,12 @@ namespace NitroComposer {
 		Parse();
 	}
 
-	const SWAR::Wave &SWAR::GetWaveMetaData(unsigned int waveIndex) const {
+	const SWAR::WaveRecord &SWAR::GetWaveMetaData(unsigned int waveIndex) const {
 		return waves.at(waveIndex);
 	}
 
 
-	std::unique_ptr<BinaryReadStream> SWAR::GetWaveData(const Wave &waveInfo) const {
+	std::unique_ptr<BinaryReadStream> SWAR::GetWaveData(const WaveRecord &waveInfo) const {
 		auto section = sections.getSectionInfo("DATA");
 		auto stream = sections.getSectionData(section);
 
@@ -61,7 +61,7 @@ namespace NitroComposer {
 
 			reader.setPos(offset);
 
-			Wave wave;
+			WaveRecord wave;
 
 			wave.encoding = (WaveEncoding)reader.readByte();
 			wave.loops = reader.readByte() != 0;
