@@ -107,11 +107,11 @@ namespace NitroComposer {
 			std::unique_ptr<SBNK::SplitInstrument> split = std::make_unique<SplitInstrument>();
 			split->type = InstrumentType::Split;
 
-			for(unsigned int region = 0; region < 8; ++region) {
+			for(unsigned int region = 0; region < SplitInstrument::regionCount; ++region) {
 				split->regions[region] = reader.readByte();
 			}
 
-			for(unsigned int region = 0; region < 8; ++region) {
+			for(unsigned int region = 0; region < SplitInstrument::regionCount; ++region) {
 				uint8_t subType = reader.readByte();
 				reader.skip(1);
 				auto subInstrument = ParseInstrument(reader, subType);

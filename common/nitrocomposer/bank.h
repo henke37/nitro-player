@@ -46,8 +46,10 @@ namespace NitroComposer {
 
 		class SplitInstrument : public BaseInstrument {
 		public:
-			std::uint8_t regions[8];
-			std::unique_ptr<BaseInstrument> subInstruments[8];
+			static constexpr unsigned int regionCount = 8;
+
+			std::uint8_t regions[regionCount];
+			std::unique_ptr<BaseInstrument> subInstruments[regionCount];
 		};
 		class Drumkit : public BaseInstrument {
 		public:

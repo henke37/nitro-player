@@ -27,6 +27,8 @@ namespace NitroComposer {
 	private:
 		void Tick();
 
+		void TickTracks();
+
 		enum class VoiceState {
 			Free,
 			Attacking,
@@ -64,6 +66,8 @@ namespace NitroComposer {
 		public:
 			Track();
 
+			void Init(SequencePlayer *player);
+
 			void Tick();
 
 			void SetInstrument(unsigned int instrumentId);
@@ -71,6 +75,9 @@ namespace NitroComposer {
 			void NoteOn(std::uint8_t note, std::uint16_t velocity, std::uint16_t durration);
 
 		private:
+			SequencePlayer *player;
+			const InstrumentBank::BaseInstrument *currentInstrument;
+
 			bool isPlaying;
 
 			bool noteWait;
@@ -82,6 +89,16 @@ namespace NitroComposer {
 			std::uint8_t release;
 
 			std::uint8_t *nextCommand;
+
+			int wait;
+
+			void ExecuteNextCommand();
+
+			void NoteOn(std::uint8_t note, unsigned int length);
+			void NoteOnReal(std::uint8_t note, unsigned int length);
+			void NoteOnTie(std::uint8_t note);
+
+			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
 		};
 		static constexpr unsigned int trackCount = 16;
 		Track tracks[trackCount];
@@ -99,6 +116,8 @@ namespace NitroComposer {
 		static void ISR();
 
 		std::uint8_t tempo;
+		std::uint8_t tempoTimer;
+
 		std::uint8_t mainVolume;
 
 		const InstrumentBank *bank;

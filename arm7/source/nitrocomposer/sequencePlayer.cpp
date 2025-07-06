@@ -26,6 +26,10 @@ namespace NitroComposer {
 			voices[voiceIndex].Init(voiceIndex, this);
 		}
 
+		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
+			tracks[trackIndex].Init(this);
+		}
+
 		setupFifo();
 	}
 
@@ -137,14 +141,22 @@ namespace NitroComposer {
 
 	void SequencePlayer::Tick() {
 
-		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
-			auto &track = tracks[trackIndex];
-			track.Tick();
+		while(tempoTimer >= 240) {
+			tempoTimer -= 240;
+			TickTracks();
 		}
+		tempoTimer += tempo;
 
 		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
 			auto &voice = voices[voiceIndex];
 			voice.Tick();
+		}
+	}
+
+	void SequencePlayer::TickTracks() {
+		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
+			auto &track = tracks[trackIndex];
+			track.Tick();
 		}
 	}
 
