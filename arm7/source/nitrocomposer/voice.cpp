@@ -5,9 +5,8 @@
 
 namespace NitroComposer {
 
-	void SequencePlayer::Voice::Init(unsigned int voiceIndex, SequencePlayer *player) {
+	void SequencePlayer::Voice::Init(unsigned int voiceIndex) {
 		this->voiceIndex = voiceIndex;
-		this->player = player;
 	}
 
 	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, unsigned int length) {
@@ -27,7 +26,7 @@ namespace NitroComposer {
 		case InstrumentBank::InstrumentType::PCM:
 		{
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
-			auto &wave=player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
+			auto &wave=track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 			SCHANNEL_SOURCE(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
 
 			ctrVal |= std::uint32_t(wave.encoding) << 29;

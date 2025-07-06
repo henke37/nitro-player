@@ -41,7 +41,7 @@ namespace NitroComposer {
 
 		class Voice {
 		public:
-			void Init(unsigned int voiceIndex, SequencePlayer *player);
+			void Init(unsigned int voiceIndex);
 
 			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, unsigned int length);
 
@@ -104,6 +104,8 @@ namespace NitroComposer {
 			void NoteOnTie(std::uint8_t note);
 
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
+
+			friend class Voice;
 		};
 		static constexpr unsigned int trackCount = 16;
 		Track tracks[trackCount];
