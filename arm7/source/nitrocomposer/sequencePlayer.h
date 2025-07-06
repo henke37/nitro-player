@@ -19,6 +19,7 @@ namespace NitroComposer {
 		std::int16_t GetVar(std::uint8_t var) const;
 
 		void PlaySequence(const std::uint8_t *sequenceData);
+		void AbortSequence();
 
 		void StartTrack(std::uint8_t trackId, std::uint32_t offset);
 		unsigned int FindFreeVoice(InstrumentBank::InstrumentType type);
@@ -77,6 +78,7 @@ namespace NitroComposer {
 			void Tick();
 
 			void StartPlaying(std::uint32_t offset);
+			void StopPlaying();
 
 			void SetInstrument(unsigned int instrumentId);
 

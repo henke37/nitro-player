@@ -46,10 +46,18 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::PlaySequence(const std::uint8_t *sequenceData) {
+		AbortSequence();
+
 		this->sequenceData = sequenceData;
 		this->tempo = 120;
 
 		StartTrack(0, 0);
+	}
+
+	void SequencePlayer::AbortSequence() {
+		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
+			tracks[trackIndex].StopPlaying();
+		}
 	}
 
 	void SequencePlayer::StartTrack(std::uint8_t trackId, std::uint32_t offset) {

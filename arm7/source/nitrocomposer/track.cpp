@@ -36,6 +36,10 @@ namespace NitroComposer {
 		SetNextCommand(offset);
 	}
 
+	void SequencePlayer::Track::StopPlaying() {
+		this->isPlaying = false;
+	}
+
 
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		if(tieMode) {

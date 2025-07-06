@@ -70,7 +70,7 @@ namespace NitroComposer {
 		}
 
 		case 0xFF: {
-			this->isPlaying = false;
+			StopPlaying();
 		} break;
 
 		default:
