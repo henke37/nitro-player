@@ -10,6 +10,13 @@ namespace NitroComposer {
 		this->player = player;
 	}
 
+	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, unsigned int length) {
+		this->currentInstrument = instrument;
+		this->track = track;
+
+		ConfigureControlRegisters();
+	}
+
 	void SequencePlayer::Voice::Tick() {}
 
 	void SequencePlayer::Voice::ConfigureControlRegisters() {
@@ -52,7 +59,11 @@ namespace NitroComposer {
 	}
 
 	std::uint8_t SequencePlayer::Voice::ComputeVolume() const {
-		return 64;
+		return 127;
+	}
+
+	std::uint8_t SequencePlayer::Voice::ComputePan() const {
+		return currentInstrument->pan;
 	}
 
 }

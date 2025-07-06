@@ -20,7 +20,7 @@ namespace NitroComposer {
 
 		void PlaySequence(const std::uint8_t *sequenceData);
 
-		unsigned int FindFreeVoice();
+		unsigned int FindFreeVoice(InstrumentBank::InstrumentType type);
 
 		const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
 
@@ -37,9 +37,13 @@ namespace NitroComposer {
 			Releasing
 		};
 
+		class Track;
+
 		class Voice {
 		public:
 			void Init(unsigned int voiceIndex, SequencePlayer *player);
+
+			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, unsigned int length);
 
 			void Tick();
 
@@ -58,6 +62,7 @@ namespace NitroComposer {
 
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
+			const Track *track;
 		};
 		static constexpr unsigned int voiceCount = 16;
 		Voice voices[voiceCount];

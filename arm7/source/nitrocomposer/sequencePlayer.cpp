@@ -46,7 +46,7 @@ namespace NitroComposer {
 		this->tempo = 120;
 	}
 
-	unsigned int SequencePlayer::FindFreeVoice() {
+	unsigned int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type) {
 		//TODO: do this properly
 		return 0;
 	}
