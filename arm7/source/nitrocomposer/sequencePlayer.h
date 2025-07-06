@@ -98,12 +98,17 @@ namespace NitroComposer {
 			int wait;
 
 			void ExecuteNextCommand();
+			void skipCommandArgs(std::uint8_t command);
 
-			void NoteOn(std::uint8_t note, unsigned int length);
-			void NoteOnReal(std::uint8_t note, unsigned int length);
-			void NoteOnTie(std::uint8_t note);
+			void NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length);
+			void NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length);
+			void NoteOnTie(std::uint8_t note, std::uint8_t velocity);
 
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
+
+			std::uint8_t readByteCommand();
+			std::uint16_t readShortCommand();
+			unsigned int readMidiVarLen();
 
 			friend class Voice;
 		};
@@ -128,7 +133,8 @@ namespace NitroComposer {
 		std::uint8_t mainVolume;
 
 		const InstrumentBank *bank;
-		const LoadedWaveArchive *waveArchs[4];
+		static constexpr unsigned int numWaveArchs = 4;
+		const LoadedWaveArchive *waveArchs[numWaveArchs];
 
 		const std::uint8_t *sequenceData;
 	};

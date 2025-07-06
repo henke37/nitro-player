@@ -30,6 +30,10 @@ namespace NitroComposer {
 			tracks[trackIndex].Init(this);
 		}
 
+		for(unsigned int waveArchiveIndex = 0; waveArchiveIndex < numWaveArchs; ++waveArchiveIndex) {
+			waveArchs[waveArchiveIndex] = nullptr;
+		}
+
 		setupFifo();
 	}
 
@@ -49,6 +53,13 @@ namespace NitroComposer {
 	unsigned int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type) {
 		//TODO: do this properly
 		return 0;
+	}
+
+	const LoadedWave &SequencePlayer::GetWave(unsigned int archiveSlot, unsigned int waveIndex) {
+		assert(archiveSlot < numWaveArchs);
+		assert(this->waveArchs[archiveSlot]);
+		assert(waveIndex < this->waveArchs[archiveSlot]->waves.size());
+		return this->waveArchs[archiveSlot]->waves.at(waveIndex);
 	}
 
 	void SequencePlayer::setupFifo() {
@@ -112,6 +123,7 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::LoadWaveArchive:
 		{
 			LoadWaveArchiveIPC *loadWaveArchiveIpc = static_cast<LoadWaveArchiveIPC *>(ipc);
+			assert(loadWaveArchiveIpc->slot < numWaveArchs);
 			this->waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
 
 			if(!loadWaveArchiveIpc->archive) break;
