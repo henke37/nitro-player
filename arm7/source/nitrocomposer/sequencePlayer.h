@@ -20,6 +20,7 @@ namespace NitroComposer {
 
 		void PlaySequence(const std::uint8_t *sequenceData);
 
+		void StartTrack(std::uint8_t trackId, std::uint32_t offset);
 		unsigned int FindFreeVoice(InstrumentBank::InstrumentType type);
 
 		const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
@@ -75,6 +76,8 @@ namespace NitroComposer {
 
 			void Tick();
 
+			void StartPlaying(std::uint32_t offset);
+
 			void SetInstrument(unsigned int instrumentId);
 
 			void NoteOn(std::uint8_t note, std::uint16_t velocity, std::uint16_t durration);
@@ -93,7 +96,7 @@ namespace NitroComposer {
 			std::uint8_t sustain;
 			std::uint8_t release;
 
-			std::uint8_t *nextCommand;
+			const std::uint8_t *nextCommand;
 
 			int wait;
 
@@ -106,8 +109,11 @@ namespace NitroComposer {
 
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
 
+			void SetNextCommand(std::uint32_t offset);
+
 			std::uint8_t readByteCommand();
 			std::uint16_t readShortCommand();
+			std::uint32_t readTriByteCommand();
 			unsigned int readMidiVarLen();
 
 			friend class Voice;

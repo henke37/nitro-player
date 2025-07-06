@@ -24,15 +24,54 @@ namespace NitroComposer {
 			SetInstrument(programId);
 		} break;
 
+		case 0x93:
+		{
+			std::uint8_t trackId = readByteCommand();
+			std::uint32_t offset = readTriByteCommand();
+			player->StartTrack(trackId, offset);
+		} break;
+
+		case 0x94:
+		{
+			std::uint32_t offset = readTriByteCommand();
+			SetNextCommand(offset);
+		} break;
+
+		case 0x95:
+		{
+			//TODO: push callstack
+			std::uint32_t offset = readTriByteCommand();
+			SetNextCommand(offset);
+		} break;
+
 		case 0xC7:
 		{
 			noteWait = readByteCommand() != 0;
 		} break;
 
+		case 0xC8:
+		{
+			tieMode = readByteCommand() != 0;
+		} break;
+
 		case 0xE1:
 		{
 			player->tempo = readShortCommand();
-		}break;
+		} break;
+
+		case 0xFD:
+		{
+			//TODO: pop callstack
+		} break;
+
+		case 0xFE:
+		{
+			nextCommand += 2;
+		}
+
+		case 0xFF: {
+			this->isPlaying = false;
+		} break;
 
 		default:
 			skipCommandArgs(command);
@@ -130,6 +169,17 @@ namespace NitroComposer {
 		std::uint16_t val = *nextCommand;
 		++nextCommand;
 		val = val | (*nextCommand << 8);
+		++nextCommand;
+
+		return val;
+	}
+
+	std::uint32_t SequencePlayer::Track::readTriByteCommand() {
+		std::uint32_t val = *nextCommand;
+		++nextCommand;
+		val = val | (*nextCommand << 8);
+		++nextCommand;
+		val = val | (*nextCommand << 16);
 		++nextCommand;
 
 		return val;

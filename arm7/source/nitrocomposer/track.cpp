@@ -31,6 +31,11 @@ namespace NitroComposer {
 		}
 	}
 
+	void SequencePlayer::Track::StartPlaying(std::uint32_t offset) {
+		this->isPlaying = true;
+		SetNextCommand(offset);
+	}
+
 
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		if(tieMode) {
@@ -48,6 +53,10 @@ namespace NitroComposer {
 		auto voiceIndex = this->player->FindFreeVoice(noteInstrument->type);
 		auto &voice = this->player->voices[voiceIndex];
 		voice.StartNote(this, noteInstrument, note, length);
+	}
+
+	void SequencePlayer::Track::SetNextCommand(std::uint32_t offset) {
+		this->nextCommand=this->player->sequenceData + offset;
 	}
 
 	const InstrumentBank::LeafInstrument *SequencePlayer::Track::ResolveInstrumentForNote(std::uint8_t note) const {
