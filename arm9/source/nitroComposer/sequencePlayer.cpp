@@ -110,6 +110,8 @@ namespace NitroComposer {
 		buff->slot = slot;
 		buff->archive = &loadedArchive;
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
+
+		printf("Loaded archive %d \"%s\"\n", archiveId, sdat->GetNameForWaveArchive(archiveId).c_str());
 	}
 
 	void SequencePlayer::LoadWaveArchiveData(unsigned int slot, const std::unique_ptr<WaveArchiveInfoRecord> &info) {
