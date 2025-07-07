@@ -79,10 +79,10 @@ namespace NitroComposer {
 	}
 
 	std::string SDatFile::GetNameForWaveArchive(unsigned int archiveId) const {
-		if(archiveId >= bankNames.size()) {
+		if(archiveId >= waveArchiveNames.size()) {
 			return std::string("WAVE_") + std::to_string(archiveId);
 		}
-		std::string name = bankNames.at(archiveId);
+		std::string name = waveArchiveNames.at(archiveId);
 		if(name.empty()) {
 			return std::string("WAVE_") + std::to_string(archiveId);
 		}
@@ -276,13 +276,14 @@ namespace NitroComposer {
 			for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
 				std::uint32_t offset = *itr;
 				if(offset == 0) {
-					bankInfos.emplace_back(nullptr);
+					//bankInfos.emplace_back(nullptr);
 					continue;
 				}
 				reader.setPos(offset);
 
 				std::unique_ptr<BankInfoRecord> record = std::make_unique<BankInfoRecord>();
 				record->fatId = reader.readLEShort();
+				reader.skip(2);
 				for(unsigned int swarIndex = 0; swarIndex < 4; ++swarIndex) {
 					record->swars[swarIndex] = reader.readLEShort();
 				}
