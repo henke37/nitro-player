@@ -1,6 +1,7 @@
 #include "sequencePlayer.h"
 
 #include <cassert>
+#include <nds/arm7/console.h>
 
 namespace NitroComposer {
 
@@ -56,7 +57,10 @@ namespace NitroComposer {
 		const InstrumentBank::LeafInstrument *noteInstrument = ResolveInstrumentForNote(note);
 		auto voiceIndex = this->player->FindFreeVoice(noteInstrument->type);
 		auto &voice = this->player->voices[voiceIndex];
-		voice.StartNote(this, noteInstrument, note, length);
+
+		consolePrintf("Note on %d,%d,%d", note, velocity, length);
+
+		voice.StartNote(this, noteInstrument, note, velocity, length);
 	}
 
 	void SequencePlayer::Track::SetNextCommand(std::uint32_t offset) {

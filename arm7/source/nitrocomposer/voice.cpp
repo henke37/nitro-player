@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <nds/arm7/audio.h>
+#include <nds/arm7/console.h>
 
 namespace NitroComposer {
 
@@ -9,10 +10,15 @@ namespace NitroComposer {
 		this->voiceIndex = voiceIndex;
 	}
 
-	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, unsigned int length) {
+	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		this->currentInstrument = instrument;
 		this->track = track;
 
+		this->note = note;
+		this->velocity = velocity;
+		this->length = length;
+
+		ConfigureTimerRegister();
 		ConfigureControlRegisters();
 	}
 
@@ -27,6 +33,10 @@ namespace NitroComposer {
 		{
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
 			auto &wave=track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
+
+			consolePrintf(",%d,%d\n", pcmInstrument->archive, pcmInstrument->wave);
+			consoleFlush();
+
 			SCHANNEL_SOURCE(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
 
 			ctrVal |= std::uint32_t(wave.encoding) << 29;
@@ -55,6 +65,28 @@ namespace NitroComposer {
 
 	void SequencePlayer::Voice::ConfigureVolumeRegister() {
 		SCHANNEL_VOL(voiceIndex) = ComputeVolume();
+	}
+
+	void SequencePlayer::Voice::ConfigureTimerRegister() {
+		std::uint16_t baseTimer;
+		switch(currentInstrument->type) {
+		case InstrumentBank::InstrumentType::PCM:
+		{
+			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
+			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
+			baseTimer = wave.timerLen;
+		}
+		case InstrumentBank::InstrumentType::Pulse:
+		case InstrumentBank::InstrumentType::Noise:
+			baseTimer = (std::uint16_t)SOUND_FREQ(440);
+			break;
+		case InstrumentBank::InstrumentType::Drumkit:
+		case InstrumentBank::InstrumentType::Split:
+		case InstrumentBank::InstrumentType::Null:
+			assert(0);
+		}
+
+		SCHANNEL_TIMER(voiceIndex) = baseTimer;
 	}
 
 	std::uint8_t SequencePlayer::Voice::ComputeVolume() const {

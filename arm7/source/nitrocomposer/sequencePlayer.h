@@ -45,7 +45,7 @@ namespace NitroComposer {
 		public:
 			void Init(unsigned int voiceIndex);
 
-			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, unsigned int length);
+			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
 
 			void Tick();
 
@@ -61,6 +61,10 @@ namespace NitroComposer {
 
 			std::uint8_t ComputeVolume() const;
 			std::uint8_t ComputePan() const;
+
+			std::uint8_t note;
+			std::uint8_t velocity;
+			unsigned int length;
 
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
