@@ -18,7 +18,7 @@ namespace NitroComposer {
 
 		bool loops;
 		std::uint16_t loopStart;
-		std::uint16_t loopLength;
+		std::uint32_t loopLength;
 
 		std::uint16_t sampleRate;
 		std::uint16_t timerLen;

@@ -68,7 +68,7 @@ namespace NitroComposer {
 			wave.sampleRate = reader.readLEShort();
 			wave.timerLen = reader.readLEShort();
 			wave.loopStart = reader.readLEShort();
-			wave.loopLength = reader.readLEShort();
+			wave.loopLength = reader.readLELong();
 			wave.dataOffset = reader.getPos();
 
 			waves.push_back(wave);
