@@ -49,7 +49,7 @@ namespace NitroComposer {
 			auto pulseInstrument = static_cast<const InstrumentBank::PulseInstrument *>(currentInstrument);
 			ctrVal |= pulseInstrument->duty << 24;
 		}
-			//fall thru
+		[[fallthrough]];
 		case InstrumentBank::InstrumentType::Noise:
 			ctrVal |= SOUND_FORMAT_PSG;
 			break;
@@ -75,7 +75,7 @@ namespace NitroComposer {
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
 			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 			baseTimer = wave.timerLen;
-		}
+		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		case InstrumentBank::InstrumentType::Noise:
 			baseTimer = (std::uint16_t)SOUND_FREQ(440);
