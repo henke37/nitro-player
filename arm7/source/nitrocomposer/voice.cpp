@@ -83,10 +83,11 @@ namespace NitroComposer {
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
 		case InstrumentBank::InstrumentType::Null:
+		default:
 			assert(0);
 		}
 
-		SCHANNEL_TIMER(voiceIndex) = baseTimer;
+		SCHANNEL_TIMER(voiceIndex) = -baseTimer;
 	}
 
 	std::uint8_t SequencePlayer::Voice::ComputeVolume() const {
