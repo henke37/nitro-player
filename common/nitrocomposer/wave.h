@@ -7,10 +7,10 @@
 namespace NitroComposer {
 
 	enum class WaveEncoding {
-		PCM8,
-		PCM16,
-		ADPCM,
-		Generated
+		PCM8 = 0,
+		PCM16 = 1,
+		ADPCM = 2,
+		Generated = 3
 	};
 
 	struct Wave {

@@ -88,6 +88,7 @@
     <ClCompile Include="..\arm7\source\main.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\sequencePlayer.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\track.cpp" />
+    <ClCompile Include="..\arm7\source\nitrocomposer\trackCommands.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\voice.cpp" />
   </ItemGroup>
   <ItemGroup>

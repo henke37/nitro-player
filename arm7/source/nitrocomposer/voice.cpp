@@ -25,16 +25,16 @@ namespace NitroComposer {
 	void SequencePlayer::Voice::Tick() {}
 
 	void SequencePlayer::Voice::ConfigureControlRegisters() {
-		std::uint32_t ctrVal = ComputeVolume();
+		std::uint32_t ctrVal = SOUND_VOL(ComputeVolume());
 		ctrVal |= SOUND_PAN(ComputePan());
 
 		switch(currentInstrument->type) {
 		case InstrumentBank::InstrumentType::PCM:
 		{
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
-			auto &wave=track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
+			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 
-			consolePrintf(",%d,%d\n", pcmInstrument->archive, pcmInstrument->wave);
+			consolePrintf(" %d/%d 0x%x\n", pcmInstrument->archive, pcmInstrument->wave, wave.waveData);
 			consoleFlush();
 
 			SCHANNEL_SOURCE(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
@@ -43,7 +43,7 @@ namespace NitroComposer {
 			ctrVal |= wave.loops ? SOUND_REPEAT : SOUND_ONE_SHOT;
 			SCHANNEL_LENGTH(voiceIndex) = wave.loopLength;
 			SCHANNEL_REPEAT_POINT(voiceIndex) = wave.loopStart;
-		}
+		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		{
 			auto pulseInstrument = static_cast<const InstrumentBank::PulseInstrument *>(currentInstrument);

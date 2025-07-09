@@ -119,6 +119,7 @@
     <ClCompile Include="arm9\source\nitroComposer\sequencePlayer.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sseq.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\swar.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\wave.cpp" />
     <ClCompile Include="arm9\source\nscr.cpp" />
     <ClCompile Include="arm9\source\oamMan.cpp" />
     <ClCompile Include="arm9\source\palMan.cpp" />
@@ -136,6 +137,7 @@
     <ClCompile Include="arm9\source\tileMapMirror.cpp" />
     <ClCompile Include="arm9\source\tilePos.cpp" />
     <ClCompile Include="arm9\source\vblankBatcher.cpp" />
+    <ClCompile Include="common\nitrocomposer\wave.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arm9\source\animationCell.h" />
@@ -197,6 +199,7 @@
     <ClInclude Include="common\nitrocomposer\bank.h" />
     <ClInclude Include="common\nitrocomposer\infoRecords.h" />
     <ClInclude Include="common\nitrocomposer\ipc.h" />
+    <ClInclude Include="common\nitrocomposer\wave.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
