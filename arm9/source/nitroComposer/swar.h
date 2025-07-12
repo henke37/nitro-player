@@ -14,6 +14,7 @@ namespace NitroComposer {
 
 		struct WaveRecord : Wave {
 			std::uint32_t dataOffset;
+			size_t GetDataSize() const;
 		};
 
 		size_t GetWaveCount() const { return waves.size(); }

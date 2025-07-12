@@ -24,9 +24,16 @@ namespace NitroComposer {
 		auto section = sections.getSectionInfo("DATA");
 		auto stream = sections.getSectionData(section);
 
-		std::uint16_t sampleCount = waveInfo.loopStart + waveInfo.loopLength;
-		size_t dataSize;
+		size_t dataSize = waveInfo.GetDataSize();
 
+		return std::make_unique<SubStream>(stream.release(), waveInfo.dataOffset, dataSize, true);
+	}
+
+	size_t SWAR::WaveRecord::GetDataSize() const {
+		std::uint16_t sampleCount = loopStart + loopLength;
+		size_t dataSize = sampleCount * 4;
+
+		/*
 		switch(waveInfo.encoding) {
 		case WaveEncoding::PCM8:
 			dataSize = sampleCount * 1;
@@ -39,9 +46,9 @@ namespace NitroComposer {
 			break;
 		default:
 			sassert(0, "Bad encoding %i", (int)waveInfo.encoding);
-		}
+		}*/
 
-		return std::make_unique<SubStream>(stream.release(), waveInfo.dataOffset, dataSize, true);
+		return dataSize;
 	}
 
 	void SWAR::Parse() {
@@ -70,6 +77,9 @@ namespace NitroComposer {
 			wave.loopStart = reader.readLEShort();
 			wave.loopLength = reader.readLELong();
 			wave.dataOffset = reader.getPos();
+
+			sassert((int)wave.encoding < 5, "Bogus wave encoding %i", (int)wave.encoding);
+			sassert(wave.sampleRate > 200 && wave.sampleRate < 50000, "Implaucible samplerate %i", wave.sampleRate);
 
 			waves.push_back(wave);
 
