@@ -90,7 +90,7 @@ namespace NitroComposer {
 			case InstrumentBank::InstrumentType::Split: {
 				auto split = static_cast<const InstrumentBank::SplitInstrument *>(currentInstrument);
 				for(unsigned int region = 0; region < InstrumentBank::SplitInstrument::regionCount; ++region) {
-					if(note < split->regions[region]) {
+					if(note <= split->regions[region]) {
 						return static_cast<const InstrumentBank::LeafInstrument *>(split->subInstruments[region].get());
 					}
 				}
