@@ -55,6 +55,9 @@ namespace NitroComposer {
 
 	void SequencePlayer::Track::NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		const InstrumentBank::LeafInstrument *noteInstrument = ResolveInstrumentForNote(note);
+
+		if(!noteInstrument) return;
+
 		auto voiceIndex = this->player->FindFreeVoice(noteInstrument->type);
 		auto &voice = this->player->voices[voiceIndex];
 
