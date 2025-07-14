@@ -25,6 +25,8 @@ namespace NitroComposer {
 		decay = 0xFF;
 		sustain = 0xFF;
 		release = 0xFF;
+		volume = 127;
+		expression = 127;
 	}
 
 	void SequencePlayer::Track::Tick() {
