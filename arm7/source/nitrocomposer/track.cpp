@@ -5,18 +5,25 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track() :
-		isPlaying(false),
-		noteWait(true),
-		tieMode(false),
-		attack(0xFF),
-		decay(0xFF),
-		sustain(0xFF),
-		release(0xFF) {}
+	SequencePlayer::Track::Track() {}
 
 	void SequencePlayer::Track::Init(SequencePlayer *player) {
 		assert(player);
 		this->player = player;
+
+		Reset();
+	}
+
+	void SequencePlayer::Track::Reset() {
+		isPlaying = false;
+		noteWait = true;
+		tieMode = false;
+		wait = 0;
+		priority = 64;
+		attack = 0xFF;
+		decay = 0xFF;
+		sustain = 0xFF;
+		release = 0xFF;
 	}
 
 	void SequencePlayer::Track::Tick() {

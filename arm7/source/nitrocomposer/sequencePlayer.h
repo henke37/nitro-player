@@ -83,6 +83,7 @@ namespace NitroComposer {
 			Track();
 
 			void Init(SequencePlayer *player);
+			void Reset();
 
 			void Tick();
 
