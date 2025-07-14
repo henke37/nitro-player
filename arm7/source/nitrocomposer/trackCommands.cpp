@@ -54,6 +54,26 @@ namespace NitroComposer {
 			tieMode = readByteCommand() != 0;
 		} break;
 
+		case 0xD0:
+		{
+			attack = readByteCommand();
+		} break;
+
+		case 0xD1:
+		{
+			decay = readByteCommand();
+		} break;
+
+		case 0xD2:
+		{
+			sustain = readByteCommand();
+		} break;
+
+		case 0xD3:
+		{
+			release = readByteCommand();
+		} break;
+
 		case 0xE1:
 		{
 			player->tempo = readShortCommand();

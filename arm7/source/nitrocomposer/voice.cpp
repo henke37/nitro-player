@@ -98,4 +98,20 @@ namespace NitroComposer {
 		return currentInstrument->pan;
 	}
 
+	std::uint8_t SequencePlayer::Voice::GetAttack() const {
+		return track->attack != 0xFF ? track->attack : currentInstrument->attack;
+	}
+
+	std::uint8_t SequencePlayer::Voice::GetDecay() const {
+		return track->decay != 0xFF ? track->decay : currentInstrument->decay;
+	}
+
+	std::uint8_t SequencePlayer::Voice::GetSustain() const {
+		return track->sustain != 0xFF ? track->sustain : currentInstrument->sustain;
+	}
+
+	std::uint8_t SequencePlayer::Voice::GetRelease() const {
+		return track->release != 0xFF ? track->release : currentInstrument->release;
+	}
+
 }

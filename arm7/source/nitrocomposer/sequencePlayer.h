@@ -69,6 +69,11 @@ namespace NitroComposer {
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
 			const Track *track;
+
+			std::uint8_t GetAttack() const;
+			std::uint8_t GetDecay() const;
+			std::uint8_t GetSustain() const;
+			std::uint8_t GetRelease() const;
 		};
 		static constexpr unsigned int voiceCount = 16;
 		Voice voices[voiceCount];
@@ -97,10 +102,10 @@ namespace NitroComposer {
 			bool noteWait;
 			bool tieMode;
 
-			std::uint8_t attack;
-			std::uint8_t decay;
-			std::uint8_t sustain;
-			std::uint8_t release;
+			std::uint8_t attack = 0xFF;
+			std::uint8_t decay = 0xFF;
+			std::uint8_t sustain = 0xFF;
+			std::uint8_t release = 0xFF;
 
 			const std::uint8_t *nextCommand;
 
