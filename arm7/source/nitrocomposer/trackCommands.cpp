@@ -144,6 +144,15 @@ namespace NitroComposer {
 		case 0x95:
 			nextCommand += 3;
 			break;
+		case 0xA0:
+			skipCommandRandomArgs(readByteCommand());
+			break;
+		case 0xA1:
+			skipCommandVarArgs(readByteCommand());
+			break;
+		case 0xA2:
+			skipCommandArgs(readByteCommand());
+			break;
 		case 0xB0:
 		case 0xB1:
 		case 0xB2:
@@ -197,6 +206,108 @@ namespace NitroComposer {
 			break;
 		case 0xFF:
 			++nextCommand;
+			break;
+		default:
+			assert(0);
+		}
+	}
+
+	void SequencePlayer::Track::skipCommandRandomArgs(std::uint8_t command) {
+		if(command < 0x80) {
+			nextCommand += 5;
+			return;
+		}
+		switch(command) {
+		case 0x80:
+		case 0x81:
+			nextCommand += 4;
+			break;
+		case 0xB0:
+		case 0xB1:
+		case 0xB2:
+		case 0xB3:
+		case 0xB4:
+		case 0xB5:
+		case 0xB6:
+		case 0xB8:
+		case 0xB9:
+		case 0xBA:
+		case 0xBB:
+		case 0xBC:
+		case 0xBD:
+			nextCommand += 5;
+			break;
+		case 0xC0:
+		case 0xC1:
+		case 0xC2:
+		case 0xC3:
+		case 0xC4:
+		case 0xC5:
+		case 0xCA:
+		case 0xCB:
+		case 0xCC:
+		case 0xCD:
+		case 0xE0:
+		case 0xCF:
+		case 0xD0:
+		case 0xD1:
+		case 0xD2:
+		case 0xD3:
+		case 0xD5:
+		case 0xE3:
+			nextCommand += 4;
+			break;
+		default:
+			assert(0);
+		}
+	}
+
+	void SequencePlayer::Track::skipCommandVarArgs(std::uint8_t command) {
+		if(command < 0x80) {
+			nextCommand += 2;
+			return;
+		}
+
+		switch(command) {
+		case 0x80:
+		case 0x81:
+			nextCommand += 1;
+			break;
+		case 0xB0:
+		case 0xB1:
+		case 0xB2:
+		case 0xB3:
+		case 0xB4:
+		case 0xB5:
+		case 0xB6:
+		case 0xB8:
+		case 0xB9:
+		case 0xBA:
+		case 0xBB:
+		case 0xBC:
+		case 0xBD:
+			nextCommand += 2;
+			break;
+		case 0xC0:
+		case 0xC1:
+		case 0xC2:
+		case 0xC3:
+		case 0xC4:
+		case 0xC5:
+		case 0xCA:
+		case 0xCB:
+		case 0xCC:
+		case 0xCD:
+		case 0xE0:
+		case 0xCF:
+		case 0xD0:
+		case 0xD1:
+		case 0xD2:
+		case 0xD3:
+		case 0xD4:
+		case 0xD5:
+		case 0xE3:
+			nextCommand += 1;
 			break;
 		default:
 			assert(0);

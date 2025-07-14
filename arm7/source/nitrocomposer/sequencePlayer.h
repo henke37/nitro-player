@@ -118,7 +118,12 @@ namespace NitroComposer {
 			int wait;
 
 			void ExecuteNextCommand();
+			void ExecuteNextRandomCommand();
+			void ExecuteNextVarCommand();
+
 			void skipCommandArgs(std::uint8_t command);
+			void skipCommandRandomArgs(std::uint8_t command);
+			void skipCommandVarArgs(std::uint8_t command);
 
 			void NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length);
 			void NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length);
