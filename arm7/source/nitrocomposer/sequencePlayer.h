@@ -107,6 +107,8 @@ namespace NitroComposer {
 			std::uint8_t sustain = 0xFF;
 			std::uint8_t release = 0xFF;
 
+			std::uint8_t expression;
+
 			const std::uint8_t *nextCommand;
 
 			int wait;

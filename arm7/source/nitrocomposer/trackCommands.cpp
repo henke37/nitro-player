@@ -74,6 +74,12 @@ namespace NitroComposer {
 			release = readByteCommand();
 		} break;
 
+		case 0xD5:
+		{
+			expression = readByteCommand();
+		} break;
+
+
 		case 0xE1:
 		{
 			player->tempo = readShortCommand();
