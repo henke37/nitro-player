@@ -253,7 +253,10 @@ namespace NitroComposer {
 			auto &stackRecord = stack[stackPointer];
 			assert(stackRecord.type == StackEntryType::Loop);
 			--stackRecord.loopCounter;
-			if(stackRecord.loopCounter) ++stackPointer;
+			if(stackRecord.loopCounter) {
+				nextCommand = stackRecord.nextCommand;
+				++stackPointer;
+			}
 		} break;
 
 		case 0xFD:
