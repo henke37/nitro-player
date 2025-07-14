@@ -65,6 +65,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			player->SetVar(varId, val);
 		} break;
 
@@ -72,6 +73,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			player->SetVar(varId, player->GetVar(varId) + val);
 		} break;
 
@@ -79,6 +81,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			player->SetVar(varId, player->GetVar(varId) - val);
 		} break;
 
@@ -86,6 +89,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			player->SetVar(varId, player->GetVar(varId) * val);
 		} break;
 
@@ -93,6 +97,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			if(!val) break;
 			player->SetVar(varId, player->GetVar(varId) / val);
 		} break;
@@ -101,6 +106,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			if(val < 0) {
 				player->SetVar(varId, player->GetVar(varId) >> -val);
 			} else {
@@ -112,11 +118,60 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
 			if(val < 0) {
 				player->SetVar(varId, -(std::rand() % (-val + 1)));
 			} else {
 				player->SetVar(varId, std::rand() % (val + 1));
 			}
+		} break;
+
+		case 0xB8:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
+			lastComparisonResult = player->GetVar(varId) == val;
+		} break;
+
+		case 0xB9:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
+			lastComparisonResult = player->GetVar(varId) >= val;
+		} break;
+
+		case 0xBA:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
+			lastComparisonResult = player->GetVar(varId) > val;
+		} break;
+
+		case 0xBB:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
+			lastComparisonResult = player->GetVar(varId) <= val;
+		} break;
+
+		case 0xBC:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
+			lastComparisonResult = player->GetVar(varId) < val;
+		} break;
+
+		case 0xBD:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			assert(varId < numVariables);
+			lastComparisonResult = player->GetVar(varId) != val;
 		} break;
 
 		case 0xC0:
