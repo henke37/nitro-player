@@ -30,7 +30,7 @@ namespace NitroComposer {
 	}
 
 	size_t SWAR::WaveRecord::GetDataSize() const {
-		std::uint16_t sampleCount = loopStart + loopLength;
+		std::uint32_t sampleCount = loopStart + loopLength;
 		size_t dataSize = sampleCount * 4;
 
 		/*
