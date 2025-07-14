@@ -114,6 +114,8 @@ namespace NitroComposer {
 			std::uint8_t expression;
 			std::uint8_t pan;
 
+			bool lastComparisonResult;
+
 			const std::uint8_t *nextCommand;
 
 			int wait;

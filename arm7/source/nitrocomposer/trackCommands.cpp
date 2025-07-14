@@ -45,6 +45,14 @@ namespace NitroComposer {
 			SetNextCommand(offset);
 		} break;
 
+		case 0xA2:
+		{
+			if(!lastComparisonResult) {
+				std::uint8_t skippedCommand = readByteCommand();
+				skipCommandArgs(skippedCommand);
+			}
+		} break;
+
 		case 0xC0:
 		{
 			pan = readByteCommand();

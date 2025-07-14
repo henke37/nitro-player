@@ -20,6 +20,7 @@ namespace NitroComposer {
 		tieMode = false;
 		wait = 0;
 		priority = 64;
+		lastComparisonResult = true;
 		attack = 0xFF;
 		decay = 0xFF;
 		sustain = 0xFF;
