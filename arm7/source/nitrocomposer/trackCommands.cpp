@@ -1,6 +1,7 @@
 #include "sequencePlayer.h"
 
 #include <cassert>
+#include <nds/arm7/console.h>
 
 namespace NitroComposer {
 
@@ -42,6 +43,21 @@ namespace NitroComposer {
 			//TODO: push callstack
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
+		} break;
+
+		case 0xC0:
+		{
+			pan = readByteCommand();
+		} break;
+
+		case 0xC1:
+		{
+			volume = readByteCommand();
+		} break;
+
+		case 0xC6:
+		{
+			priority = readByteCommand();
 		} break;
 
 		case 0xC7:
@@ -100,6 +116,8 @@ namespace NitroComposer {
 		} break;
 
 		default:
+			consolePrintf("Skipping unknown command %x\n", command);
+			consoleFlush();
 			skipCommandArgs(command);
 			break;
 

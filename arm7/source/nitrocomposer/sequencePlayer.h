@@ -102,12 +102,16 @@ namespace NitroComposer {
 			bool noteWait;
 			bool tieMode;
 
+			std::uint8_t priority;
+
 			std::uint8_t attack = 0xFF;
 			std::uint8_t decay = 0xFF;
 			std::uint8_t sustain = 0xFF;
 			std::uint8_t release = 0xFF;
 
+			std::uint8_t volume;
 			std::uint8_t expression;
+			std::uint8_t pan;
 
 			const std::uint8_t *nextCommand;
 
