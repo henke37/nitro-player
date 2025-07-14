@@ -1,6 +1,8 @@
 #include "sequencePlayer.h"
 
 #include <cassert>
+#include <cstdlib>
+
 #include <nds/arm7/console.h>
 
 namespace NitroComposer {
@@ -56,6 +58,64 @@ namespace NitroComposer {
 			if(!lastComparisonResult) {
 				std::uint8_t skippedCommand = readByteCommand();
 				skipCommandArgs(skippedCommand);
+			}
+		} break;
+
+		case 0xB0:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			player->SetVar(varId, val);
+		} break;
+
+		case 0xB1:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			player->SetVar(varId, player->GetVar(varId) + val);
+		} break;
+
+		case 0xB2:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			player->SetVar(varId, player->GetVar(varId) - val);
+		} break;
+
+		case 0xB3:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			player->SetVar(varId, player->GetVar(varId) * val);
+		} break;
+
+		case 0xB4:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			if(!val) break;
+			player->SetVar(varId, player->GetVar(varId) / val);
+		} break;
+
+		case 0xB5:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			if(val < 0) {
+				player->SetVar(varId, player->GetVar(varId) >> -val);
+			} else {
+				player->SetVar(varId, player->GetVar(varId) << val);
+			}
+		} break;
+
+		case 0xB6:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readShortCommand();
+			if(val < 0) {
+				player->SetVar(varId, -(std::rand() % (-val + 1)));
+			} else {
+				player->SetVar(varId, std::rand() % (val + 1));
 			}
 		} break;
 
@@ -118,6 +178,13 @@ namespace NitroComposer {
 			expression = readByteCommand();
 		} break;
 
+		case 0xD6:
+		{
+			std::uint8_t varId = readByteCommand();
+			assert(varId < numVariables);
+			consolePrintf("Var %d = %d\n", varId, player->GetVar(varId));
+			consoleFlush();
+		} break;
 
 		case 0xE1:
 		{
