@@ -27,6 +27,8 @@ namespace NitroComposer {
 		release = 0xFF;
 		volume = 127;
 		expression = 127;
+
+		stackPointer = 0;
 	}
 
 	void SequencePlayer::Track::Tick() {

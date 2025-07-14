@@ -40,8 +40,14 @@ namespace NitroComposer {
 
 		case 0x95:
 		{
-			//TODO: push callstack
+			assert(stackPointer < 4);
 			std::uint32_t offset = readTriByteCommand();
+
+			auto &stackRecord = stack[stackPointer];
+			stackRecord.nextCommand = nextCommand;
+			stackRecord.type = StackEntryType::Call;
+			++stackPointer;
+
 			SetNextCommand(offset);
 		} break;
 
@@ -98,6 +104,15 @@ namespace NitroComposer {
 			release = readByteCommand();
 		} break;
 
+		case 0xD4:
+		{
+			auto &stackRecord = stack[stackPointer];
+			stackRecord.nextCommand = nextCommand;
+			stackRecord.loopCounter = readByteCommand();
+			stackRecord.type = StackEntryType::Loop;
+			++stackPointer;
+		}
+
 		case 0xD5:
 		{
 			expression = readByteCommand();
@@ -109,9 +124,23 @@ namespace NitroComposer {
 			player->tempo = readShortCommand();
 		} break;
 
+		case 0xFC:
+		{
+			assert(stackPointer > 0);
+			--stackPointer;
+			auto &stackRecord = stack[stackPointer];
+			assert(stackRecord.type == StackEntryType::Loop);
+			--stackRecord.loopCounter;
+			if(stackRecord.loopCounter) ++stackPointer;
+		} break;
+
 		case 0xFD:
 		{
-			//TODO: pop callstack
+			assert(stackPointer > 0);
+			--stackPointer;
+			auto &stackRecord = stack[stackPointer];
+			assert(stackRecord.type == StackEntryType::Call);
+			nextCommand = stackRecord.nextCommand;
 		} break;
 
 		case 0xFE:
