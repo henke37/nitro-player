@@ -27,6 +27,7 @@ namespace NitroComposer {
 		release = 0xFF;
 		volume = 127;
 		expression = 127;
+		transpose = 0;
 
 		stackPointer = 0;
 	}
@@ -55,6 +56,7 @@ namespace NitroComposer {
 
 
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
+		note += transpose;
 		if(tieMode) {
 			//NoteOnTie(note, velocity);
 		} else {

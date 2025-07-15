@@ -184,6 +184,11 @@ namespace NitroComposer {
 			volume = readByteCommand();
 		} break;
 
+		case 0xC3:
+		{
+			transpose = readByteCommand();
+		} break;
+
 		case 0xC6:
 		{
 			priority = readByteCommand();
