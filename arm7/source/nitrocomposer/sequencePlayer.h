@@ -112,7 +112,10 @@ namespace NitroComposer {
 
 			std::uint8_t volume;
 			std::uint8_t expression;
-			std::uint8_t pan;
+			std::int8_t pan;
+
+			std::int8_t pitchBend;
+			std::uint8_t pitchBendRange;
 
 			std::int8_t transpose;
 

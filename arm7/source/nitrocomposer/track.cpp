@@ -33,6 +33,9 @@ namespace NitroComposer {
 		lastPlayedNote = 60;
 		portaTime = 0;
 
+		pitchBend = 0;
+		pitchBendRange = 2;
+
 		stackPointer = 0;
 	}
 

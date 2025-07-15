@@ -189,6 +189,16 @@ namespace NitroComposer {
 			transpose = readByteCommand();
 		} break;
 
+		case 0xC4:
+		{
+			pitchBend = readByteCommand();
+		} break;
+
+		case 0xC5:
+		{
+			pitchBendRange = readByteCommand();
+		} break;
+
 		case 0xC6:
 		{
 			priority = readByteCommand();
