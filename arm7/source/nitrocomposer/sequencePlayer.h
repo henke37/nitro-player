@@ -116,6 +116,10 @@ namespace NitroComposer {
 
 			std::int8_t transpose;
 
+			bool portamento;
+			std::uint8_t lastPlayedNote;
+			std::uint8_t portaTime;
+
 			bool lastComparisonResult;
 
 			const std::uint8_t *nextCommand;

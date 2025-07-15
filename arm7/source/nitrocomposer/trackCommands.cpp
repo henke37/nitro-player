@@ -204,6 +204,23 @@ namespace NitroComposer {
 			tieMode = readByteCommand() != 0;
 		} break;
 
+		case 0xC9:
+		{
+			std::uint8_t note = readByteCommand();
+			lastPlayedNote = note + transpose;
+			portamento = true;
+		} break;
+
+		case 0xCE:
+		{
+			portamento = readByteCommand() != 0;
+		} break;
+
+		case 0xCF:
+		{
+			portaTime = readByteCommand();
+		} break;
+
 		case 0xD0:
 		{
 			attack = readByteCommand();

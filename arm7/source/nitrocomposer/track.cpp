@@ -29,6 +29,10 @@ namespace NitroComposer {
 		expression = 127;
 		transpose = 0;
 
+		portamento = false;
+		lastPlayedNote = 60;
+		portaTime = 0;
+
 		stackPointer = 0;
 	}
 
@@ -62,6 +66,7 @@ namespace NitroComposer {
 		} else {
 			NoteOnReal(note, velocity, length);
 		}
+		lastPlayedNote = note;
 		if(noteWait) {
 			this->wait = length;
 		}
