@@ -117,6 +117,18 @@ namespace NitroComposer {
 			std::int8_t pitchBend;
 			std::uint8_t pitchBendRange;
 
+			enum class ModulationMode {
+				Vibrato = 0,//pitch
+				Tremolo = 1,//volume
+				Pan = 2
+			};
+
+			std::uint8_t modDepth;
+			std::uint8_t modSpeed;
+			ModulationMode modMode;
+			std::uint8_t modRange;
+			std::uint16_t modDelay;
+
 			std::int8_t transpose;
 
 			bool portamento;

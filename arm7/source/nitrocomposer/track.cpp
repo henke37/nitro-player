@@ -36,6 +36,11 @@ namespace NitroComposer {
 		pitchBend = 0;
 		pitchBendRange = 2;
 
+		modMode = ModulationMode::Vibrato;
+		modDepth = 0;
+		modDelay = 0;
+		modSpeed = 0;
+
 		stackPointer = 0;
 	}
 

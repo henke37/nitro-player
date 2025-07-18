@@ -221,6 +221,31 @@ namespace NitroComposer {
 			portamento = true;
 		} break;
 
+		case 0xCA:
+		{
+			modDepth = readByteCommand();
+		} break;
+
+		case 0xCB:
+		{
+			modSpeed = readByteCommand();
+		} break;
+
+		case 0xCC:
+		{
+			modMode = ModulationMode(readByteCommand());
+		} break;
+
+		case 0xCD:
+		{
+			modRange = readByteCommand();
+		} break;
+
+		case 0xE0:
+		{
+			modDelay = readShortCommand();
+		} break;
+
 		case 0xCE:
 		{
 			portamento = readByteCommand() != 0;
