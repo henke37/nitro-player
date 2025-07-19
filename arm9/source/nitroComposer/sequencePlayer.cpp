@@ -79,6 +79,8 @@ namespace NitroComposer {
 		sbnk = sdat->OpenBank(bankInfo);
 		//printf("Loaded bank %s.\n", sdat->GetNameForBank(bankId).c_str());
 
+		LoadWaveFormsForCurrentBank();
+
 		std::unique_ptr<LoadBankIPC> buff = std::make_unique<LoadBankIPC>();
 		buff->command = BaseIPC::CommandType::LoadBank;
 		buff->bank = sbnk.get();
