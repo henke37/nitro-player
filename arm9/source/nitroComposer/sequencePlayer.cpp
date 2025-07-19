@@ -180,11 +180,11 @@ namespace NitroComposer {
 			LoadWaveFormForInstrument(static_cast<InstrumentBank::PCMInstrument *>(inst));
 			break;
 		case InstrumentBank::InstrumentType::Split:
-				LoadWaveFormForInstrument(static_cast<InstrumentBank::SplitInstrument *>(inst));
-				break;
+			LoadWaveFormForInstrument(static_cast<InstrumentBank::SplitInstrument *>(inst));
+			break;
 		case InstrumentBank::InstrumentType::Drumkit:
-				LoadWaveFormForInstrument(static_cast<InstrumentBank::Drumkit *>(inst));
-				break;
+			LoadWaveFormForInstrument(static_cast<InstrumentBank::Drumkit *>(inst));
+			break;
 		default:
 			sassert(0, "Unknown instrument type %i", (int)inst->type);
 		}
