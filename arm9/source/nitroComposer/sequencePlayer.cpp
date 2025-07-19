@@ -3,6 +3,7 @@
 #include <nds/arm9/sassert.h>
 #include <nds/fifocommon.h>
 #include <nds/system.h>
+#include <nds/arm9/cache.h>
 
 #include "nitroComposer/ipc.h"
 
@@ -85,8 +86,8 @@ namespace NitroComposer {
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadBankIPC), (u8 *)buff.get());
 	}
 
-	void SequencePlayer::LoadWaveArchive(unsigned int slot, std::uint16_t archiveId) {
-		auto &loadedArchive = loadedWaveArchives[slot];
+	void SequencePlayer::LoadWaveArchive(unsigned int archiveSlot, std::uint16_t archiveId) {
+		auto &loadedArchive = loadedWaveArchives[archiveSlot];
 
 		if(loadedArchive.archiveId == archiveId) return;
 
@@ -95,28 +96,28 @@ namespace NitroComposer {
 		if(archiveId >= 0xFFFF) {
 			std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
 			buff->command = BaseIPC::CommandType::LoadWaveArchive;
-			buff->slot = slot;
+			buff->slot = archiveSlot;
 			buff->archive = nullptr;
 			fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
 			return;
 		}
 
 		auto &info = sdat->GetWaveArchiveInfo(archiveId);
-		LoadWaveArchiveData(slot, info);
+		LoadWaveArchiveData(archiveSlot, info);
 		loadedArchive.archiveId = archiveId;
 
 		std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
 		buff->command = BaseIPC::CommandType::LoadWaveArchive;
-		buff->slot = slot;
+		buff->slot = archiveSlot;
 		buff->archive = &loadedArchive;
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
 
 		printf("Loaded archive %d \"%s\"\n", archiveId, sdat->GetNameForWaveArchive(archiveId).c_str());
 	}
 
-	void SequencePlayer::LoadWaveArchiveData(unsigned int slot, const std::unique_ptr<WaveArchiveInfoRecord> &info) {
-		auto &loadedArchive = loadedWaveArchives[slot];
-		auto swar = sdat->OpenWaveArchive(info);
+	void SequencePlayer::LoadWaveArchiveData(unsigned int archiveSlot, const std::unique_ptr<WaveArchiveInfoRecord> &info) {
+		auto &loadedArchive = loadedWaveArchives[archiveSlot];
+		auto &swar = swars[archiveSlot] = std::move(sdat->OpenWaveArchive(info));
 		auto waveCount = swar->GetWaveCount();
 		loadedArchive.waves.reserve(waveCount);
 
@@ -124,18 +125,77 @@ namespace NitroComposer {
 			auto &info = swar->GetWaveMetaData(waveIndex);
 
 			LoadedWave loadedWave = info;
-
-			auto stream = swar->GetWaveData(info);
-			auto dataLen = stream->getLength();
-			loadedWave.waveData = malloc(dataLen);
-			sassert(loadedWave.waveData, "Not enough ram for wave data!");
-			auto readLen = stream->read((uint8_t *)loadedWave.waveData, dataLen);
-			sassert(readLen == dataLen, "Only read %d/%d bytes!", readLen, dataLen);
+			loadedWave.waveData = nullptr;
 
 			loadedArchive.waves.emplace_back(std::move(loadedWave));
 		}
 	}
 
+	void SequencePlayer::LoadWaveArchiveWaveForm(unsigned int archiveSlot, std::uint16_t waveIndex) {
+		auto &loadedArchive = loadedWaveArchives[archiveSlot];
+		auto &swar = swars[archiveSlot];
+		auto &loadedWave = loadedArchive.waves.at(waveIndex);
+
+		if(loadedWave.waveData != nullptr) return;
+
+		auto &info = swar->GetWaveMetaData(waveIndex);
+
+		auto stream = swar->GetWaveData(info);
+		auto dataLen = info.GetDataSize();
+		loadedWave.waveData = malloc(dataLen);
+		sassert(loadedWave.waveData, "Not enough ram for wave data! %i", dataLen);
+		auto readLen = stream->read((uint8_t *)loadedWave.waveData, dataLen);
+		sassert(readLen == dataLen, "Only read %d/%d bytes!", readLen, dataLen);
+
+		DC_FlushRange(loadedWave.waveData, dataLen);
+	}
+
+
+	void SequencePlayer::LoadWaveFormsForCurrentBank() {
+		for(auto instItr = sbnk->instruments.cbegin(); instItr != sbnk->instruments.cend(); ++instItr) {
+			auto inst = instItr->get();
+			LoadWaveFormForInstrument(inst);
+		}
+	}
+
+	void SequencePlayer::LoadWaveFormForInstrument(InstrumentBank::BaseInstrument *inst) {
+		switch(inst->type) {
+		case InstrumentBank::InstrumentType::Pulse:
+		case InstrumentBank::InstrumentType::Noise:
+		case InstrumentBank::InstrumentType::Null:
+			break;
+		case InstrumentBank::InstrumentType::PCM:
+			LoadWaveFormForInstrument(static_cast<InstrumentBank::PCMInstrument *>(inst));
+			break;
+		case InstrumentBank::InstrumentType::Split:
+				LoadWaveFormForInstrument(static_cast<InstrumentBank::SplitInstrument *>(inst));
+				break;
+		case InstrumentBank::InstrumentType::Drumkit:
+					LoadWaveFormForInstrument(static_cast<InstrumentBank::Drumkit *>(inst));
+					break;
+		default:
+			sassert(0, "Unknown instrument type %i", (int)inst->type);
+		}
+	}
+
+	void SequencePlayer::LoadWaveFormForInstrument(InstrumentBank::PCMInstrument *inst) {
+		LoadWaveArchiveWaveForm(inst->archive, inst->wave);
+	}
+
+	void SequencePlayer::LoadWaveFormForInstrument(InstrumentBank::SplitInstrument *split) {
+		for(unsigned int range = 0; range < InstrumentBank::SplitInstrument::regionCount; ++range) {
+			LoadWaveFormForInstrument(split->subInstruments[range].get());
+
+			if(split->regions[range] == 127) break;
+		}
+	}
+
+	void SequencePlayer::LoadWaveFormForInstrument(InstrumentBank::Drumkit *drums) {
+		for(std::uint8_t note = drums->minNote; note <= drums->maxNote; ++note) {
+			auto inst = drums->subInstruments[note - (drums->minNote)].get();
+			LoadWaveFormForInstrument(inst);
+		}
+	}
 
 	void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
 		std::unique_ptr<SetVarIPC> buff = std::make_unique<SetVarIPC>();
