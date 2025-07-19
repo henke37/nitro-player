@@ -169,6 +169,8 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::LoadWaveFormForInstrument(InstrumentBank::BaseInstrument *inst) {
+		if(!inst) return;
+
 		switch(inst->type) {
 		case InstrumentBank::InstrumentType::Pulse:
 		case InstrumentBank::InstrumentType::Noise:
