@@ -150,6 +150,14 @@ namespace NitroComposer {
 		DC_FlushRange(loadedWave.waveData, dataLen);
 	}
 
+	void SequencePlayer::UnloadWaveArchiveWaveForms(unsigned int archiveSlot) {
+		auto &loadedArchive = loadedWaveArchives[archiveSlot];
+		for(auto waveItr = loadedArchive.waves.begin(); waveItr < loadedArchive.waves.end(); ++waveItr) {
+			auto &loadedWave = *waveItr;
+			free(loadedWave.waveData);
+			loadedWave.waveData = nullptr;
+		}
+	}
 
 	void SequencePlayer::LoadWaveFormsForCurrentBank() {
 		for(auto instItr = sbnk->instruments.cbegin(); instItr != sbnk->instruments.cend(); ++instItr) {

@@ -30,6 +30,7 @@ namespace NitroComposer {
 		void LoadWaveArchive(unsigned int archiveSlot, std::uint16_t archiveId);
 		void LoadWaveArchiveData(unsigned int archiveSlot, const std::unique_ptr<WaveArchiveInfoRecord> &info);
 		void LoadWaveArchiveWaveForm(unsigned int archiveSlot, std::uint16_t waveId);
+		void UnloadWaveArchiveWaveForms(unsigned int archiveSlot);
 
 		void SetVar(std::uint8_t var, std::int16_t val);
 		std::int16_t GetVar(std::uint8_t var) const;
