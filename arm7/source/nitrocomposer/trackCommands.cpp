@@ -53,6 +53,16 @@ namespace NitroComposer {
 			SetNextCommand(offset);
 		} break;
 
+		case 0xA0:
+		{
+			ExecuteNextRandomCommand();
+		} break;
+
+		case 0xA1:
+		{
+			ExecuteNextVarCommand();
+		} break;
+
 		case 0xA2:
 		{
 			if(!lastComparisonResult) {
@@ -340,6 +350,26 @@ namespace NitroComposer {
 			skipCommandArgs(command);
 			break;
 
+		}
+	}
+
+	void SequencePlayer::Track::ExecuteNextRandomCommand() {
+		std::uint8_t command = readByteCommand();
+		switch(command) {
+		default:
+			consolePrintf("Skipping unknown rnd command %x\n", command);
+			consoleFlush();
+			skipCommandRandomArgs(command);
+		}
+	}
+
+	void SequencePlayer::Track::ExecuteNextVarCommand() {
+		std::uint8_t command = readByteCommand();
+		switch(command) {
+		default:
+			consolePrintf("Skipping unknown var command %x\n", command);
+			consoleFlush();
+			skipCommandVarArgs(command);
 		}
 	}
 
