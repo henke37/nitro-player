@@ -181,8 +181,8 @@ namespace NitroComposer {
 				LoadWaveFormForInstrument(static_cast<InstrumentBank::SplitInstrument *>(inst));
 				break;
 		case InstrumentBank::InstrumentType::Drumkit:
-					LoadWaveFormForInstrument(static_cast<InstrumentBank::Drumkit *>(inst));
-					break;
+				LoadWaveFormForInstrument(static_cast<InstrumentBank::Drumkit *>(inst));
+				break;
 		default:
 			sassert(0, "Unknown instrument type %i", (int)inst->type);
 		}
@@ -201,8 +201,8 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::LoadWaveFormForInstrument(InstrumentBank::Drumkit *drums) {
-		for(std::uint8_t note = drums->minNote; note <= drums->maxNote; ++note) {
-			auto inst = drums->subInstruments[note - (drums->minNote)].get();
+		for(auto instItr = drums->subInstruments.cbegin(); instItr != drums->subInstruments.cend(); ++instItr) {
+			InstrumentBank::BaseInstrument *inst = instItr->get();
 			LoadWaveFormForInstrument(inst);
 		}
 	}
