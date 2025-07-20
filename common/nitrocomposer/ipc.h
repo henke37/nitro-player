@@ -22,7 +22,8 @@ namespace NitroComposer {
 			SetTempo,
 			SetMainVolume,
 			GetVar,
-			SetVar
+			SetVar,
+			ReserveChannels
 		};
 
 		CommandType command;
@@ -54,10 +55,13 @@ namespace NitroComposer {
 		const InstrumentBank *bank;
 	};
 
-
 	struct LoadWaveArchiveIPC : BaseIPC {
 		std::uint8_t slot;
 		const LoadedWaveArchive *archive;
+	};
+
+	struct ReserveChannelsIPC : BaseIPC {
+		std::uint16_t reservations;
 	};
 }
 

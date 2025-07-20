@@ -203,6 +203,9 @@ namespace NitroComposer {
 		const LoadedWaveArchive *waveArchs[numWaveArchs];
 
 		const std::uint8_t *sequenceData;
+
+		std::uint8_t externalChannelReservations;
+		std::uint8_t allowedChannels;
 	};
 
 	extern SequencePlayer sequencePlayer;

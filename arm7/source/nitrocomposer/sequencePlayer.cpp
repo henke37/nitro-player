@@ -34,6 +34,9 @@ namespace NitroComposer {
 			waveArchs[waveArchiveIndex] = nullptr;
 		}
 
+		externalChannelReservations = 0;
+		allowedChannels = 0xFF;
+
 		setupFifo();
 	}
 
@@ -153,6 +156,12 @@ namespace NitroComposer {
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
 			PlaySequence(playTrackIpc->sequenceData);
 		} break;
+
+		case BaseIPC::CommandType::ReserveChannels:
+		{
+			ReserveChannelsIPC *reserveIpc = static_cast<ReserveChannelsIPC *>(ipc);
+			externalChannelReservations = reserveIpc->reservations;
+		}
 
 		default:
 			assert(0);
