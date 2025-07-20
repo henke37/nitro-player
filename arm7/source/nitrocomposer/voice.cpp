@@ -34,7 +34,9 @@ namespace NitroComposer {
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
 			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 
-			consolePrintf(" %d/%d 0x%x\n", pcmInstrument->archive, pcmInstrument->wave, wave.waveData);
+			assert(wave.waveData);
+
+			consolePrintf(" %d/%d\n", wave.loopLength, wave.loopStart);
 			consoleFlush();
 
 			SCHANNEL_SOURCE(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
