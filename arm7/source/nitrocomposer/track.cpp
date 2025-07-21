@@ -18,7 +18,7 @@ namespace NitroComposer {
 		isPlaying = false;
 		noteWait = true;
 		tieMode = false;
-		wait = 0;
+		waitCounter = 0;
 		priority = 64;
 		lastComparisonResult = true;
 		attack = 0xFF;
@@ -47,12 +47,12 @@ namespace NitroComposer {
 	void SequencePlayer::Track::Tick() {
 		if(!isPlaying) return;
 
-		if(wait) {
-			--wait;
+		if(waitCounter) {
+			--waitCounter;
 			return;
 		}
 
-		while(!wait) {
+		while(!waitCounter) {
 			ExecuteNextCommand();
 		}
 	}
@@ -76,7 +76,7 @@ namespace NitroComposer {
 		}
 		lastPlayedNote = note;
 		if(noteWait) {
-			this->wait = length;
+			this->waitCounter = length;
 		}
 	}
 

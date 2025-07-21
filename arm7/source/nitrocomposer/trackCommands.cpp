@@ -19,7 +19,7 @@ namespace NitroComposer {
 
 		switch(command) {
 		case 0x80:
-			wait = readMidiVarLen();
+			waitCounter = readMidiVarLen();
 			break;
 		case 0x81:
 		{

@@ -153,7 +153,7 @@ namespace NitroComposer {
 			StackEntry stack[4];
 			unsigned int stackPointer;
 
-			int wait;
+			int waitCounter;
 
 			void ExecuteNextCommand();
 			void ExecuteNextRandomCommand();
