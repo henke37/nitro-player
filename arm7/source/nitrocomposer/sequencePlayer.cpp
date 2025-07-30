@@ -212,7 +212,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::setupTimer() {
-		timerStart(1, ClockDivider_64, 2728, ISR);
+		timerStart(1, ClockDivider_64, -2728, ISR);
 	}
 
 	void SequencePlayer::ISR() {
