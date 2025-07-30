@@ -13,6 +13,10 @@
 
 namespace NitroComposer {
 
+	static const uint8_t pcmChannels[] = { 4, 5, 6, 7, 2, 0, 3, 1, 8, 9, 10, 11, 14, 12, 15, 13 };
+	static const uint8_t psgChannels[] = { 8, 9, 10, 11, 12, 13 };
+	static const uint8_t noiseChannels[] = { 14, 15 };
+
 	SequencePlayer sequencePlayer;
 
 	const size_t fifoBuffSize = 32;
@@ -69,9 +73,48 @@ namespace NitroComposer {
 		track.StartPlaying(offset);
 	}
 
-	unsigned int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type) {
-		//TODO: do this properly
-		return 0;
+
+
+	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type) {
+		size_t channelCount;
+		const uint8_t *channelList;
+		switch(type) {
+		case InstrumentBank::InstrumentType::PCM:
+			channelCount = 16;
+			channelList = pcmChannels;
+			break;
+		case InstrumentBank::InstrumentType::Pulse:
+			channelCount = 6;
+			channelList = psgChannels;
+			break;
+		case InstrumentBank::InstrumentType::Noise:
+			channelCount = 2;
+			channelList = noiseChannels;
+			break;
+		case InstrumentBank::InstrumentType::Drumkit:
+		case InstrumentBank::InstrumentType::Split:
+		case InstrumentBank::InstrumentType::Null:
+		default:
+			assert(0);
+		}
+
+		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
+			auto voiceIndex = channelList[slotIndex];
+			if(!isVoiceAllowed(voiceIndex)) continue;
+			auto &voice = voices[voiceIndex];
+			if(voice.state == VoiceState::Free) return voiceIndex;
+		}
+
+		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
+			auto voiceIndex = channelList[slotIndex];
+			if(!isVoiceAllowed(voiceIndex)) continue;
+			auto &voice = voices[voiceIndex];
+			if(voice.state == VoiceState::Releasing) return voiceIndex;
+		}
+
+		//TODO: voice stealing
+
+		return -1;
 	}
 
 	const LoadedWave &SequencePlayer::GetWave(unsigned int archiveSlot, unsigned int waveIndex) {
@@ -174,6 +217,13 @@ namespace NitroComposer {
 
 	void SequencePlayer::ISR() {
 		sequencePlayer.Tick();
+	}
+
+	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex) const {
+		if(!(allowedChannels & BIT(voiceIndex)) && allowedChannels) return false;
+		if(!(externalChannelReservations & BIT(voiceIndex)) && externalChannelReservations) return false;
+
+		return true;
 	}
 
 	void SequencePlayer::Tick() {

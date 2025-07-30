@@ -18,6 +18,8 @@ namespace NitroComposer {
 		this->velocity = velocity;
 		this->length = length;
 
+		this->state = VoiceState::Attacking;
+
 		ConfigureTimerRegister();
 		ConfigureControlRegisters();
 	}

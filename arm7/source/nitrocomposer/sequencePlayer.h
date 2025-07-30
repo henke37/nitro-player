@@ -22,7 +22,7 @@ namespace NitroComposer {
 		void AbortSequence();
 
 		void StartTrack(std::uint8_t trackId, std::uint32_t offset);
-		unsigned int FindFreeVoice(InstrumentBank::InstrumentType type);
+		signed int FindFreeVoice(InstrumentBank::InstrumentType type);
 
 		const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
 
@@ -206,6 +206,8 @@ namespace NitroComposer {
 
 		std::uint8_t externalChannelReservations;
 		std::uint8_t allowedChannels;
+
+		bool isVoiceAllowed(std::uint8_t voiceIndex) const;
 	};
 
 	extern SequencePlayer sequencePlayer;

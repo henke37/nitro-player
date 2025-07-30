@@ -86,6 +86,8 @@ namespace NitroComposer {
 		if(!noteInstrument) return;
 
 		auto voiceIndex = this->player->FindFreeVoice(noteInstrument->type);
+		if(voiceIndex < 0) return;
+
 		auto &voice = this->player->voices[voiceIndex];
 
 		consolePrintf("Note on %d,%d,%d", note, velocity, length);
