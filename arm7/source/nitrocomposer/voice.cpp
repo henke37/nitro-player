@@ -24,7 +24,51 @@ namespace NitroComposer {
 		ConfigureControlRegisters();
 	}
 
-	void SequencePlayer::Voice::Tick() {}
+	void SequencePlayer::Voice::Tick() {
+		if(state == SequencePlayer::VoiceState::Free) return;
+
+		if(!(SCHANNEL_CR(voiceIndex) & SCHANNEL_ENABLE)) {
+			Kill();
+			return;
+		}
+
+		if(state!=VoiceState::Releasing) {
+			if(!this->length) {
+				Release();
+			} else {
+				--this->length;
+			}
+		}
+
+		switch(state) {
+		case NitroComposer::SequencePlayer::VoiceState::Attacking:
+			break;
+		case NitroComposer::SequencePlayer::VoiceState::Decaying:
+			break;
+		case NitroComposer::SequencePlayer::VoiceState::Sustaining:
+			break;
+		case NitroComposer::SequencePlayer::VoiceState::Releasing:
+			Kill();
+			break;
+		default:
+			assert(0);
+			break;
+		}
+	}
+
+	void SequencePlayer::Voice::Release() {
+		this->state = VoiceState::Releasing;
+		this->length = 0;
+	}
+
+	void SequencePlayer::Voice::Kill() {
+		this->state = VoiceState::Free;
+		this->track = nullptr;
+		this->currentInstrument = nullptr;
+		this->length = 0;
+
+		SCHANNEL_CR(voiceIndex) = 0;
+	}
 
 	void SequencePlayer::Voice::ConfigureControlRegisters() {
 		std::uint32_t ctrVal = SOUND_VOL(ComputeVolume());

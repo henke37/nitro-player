@@ -52,6 +52,9 @@ namespace NitroComposer {
 			bool IsPulseVoice() const { return voiceIndex >= 8 && voiceIndex <= 13; }
 			bool IsNoiseVoice() const { return voiceIndex >= 14; }
 
+			void Release();
+			void Kill();
+
 			VoiceState state = VoiceState::Free;
 		private:
 			unsigned int voiceIndex;
