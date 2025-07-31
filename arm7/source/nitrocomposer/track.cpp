@@ -70,6 +70,7 @@ namespace NitroComposer {
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		note += transpose;
 		if(tieMode) {
+			consolePrintf("Tie-Note on %d,%d", note, velocity);
 			//NoteOnTie(note, velocity);
 		} else {
 			NoteOnReal(note, velocity, length);

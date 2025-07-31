@@ -67,7 +67,7 @@ namespace NitroComposer {
 		this->currentInstrument = nullptr;
 		this->length = 0;
 
-		SCHANNEL_CR(voiceIndex) = 0;
+		SCHANNEL_CR(voiceIndex) = SOUND_PAN(64);
 	}
 
 	void SequencePlayer::Voice::ConfigureControlRegisters() {
@@ -116,17 +116,21 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Voice::ConfigureTimerRegister() {
-		std::uint16_t baseTimer;
+		std::uint16_t timer;
+		std::uint8_t baseNote;
+
 		switch(currentInstrument->type) {
 		case InstrumentBank::InstrumentType::PCM:
 		{
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
 			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
-			baseTimer = wave.timerLen;
+			timer = wave.timerLen;
+			baseNote = pcmInstrument->baseNote;
 		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		case InstrumentBank::InstrumentType::Noise:
-			baseTimer = (std::uint16_t)SOUND_FREQ(440);
+			timer = (std::uint16_t)SOUND_FREQ(440);
+			baseNote = 69;
 			break;
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
@@ -135,7 +139,11 @@ namespace NitroComposer {
 			assert(0);
 		}
 
-		SCHANNEL_TIMER(voiceIndex) = -baseTimer;
+		int adjustment = (this->note - baseNote) * 64;
+
+		if(adjustment) timer = Timer_Adjust(timer, adjustment);
+
+		SCHANNEL_TIMER(voiceIndex) = -timer;
 	}
 
 	std::uint8_t SequencePlayer::Voice::ComputeVolume() const {
