@@ -213,6 +213,16 @@ namespace NitroComposer {
 		bool isVoiceAllowed(std::uint8_t voiceIndex) const;
 	};
 
+	int Cnv_Attack(int attk);
+	int Cnv_Fall(int fall);
+	int Cnv_Scale(int scale);
+	int Cnv_Sust(int sust);
+	int Cnv_Sine(int arg);
+	uint16_t Timer_Adjust(uint16_t basetmr, int pitch);
+
+	int calcVolDivShift(int x);
+	int32_t muldiv7(int32_t val, uint8_t mul);
+
 	extern SequencePlayer sequencePlayer;
 
 }
