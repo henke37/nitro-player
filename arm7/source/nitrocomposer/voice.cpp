@@ -202,7 +202,7 @@ namespace NitroComposer {
 			volume = -AMPL_K;
 
 		volume += this->amplitude >> 7;
-		volume += this->velocity;
+		volume += Cnv_Sust(this->velocity);
 		volume += AMPL_K;
 
 		return std::clamp(volume, 0, AMPL_K);
