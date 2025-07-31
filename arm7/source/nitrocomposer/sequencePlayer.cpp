@@ -216,7 +216,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::ISR() {
-		sequencePlayer.Tick();
+		sequencePlayer.Update();
 	}
 
 	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex) const {
@@ -226,17 +226,29 @@ namespace NitroComposer {
 		return true;
 	}
 
-	void SequencePlayer::Tick() {
+	void SequencePlayer::Update() {
 
 		while(tempoTimer >= 240) {
 			tempoTimer -= 240;
+			TickVoices();
 			TickTracks();
 		}
 		tempoTimer += tempo;
 
+		UpdateVoices();
+	}
+
+	void SequencePlayer::TickVoices() {
 		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
 			auto &voice = voices[voiceIndex];
 			voice.Tick();
+		}
+	}
+
+	void SequencePlayer::UpdateVoices() {
+		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
+			auto &voice = voices[voiceIndex];
+			voice.Update();
 		}
 	}
 

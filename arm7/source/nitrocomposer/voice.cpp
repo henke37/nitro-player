@@ -24,20 +24,12 @@ namespace NitroComposer {
 		ConfigureControlRegisters();
 	}
 
-	void SequencePlayer::Voice::Tick() {
+	void SequencePlayer::Voice::Update() {
 		if(state == SequencePlayer::VoiceState::Free) return;
 
 		if(!(SCHANNEL_CR(voiceIndex) & SCHANNEL_ENABLE)) {
 			Kill();
 			return;
-		}
-
-		if(state!=VoiceState::Releasing) {
-			if(!this->length) {
-				Release();
-			} else {
-				--this->length;
-			}
 		}
 
 		switch(state) {
@@ -53,6 +45,18 @@ namespace NitroComposer {
 		default:
 			assert(0);
 			break;
+		}
+	}
+
+	void SequencePlayer::Voice::Tick() {
+		if(state == SequencePlayer::VoiceState::Free) return;
+
+		if(state != VoiceState::Releasing) {
+			if(!this->length) {
+				Release();
+			} else {
+				--this->length;
+			}
 		}
 	}
 
@@ -81,9 +85,6 @@ namespace NitroComposer {
 			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 
 			assert(wave.waveData);
-
-			consolePrintf(" %d/%d\n", wave.loopLength, wave.loopStart);
-			consoleFlush();
 
 			SCHANNEL_SOURCE(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
 

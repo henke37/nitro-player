@@ -27,7 +27,10 @@ namespace NitroComposer {
 		const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
 
 	private:
-		void Tick();
+		void Update();
+
+		void TickVoices();
+		void UpdateVoices();
 
 		void TickTracks();
 
@@ -48,6 +51,7 @@ namespace NitroComposer {
 			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
 
 			void Tick();
+			void Update();
 
 			bool IsPulseVoice() const { return voiceIndex >= 8 && voiceIndex <= 13; }
 			bool IsNoiseVoice() const { return voiceIndex >= 14; }

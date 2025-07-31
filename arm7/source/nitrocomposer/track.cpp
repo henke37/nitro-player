@@ -70,11 +70,13 @@ namespace NitroComposer {
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		note += transpose;
 		if(tieMode) {
-			consolePrintf("Tie-Note on %d,%d", note, velocity);
+			consolePrintf("Tie-Note on %d,%d\n", note, velocity);
 			//NoteOnTie(note, velocity);
 		} else {
+			consolePrintf("Note on %d,%d,%d\n", note, velocity, length);
 			NoteOnReal(note, velocity, length);
 		}
+		consoleFlush();
 		lastPlayedNote = note;
 		if(noteWait) {
 			this->waitCounter = length;
@@ -90,8 +92,6 @@ namespace NitroComposer {
 		if(voiceIndex < 0) return;
 
 		auto &voice = this->player->voices[voiceIndex];
-
-		consolePrintf("Note on %d,%d,%d", note, velocity, length);
 
 		voice.StartNote(this, noteInstrument, note, velocity, length);
 	}
