@@ -142,20 +142,22 @@ namespace NitroComposer {
 		SCHANNEL_CR(voiceIndex) = ctrVal;
 	}
 
+#define SOUND_VOLDIV(div) ((div) << 8)
+
 	void SequencePlayer::Voice::ConfigureVolumeRegister() {
 		int volume = ComputeVolume();
 
 		std::uint32_t cr = SCHANNEL_CR(voiceIndex);
-		cr &= ~(SOUND_VOL(0x7F) | (3<<8));
+		cr &= ~(SOUND_VOL(0x7F) | SOUND_VOLDIV(3));
 
 		cr |= SOUND_VOL(static_cast<int>(volumeTable[volume]));
 
 		if(volume < AMPL_K - 240)
-			cr |= (3 << 8);
+			cr |= SOUND_VOLDIV(3);
 		else if(volume < AMPL_K - 120)
-			cr |= (2 << 8);
+			cr |= SOUND_VOLDIV(2);
 		else if(volume < AMPL_K - 60)
-			cr |= (1 << 8);
+			cr |= SOUND_VOLDIV(1);
 
 		SCHANNEL_CR(voiceIndex) = cr;
 	}
