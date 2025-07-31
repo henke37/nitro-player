@@ -66,7 +66,7 @@ namespace NitroComposer {
 			void ConfigureVolumeRegister();
 			void ConfigureTimerRegister();
 
-			std::uint8_t ComputeVolume() const;
+			int ComputeVolume() const;
 			std::uint8_t ComputePan() const;
 
 			std::uint8_t note;
@@ -81,6 +81,8 @@ namespace NitroComposer {
 			std::uint8_t GetDecay() const;
 			std::uint8_t GetSustain() const;
 			std::uint8_t GetRelease() const;
+
+			int amplitude;
 		};
 		static constexpr unsigned int voiceCount = 16;
 		Voice voices[voiceCount];
@@ -226,6 +228,12 @@ namespace NitroComposer {
 
 	int calcVolDivShift(int x);
 	int32_t muldiv7(int32_t val, uint8_t mul);
+
+	const int AMPL_K = 723;
+	const int AMPL_MIN = -AMPL_K;
+	const int AMPLITUDE_THRESHOLD = AMPL_MIN << 7;
+
+	extern const uint8_t volumeTable[];
 
 	extern SequencePlayer sequencePlayer;
 

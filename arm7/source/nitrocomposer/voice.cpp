@@ -1,6 +1,8 @@
 #include "sequencePlayer.h"
 
 #include <cassert>
+#include <algorithm>
+
 #include <nds/arm7/audio.h>
 #include <nds/arm7/console.h>
 
@@ -19,6 +21,7 @@ namespace NitroComposer {
 		this->length = length;
 
 		this->state = VoiceState::Attacking;
+		this->amplitude = AMPLITUDE_THRESHOLD;
 
 		ConfigureTimerRegister();
 		ConfigureControlRegisters();
@@ -33,19 +36,46 @@ namespace NitroComposer {
 		}
 
 		switch(state) {
-		case NitroComposer::SequencePlayer::VoiceState::Attacking:
+		case SequencePlayer::VoiceState::Attacking:
+		{
+			int newAmpl = this->amplitude;
+			int oldAmpl = this->amplitude >> 7;
+			do
+				newAmpl = (newAmpl * static_cast<int>(this->GetAttack())) / 256;
+			while((newAmpl >> 7) == oldAmpl);
+			this->amplitude = newAmpl;
+			if(!this->amplitude)
+				this->state = SequencePlayer::VoiceState::Decaying;
 			break;
-		case NitroComposer::SequencePlayer::VoiceState::Decaying:
+		}
+		case SequencePlayer::VoiceState::Decaying:
+		{
+			this->amplitude -= static_cast<int>(this->GetDecay());
+			int sustLvl = Cnv_Sust(this->GetSustain()) << 7;
+			if(this->amplitude <= sustLvl) {
+				this->amplitude = sustLvl;
+				this->state = SequencePlayer::VoiceState::Sustaining;
+			}
 			break;
-		case NitroComposer::SequencePlayer::VoiceState::Sustaining:
+		}
+		case SequencePlayer::VoiceState::Sustaining:
+			//Nothing to do in this state
 			break;
-		case NitroComposer::SequencePlayer::VoiceState::Releasing:
-			Kill();
+		case SequencePlayer::VoiceState::Releasing:
+		{
+			this->amplitude -= static_cast<int>(this->GetRelease());
+			if(this->amplitude <= AMPLITUDE_THRESHOLD) {
+				this->Kill();
+				return;
+			}
 			break;
+		}
 		default:
 			assert(0);
 			break;
 		}
+
+		ConfigureVolumeRegister();
 	}
 
 	void SequencePlayer::Voice::Tick() {
@@ -75,7 +105,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Voice::ConfigureControlRegisters() {
-		std::uint32_t ctrVal = SOUND_VOL(ComputeVolume());
+		std::uint32_t ctrVal = 0;
 		ctrVal |= SOUND_PAN(ComputePan());
 
 		switch(currentInstrument->type) {
@@ -113,7 +143,21 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Voice::ConfigureVolumeRegister() {
-		SCHANNEL_VOL(voiceIndex) = ComputeVolume();
+		int volume = ComputeVolume();
+
+		std::uint32_t cr = SCHANNEL_CR(voiceIndex);
+		cr &= ~(SOUND_VOL(0x7F) | (3<<8));
+
+		cr |= SOUND_VOL(static_cast<int>(volumeTable[volume]));
+
+		if(volume < AMPL_K - 240)
+			cr |= (3 << 8);
+		else if(volume < AMPL_K - 120)
+			cr |= (2 << 8);
+		else if(volume < AMPL_K - 60)
+			cr |= (1 << 8);
+
+		SCHANNEL_CR(voiceIndex) = cr;
 	}
 
 	void SequencePlayer::Voice::ConfigureTimerRegister() {
@@ -147,8 +191,19 @@ namespace NitroComposer {
 		SCHANNEL_TIMER(voiceIndex) = -timer;
 	}
 
-	std::uint8_t SequencePlayer::Voice::ComputeVolume() const {
-		return 127;
+	int SequencePlayer::Voice::ComputeVolume() const {
+		int volume = 0;// track->player->masterVol;
+		//finalVol += track->player->sseqVol;
+		volume += Cnv_Sust(track->volume);
+		volume += Cnv_Sust(track->expression);
+		if(volume < -AMPL_K)
+			volume = -AMPL_K;
+
+		volume += this->amplitude >> 7;
+		volume += this->velocity;
+		volume += AMPL_K;
+
+		return std::clamp(volume, 0, AMPL_K);
 	}
 
 	std::uint8_t SequencePlayer::Voice::ComputePan() const {
