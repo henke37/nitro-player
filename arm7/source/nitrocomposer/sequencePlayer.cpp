@@ -221,7 +221,7 @@ namespace NitroComposer {
 
 	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex) const {
 		if(!(allowedChannels & BIT(voiceIndex)) && allowedChannels) return false;
-		if(!(externalChannelReservations & BIT(voiceIndex)) && externalChannelReservations) return false;
+		if((externalChannelReservations & BIT(voiceIndex)) && externalChannelReservations) return false;
 
 		return true;
 	}
