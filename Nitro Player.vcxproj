@@ -112,6 +112,7 @@
     <ClCompile Include="arm9\source\ncer.cpp" />
     <ClCompile Include="arm9\source\ncgr.cpp" />
     <ClCompile Include="arm9\source\nclr.cpp" />
+    <ClCompile Include="arm9\source\ndsfile.cpp" />
     <ClCompile Include="arm9\source\nftr.cpp" />
     <ClCompile Include="arm9\source\nineslice.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sbnk.cpp" />
@@ -133,6 +134,7 @@
     <ClCompile Include="arm9\source\strutils.cpp" />
     <ClCompile Include="arm9\source\substream.cpp" />
     <ClCompile Include="arm9\source\testMode.cpp" />
+    <ClCompile Include="arm9\source\testNDS.cpp" />
     <ClCompile Include="arm9\source\tileMan.cpp" />
     <ClCompile Include="arm9\source\tileMapMirror.cpp" />
     <ClCompile Include="arm9\source\tilePos.cpp" />
@@ -169,6 +171,7 @@
     <ClInclude Include="arm9\source\ncer.h" />
     <ClInclude Include="arm9\source\ncgr.h" />
     <ClInclude Include="arm9\source\nclr.h" />
+    <ClInclude Include="arm9\source\ndsfile.h" />
     <ClInclude Include="arm9\source\nftr.h" />
     <ClInclude Include="arm9\source\nineslice.h" />
     <ClInclude Include="arm9\source\nitroComposer\sbnk.h" />
@@ -192,6 +195,7 @@
     <ClInclude Include="arm9\source\substream.h" />
     <ClInclude Include="arm9\source\tcm.h" />
     <ClInclude Include="arm9\source\testMode.h" />
+    <ClInclude Include="arm9\source\testNDS.h" />
     <ClInclude Include="arm9\source\tileMan.h" />
     <ClInclude Include="arm9\source\tileMapMirror.h" />
     <ClInclude Include="arm9\source\tilePos.h" />

@@ -18,6 +18,7 @@
 #include "consts.h"
 
 #include "testMode.h"
+#include "testNDS.h"
 
 extern std::unique_ptr<GameMode> g_mode;
 extern std::unique_ptr<GameMode> g_nextMode;
