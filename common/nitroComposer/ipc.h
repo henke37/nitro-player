@@ -33,6 +33,7 @@ namespace NitroComposer {
 		std::uint8_t *sequenceData;
 		std::uint32_t length;
 		std::uint32_t channelMask;
+		std::uint8_t sequenceVolume;
 	};
 
 	struct SetMainVolumeIPC : BaseIPC {
