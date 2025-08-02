@@ -157,6 +157,7 @@ void NDSFile::FileSystem::ParseFNT(std::unique_ptr<BinaryReadStream> &&FNTData) 
 		std::uint16_t fileIndex = dirIndex.firstFileId;
 
 		Directory dir;
+		dir.parentId = dirIndex.parentId;
 
 		for(;;) {
 			std::uint8_t nameLen = reader.readByte();

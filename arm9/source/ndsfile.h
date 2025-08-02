@@ -65,6 +65,7 @@ public:
 				std::uint16_t fileId;
 			};
 			std::vector<DirEntry> entries;
+			std::uint16_t parentId;
 			const DirEntry *findEntry(const std::string &name) const;
 		};
 		std::vector<Directory> directories;
