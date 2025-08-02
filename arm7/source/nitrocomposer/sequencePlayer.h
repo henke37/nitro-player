@@ -206,6 +206,7 @@ namespace NitroComposer {
 		std::uint8_t tempoTimer;
 
 		std::uint8_t mainVolume;
+		std::uint8_t sequenceVolume;
 
 		const InstrumentBank *bank;
 		static constexpr unsigned int numWaveArchs = 4;

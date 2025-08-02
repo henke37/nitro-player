@@ -66,6 +66,7 @@ namespace NitroComposer {
 		buff->sequenceData = sequenceData.get();
 		buff->length = dataLen;
 		buff->channelMask = player->channelMask;
+		buff->sequenceVolume = sequenceInfo->vol;
 
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)buff.get());
 	}
