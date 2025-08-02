@@ -35,10 +35,13 @@ namespace NitroComposer {
 		const std::unique_ptr<BankInfoRecord> &GetBankInfo(const std::string &bankName) const;
 		const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(unsigned int archiveId) const;
 		const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(const std::string &archiveName) const;
+		const std::unique_ptr<PlayerInfoRecord> &GetPlayerInfo(unsigned int playerId) const;
+		const std::unique_ptr<PlayerInfoRecord> &GetPlayerInfo(const std::string &playerName) const;
 
 		std::string GetNameForSequence(unsigned int sequenceId) const;
 		std::string GetNameForBank(unsigned int bankId) const;
 		std::string GetNameForWaveArchive(unsigned int archiveId) const;
+		std::string GetNameForPlayer(unsigned int playerId) const;
 
 	private:
 

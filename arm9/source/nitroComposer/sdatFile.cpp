@@ -67,6 +67,10 @@ namespace NitroComposer {
 		return waveArchInfos[archiveId];
 	}
 
+	const std::unique_ptr<PlayerInfoRecord> &SDatFile::GetPlayerInfo(unsigned int playerId) const {
+		return playerInfos.at(playerId);
+	}
+
 	std::string SDatFile::GetNameForBank(unsigned int bankId) const {
 		if(bankId >= bankNames.size()) {
 			return std::string("BANK_") + std::to_string(bankId);

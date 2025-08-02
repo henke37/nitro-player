@@ -51,6 +51,8 @@ namespace NitroComposer {
 		LoadBank(sequenceInfo->bankId);
 		sseq = sdat->OpenSequence(sequenceInfo);
 
+		auto &player = sdat->GetPlayerInfo(sequenceInfo->player);
+
 		auto stream = sseq->GetCommandStream();
 		size_t dataLen = stream->getLength();
 
@@ -63,6 +65,7 @@ namespace NitroComposer {
 		buff->command = BaseIPC::CommandType::PlaySequence;
 		buff->sequenceData = sequenceData.get();
 		buff->length = dataLen;
+		buff->channelMask = player->channelMask;
 
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)buff.get());
 	}

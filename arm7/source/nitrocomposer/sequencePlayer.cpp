@@ -197,6 +197,7 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::PlaySequence:
 		{
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
+			allowedChannels = playTrackIpc->channelMask;
 			PlaySequence(playTrackIpc->sequenceData);
 		} break;
 
