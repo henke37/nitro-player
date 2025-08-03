@@ -94,8 +94,8 @@ std::uint16_t NDSFile::FileSystem::ResolvePath(const std::string &path) const {
 			printf("File \"%s\"\n", file.c_str());
 
 			auto entry = currDir->findEntry(file);
-			if(!entry) return 0xFFFF;
-			assert(entry->fileId < 0xF000);
+			if(!entry) return Directory::DirEntry::invalidFileId;
+			assert(entry->fileId < Directory::DirEntry::folderThreshold);
 			return entry->fileId;
 		}
 
@@ -104,14 +104,14 @@ std::uint16_t NDSFile::FileSystem::ResolvePath(const std::string &path) const {
 		printf("Path \"%s\"\n",folder.c_str());
 
 		auto entry = currDir->findEntry(folder);
-		if(!entry) return 0xFFFF;
-		assert(entry->fileId >= 0xF000);
-		std::uint16_t dirId = entry->fileId - 0xF000;
+		if(!entry) return Directory::DirEntry::invalidFileId;
+		assert(entry->fileId >= Directory::DirEntry::folderThreshold);
+		std::uint16_t dirId = entry->fileId - Directory::DirEntry::folderThreshold;
 		currDir = &directories.at(dirId);
 
 		partStartPos = curSlashPos + 1;
 	}
-	return 0xFFFF;
+	return Directory::DirEntry::invalidFileId;
 }
 
 void NDSFile::FileSystem::ParseFAT(std::unique_ptr<BinaryReadStream> &&FATData) {
@@ -140,7 +140,7 @@ void NDSFile::FileSystem::ParseFNT(std::unique_ptr<BinaryReadStream> &&FNTData) 
 
 		dirIndexes.reserve(numDirs);
 		directories.reserve(numDirs);
-		dirIndexes.emplace_back(rootTableOffset, firstFileId, 0xFFFF);
+		dirIndexes.emplace_back(rootTableOffset, firstFileId, Directory::DirEntry::invalidFileId);
 	}
 
 	for(std::uint16_t dirIndex = 1; dirIndex < numDirs; ++dirIndex) {
@@ -184,6 +184,6 @@ std::unique_ptr<BinaryReadStream> NDSFile::FileSystem::OpenFile(std::uint16_t id
 }
 std::unique_ptr<BinaryReadStream> NDSFile::FileSystem::OpenFile(const std::string &path) const {
 	std::uint16_t id = ResolvePath(path);
-	sassert(id != 0xFFFF, "Couldn't resolve path \"%s\"!", path.c_str());
+	sassert(id != Directory::DirEntry::invalidFileId, "Couldn't resolve path \"%s\"!", path.c_str());
 	return OpenFile(id);
 }

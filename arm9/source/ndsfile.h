@@ -61,8 +61,13 @@ public:
 				~DirEntry() = default;
 				DirEntry &operator=(const DirEntry &) = default;
 
+				bool isDirectory() const { return fileId >= folderThreshold; }
+
 				std::string name;
 				std::uint16_t fileId;
+
+				static constexpr std::uint16_t folderThreshold = 0xF000;
+				static constexpr std::uint16_t invalidFileId = 0xFFFF;
 			};
 			std::vector<DirEntry> entries;
 			std::uint16_t parentId;
