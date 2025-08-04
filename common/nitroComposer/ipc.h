@@ -23,7 +23,10 @@ namespace NitroComposer {
 			SetMainVolume,
 			GetVar,
 			SetVar,
-			ReserveChannels
+			ReserveChannels,
+			InitStream,
+			StreamPushBlock,
+			StreamRetireBlock
 		};
 
 		CommandType command;
@@ -64,6 +67,23 @@ namespace NitroComposer {
 
 	struct ReserveChannelsIPC : BaseIPC {
 		std::uint16_t reservations;
+	};
+
+	struct InitStreamIPC : BaseIPC {
+		WaveEncoding encoding;
+		bool stereo;
+		std::uint16_t timer;
+	};
+
+	struct StreamPushBlockIPC : BaseIPC {
+		std::uint32_t blockId;
+		std::uint32_t blockDataSize;
+		std::uint32_t blockSampleCount;
+		void *blockData[2];
+	};
+
+	struct StreamRetireBlockIPC : BaseIPC {
+		std::uint32_t blockId;
 	};
 }
 
