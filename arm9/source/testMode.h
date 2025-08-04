@@ -15,8 +15,8 @@ public:
 	void Update() override;
 private:
 
-	void LoadSequence(const std::string &sequenceName);
-	void LoadSequence(unsigned int sequenceId);
+	void PlaySequence(const std::string &sequenceName);
+	void PlaySequence(unsigned int sequenceId);
 
 	std::unique_ptr<NitroComposer::SDatFile> sdat;
 

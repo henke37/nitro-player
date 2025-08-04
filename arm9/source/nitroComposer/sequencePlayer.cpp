@@ -35,19 +35,19 @@ namespace NitroComposer {
 		this->sdat = sdat;
 	}
 
-	void SequencePlayer::LoadSequence(unsigned int sequenceId) {
+	void SequencePlayer::PlaySequence(unsigned int sequenceId) {
 		const std::unique_ptr<SequenceInfoRecord> &sequenceInfo = sdat->GetSequenceInfo(sequenceId);
 		sassert(sequenceInfo, "Unknown sequence %u", sequenceId);
-		LoadSequence(sequenceInfo);
+		PlaySequence(sequenceInfo);
 	}
 
-	void SequencePlayer::LoadSequence(const std::string &sequenceName) {
+	void SequencePlayer::PlaySequence(const std::string &sequenceName) {
 		const std::unique_ptr<SequenceInfoRecord> &sequenceInfo = sdat->GetSequenceInfo(sequenceName);
 		sassert(sequenceInfo, "Unknown sequence \"%s\"", sequenceName.c_str());
-		LoadSequence(sequenceInfo);
+		PlaySequence(sequenceInfo);
 	}
 
-	void SequencePlayer::LoadSequence(const std::unique_ptr<SequenceInfoRecord> &sequenceInfo) {
+	void SequencePlayer::PlaySequence(const std::unique_ptr<SequenceInfoRecord> &sequenceInfo) {
 		LoadBank(sequenceInfo->bankId);
 		sseq = sdat->OpenSequence(sequenceInfo);
 

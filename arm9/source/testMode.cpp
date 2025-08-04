@@ -8,18 +8,18 @@ void TestMode::Load() {
 	seqPlayer.SetSdat(sdat.get());
 	printf("Sdat loaded ok.\n");
 
-	LoadSequence(2);// "BGM02DS_REQ");
+	PlaySequence("BGM02DS_REQ");
 
 	printf("Getvar: %hi\n", seqPlayer.GetVar(1));
 }
 
-void TestMode::LoadSequence(const std::string &sequenceName) {
-	seqPlayer.LoadSequence(sequenceName);
+void TestMode::PlaySequence(const std::string &sequenceName) {
+	seqPlayer.PlaySequence(sequenceName);
 	printf("Loaded sequence %s.\n", sequenceName.c_str());
 }
 
-void TestMode::LoadSequence(unsigned int sequenceId) {
-	seqPlayer.LoadSequence(sequenceId);
+void TestMode::PlaySequence(unsigned int sequenceId) {
+	seqPlayer.PlaySequence(sequenceId);
 	printf("Loaded sequence %s.\n", sdat->GetNameForSequence(sequenceId).c_str());
 }
 

@@ -17,9 +17,9 @@ namespace NitroComposer {
 
 		void SetSdat(const SDatFile *sdat);
 
-		void LoadSequence(unsigned int sequenceId);
-		void LoadSequence(const std::string &sequenceName);
-		void LoadSequence(const std::unique_ptr<SequenceInfoRecord> &);
+		void PlaySequence(unsigned int sequenceId);
+		void PlaySequence(const std::string &sequenceName);
+		void PlaySequence(const std::unique_ptr<SequenceInfoRecord> &);
 
 		void LoadBank(unsigned int bankId);
 		void LoadWaveFormsForCurrentBank();
