@@ -27,6 +27,10 @@ std::unique_ptr<BinaryReadStream> NDSFile::OpenFile(const std::string &path) con
 	return fileSystem->OpenFile(path);
 }
 
+NDSFile::FileSystem::Iterator NDSFile::getFileSystemIterator() const {
+	return fileSystem->getIterator();
+}
+
 void NDSFile::Parse() {
 	BinaryReader reader(stream.get(), false);
 
@@ -79,6 +83,15 @@ const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Directory::
 		return &dirEntry;
 	}
 	return nullptr;
+}
+
+const NDSFile::FileSystem::Directory *NDSFile::FileSystem::getDir(std::uint16_t dirId) const {
+	assert(dirId >= Directory::DirEntry::folderThreshold);
+	return &directories.at(dirId - Directory::DirEntry::folderThreshold);
+}
+
+const NDSFile::FileSystem::Directory *NDSFile::FileSystem::getRootDir() const {
+	return &*directories.cbegin();
 }
 
 std::uint16_t NDSFile::FileSystem::ResolvePath(const std::string &path) const {
@@ -178,6 +191,10 @@ void NDSFile::FileSystem::ParseFNT(std::unique_ptr<BinaryReadStream> &&FNTData) 
 	}
 }
 
+NDSFile::FileSystem::Iterator NDSFile::FileSystem::getIterator() const {
+	return NDSFile::FileSystem::Iterator(this);
+}
+
 std::unique_ptr<BinaryReadStream> NDSFile::FileSystem::OpenFile(std::uint16_t id) const {
 	auto &fatEntry = fat.at(id);
 	return std::make_unique<SubStream>(this->fileData, fatEntry.offset, fatEntry.length, false);
@@ -186,4 +203,78 @@ std::unique_ptr<BinaryReadStream> NDSFile::FileSystem::OpenFile(const std::strin
 	std::uint16_t id = ResolvePath(path);
 	sassert(id != Directory::DirEntry::invalidFileId, "Couldn't resolve path \"%s\"!", path.c_str());
 	return OpenFile(id);
+}
+
+NDSFile::FileSystem::Iterator::Iterator(const FileSystem *fileSystem) : fileSystem(fileSystem) {
+	dir = fileSystem->getRootDir();
+	dirItr = dir->entries.cbegin();
+}
+
+NDSFile::FileSystem::Iterator::Iterator(std::nullptr_t) : fileSystem(nullptr), dir(nullptr) {}
+
+const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Iterator::current() const {
+	assert(fileSystem);
+	assert(dir);
+	assert(dirItr != dir->entries.cend());
+
+	return &*dirItr;
+}
+
+bool NDSFile::FileSystem::Iterator::operator==(const Iterator &other) const {
+	if(this->fileSystem!=other.fileSystem) return false;
+	if(this->dir != other.dir) return false;
+	return this->dirItr == other.dirItr;
+}
+bool NDSFile::FileSystem::Iterator::operator!=(const Iterator &other) const {
+	if(this->fileSystem != other.fileSystem) return true;
+	if(this->dir != other.dir) return true;
+	return this->dirItr != other.dirItr;
+}
+
+bool NDSFile::FileSystem::Iterator::atEnd() const {
+	if(!fileSystem) return true;
+	if(!dir) return true;
+	if(!dir->isRoot()) return false;
+	return dirItr == dir->entries.cend();
+}
+
+void NDSFile::FileSystem::Iterator::operator++() {
+	assert(fileSystem);
+	assert(dir);
+
+	if(dirItr->isDirectory()) {
+		dir = fileSystem->getDir(dirItr->fileId);
+		dirItr = dir->entries.cbegin();
+		return;
+	}
+
+	++dirItr;
+
+	while(dirItr == dir->entries.cend()) {
+		if(dir->isRoot()) {
+			dir = nullptr;
+			return;
+		}
+		goUp();
+	}
+}
+
+void NDSFile::FileSystem::Iterator::goUp() {
+	assert(fileSystem);
+	assert(dir);
+	sassert(!dir->isRoot(), "Can't go up from the root!");
+
+	auto parentDir = fileSystem->getDir(dir->parentId);
+	for(auto parentItr = parentDir->entries.cbegin(); parentItr != parentDir->entries.cend(); ++parentItr) {
+		auto parentEntry = *parentItr;
+		if(!parentEntry.isDirectory()) continue;
+		auto candidateDir = fileSystem->getDir(parentEntry.fileId);
+		if(candidateDir != dir) continue;
+
+		dir = parentDir;
+		dirItr = parentItr + 1;
+
+		return;
+	}
+	sassert(0, "Failed to find dirEntry in parent!");
 }

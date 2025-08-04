@@ -72,8 +72,12 @@ public:
 			std::vector<DirEntry> entries;
 			std::uint16_t parentId;
 			const DirEntry *findEntry(const std::string &name) const;
+			bool isRoot() const { return parentId == DirEntry::invalidFileId; }
 		};
 		std::vector<Directory> directories;
+
+		const Directory *getDir(std::uint16_t dirId) const;
+		const Directory *getRootDir() const;
 
 		BinaryReadStream *fileData;
 
@@ -81,7 +85,33 @@ public:
 
 		void ParseFAT(std::unique_ptr<BinaryReadStream> &&FATData);
 		void ParseFNT(std::unique_ptr<BinaryReadStream> &&FNTData);
+	public:
+		class Iterator {
+		public:
+			explicit Iterator(std::nullptr_t);
+			const Directory::DirEntry *current() const;
+			const Directory::DirEntry *operator->() const { return current(); }
+			const Directory::DirEntry &operator*() const { return *current(); }
+			void operator++();
+			bool operator==(const Iterator &other) const;
+			bool operator!=(const Iterator &other) const;
+			bool atEnd() const;
+		private:
+			Iterator(const FileSystem *fileSystem);
+
+			const FileSystem *fileSystem;
+			const Directory *dir;
+			std::vector<Directory::DirEntry>::const_iterator dirItr;
+
+			void goUp();
+
+			friend class ::NDSFile::FileSystem;
+		};
+
+		Iterator getIterator() const;
 	};
+
+	FileSystem::Iterator getFileSystemIterator() const;
 
 private:	
 	std::unique_ptr<BinaryReadStream> stream;
