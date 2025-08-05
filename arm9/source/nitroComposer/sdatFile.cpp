@@ -30,6 +30,12 @@ namespace NitroComposer {
 		return std::make_unique<SBNK>(this->OpenFile(info->fatId));
 	}
 
+	std::unique_ptr<STRM> SDatFile::OpenStream(const std::unique_ptr<StreamInfoRecord> &info) const {
+		if(!info) return std::unique_ptr<STRM>();
+
+		return std::make_unique<STRM>(this->OpenFile(info->fatId));
+	}
+
 	std::unique_ptr<SSEQ> SDatFile::OpenSequence(const std::unique_ptr<SequenceInfoRecord> &info) const {
 		if(!info) return std::unique_ptr<SSEQ>();
 
@@ -39,6 +45,12 @@ namespace NitroComposer {
 		if(!info) return std::unique_ptr<SWAR>();
 
 		return std::make_unique<SWAR>(this->OpenFile(info->fatId));
+	}
+	std::unique_ptr<STRM> SDatFile::OpenStream(unsigned int streamId) const {
+		auto &info = streamInfos[streamId];
+		if(!info) return std::unique_ptr<STRM>();
+
+		return std::make_unique<STRM>(this->OpenFile(info->fatId));
 	}
 	std::unique_ptr<SWAR> SDatFile::OpenWaveArchive(unsigned int archiveId) const {
 		auto &info = waveArchInfos[archiveId];
@@ -71,6 +83,18 @@ namespace NitroComposer {
 		return playerInfos.at(playerId);
 	}
 
+	const std::unique_ptr<StreamInfoRecord> &SDatFile::GetStreamInfo(unsigned int streamId) const {
+		return streamInfos.at(streamId);
+	}
+
+	const std::unique_ptr<StreamInfoRecord> &SDatFile::GetStreamInfo(const std::string &streamName) const {
+		for(std::size_t streamId = 0; streamId < streamNames.size(); ++streamId) {
+			if(streamName != streamNames[streamId]) continue;
+			return streamInfos[streamId];
+		}
+		sassert(0, "Unknown stream \"%s\"!", streamName.c_str());
+	}
+
 	std::string SDatFile::GetNameForBank(unsigned int bankId) const {
 		if(bankId >= bankNames.size()) {
 			return std::string("BANK_") + std::to_string(bankId);
@@ -100,6 +124,17 @@ namespace NitroComposer {
 		std::string name = sequenceNames.at(sequenceId);
 		if(name.empty()) {
 			return std::string("SEQ_") + std::to_string(sequenceId);
+		}
+		return name;
+	}
+
+	std::string SDatFile::GetNameForStream(unsigned int streamId) const {
+		if(streamId >= streamNames.size()) {
+			return std::string("STRM_") + std::to_string(streamId);
+		}
+		std::string name = streamNames.at(streamId);
+		if(name.empty()) {
+			return std::string("STRM_") + std::to_string(streamId);
 		}
 		return name;
 	}
