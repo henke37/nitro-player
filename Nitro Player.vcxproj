@@ -136,6 +136,7 @@
     <ClCompile Include="arm9\source\substream.cpp" />
     <ClCompile Include="arm9\source\testMode.cpp" />
     <ClCompile Include="arm9\source\testNDS.cpp" />
+    <ClCompile Include="arm9\source\testSTRM.cpp" />
     <ClCompile Include="arm9\source\tileMan.cpp" />
     <ClCompile Include="arm9\source\tileMapMirror.cpp" />
     <ClCompile Include="arm9\source\tilePos.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="arm9\source\tcm.h" />
     <ClInclude Include="arm9\source\testMode.h" />
     <ClInclude Include="arm9\source\testNDS.h" />
+    <ClInclude Include="arm9\source\testSTRM.h" />
     <ClInclude Include="arm9\source\tileMan.h" />
     <ClInclude Include="arm9\source\tileMapMirror.h" />
     <ClInclude Include="arm9\source\tilePos.h" />
