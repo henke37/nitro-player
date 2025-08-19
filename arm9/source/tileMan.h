@@ -17,7 +17,7 @@ public:
 	TileManager(const TileManager &)=delete;
 	TileManager &operator=(const TileManager &)=delete;
 	
-	[[nodiscard]] TileReservationToken reserve(int tileCount);
+	[[nodiscard]] TileReservationToken reserve(int tileCount, int alignment=1);
 
 	int getBpp() const { return bpp; }
 	void setBpp(int bpp);
@@ -26,7 +26,7 @@ public:
 private:
 	friend class TileReservationToken;
 	
-	std::vector<TileReservationSlot>::iterator findFirstGap(int tileCount);
+	std::vector<TileReservationSlot>::iterator findFirstGap(int tileCount, int alignment);
 	
 	void unreserve(int startTileIndex);
 	

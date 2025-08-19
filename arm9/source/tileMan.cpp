@@ -29,38 +29,39 @@ TileManager::TileManager(unsigned int tileBase, unsigned int bigBase, int maxTil
 
 TileManager::~TileManager() {}
 
-std::vector<TileReservationSlot>::iterator TileManager::findFirstGap(int tileCount) {
+std::vector<TileReservationSlot>::iterator TileManager::findFirstGap(int tileCount, int alignment) {
 	assert(tileCount <= maxTiles);
-	for(auto itr = slots.begin(); itr!= slots.end()-1; ++itr) {
-		auto nextItr = itr+1;
-		
-		int spareRoom = nextItr->startTileIndex - itr->endTileIndex();
-		
-		if(spareRoom < tileCount) continue;
-		
+	for (auto itr = slots.begin(); itr != slots.end() - 1; ++itr) {
+		auto nextItr = itr + 1;
+		int start = itr->endTileIndex();
+		// Align start index
+		int alignedStart = (start + alignment - 1) & ~(alignment - 1);
+		int spareRoom = nextItr->startTileIndex - alignedStart;
+		if (spareRoom < tileCount) continue;
 		return itr;
 	}
-	
-	sassert(slots.back().endTileIndex() + tileCount <= maxTiles, "No gap of at least %i found!",tileCount);
-	
-	return slots.end()-1;
+	int lastEnd = slots.back().endTileIndex();
+	int alignedStart = (lastEnd + alignment - 1) & ~(alignment - 1);
+	sassert(alignedStart + tileCount <= maxTiles, "No gap of at least %i found!", tileCount);
+	return slots.end() - 1;
 }
 
-TileReservationToken TileManager::reserve(int tileCount) {
+TileReservationToken TileManager::reserve(int tileCount, int alignment) {
 	assert(tileCount > 0);
-	
+	assert(alignment > 0 && (alignment & (alignment - 1)) == 0); // Must be power of two
 	int startIndex;
-	
-	if(slots.empty()) {
-		sassert(tileCount<=maxTiles, "Can't fit %i! Max %i", tileCount, maxTiles);
-		startIndex=0;
-		slots.emplace_back(TileReservationSlot(startIndex,tileCount));
+	if (slots.empty()) {
+		int alignedStart = 0;
+		sassert(alignedStart + tileCount <= maxTiles, "Can't fit %i! Max %i", tileCount, maxTiles);
+		startIndex = alignedStart;
+		slots.emplace_back(TileReservationSlot(startIndex, tileCount));
 	} else {
-		auto startItr = findFirstGap(tileCount);
-		startIndex = startItr->endTileIndex();
-		slots.emplace(startItr+1, TileReservationSlot(startIndex,tileCount));
+		auto startItr = findFirstGap(tileCount, alignment);
+		int start = startItr->endTileIndex();
+		int alignedStart = (start + alignment - 1) & ~(alignment - 1);
+		slots.emplace(startItr + 1, TileReservationSlot(alignedStart, tileCount));
+		startIndex = alignedStart;
 	}
-	
 	return TileReservationToken(this, startIndex);
 }
 
