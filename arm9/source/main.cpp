@@ -69,7 +69,7 @@ int main(void) {
 
 		buttonMan.Update();
 
-		if(keysCurrent() & KEY_TOUCH) {
+		if(keysHeld() & KEY_TOUCH) {
 			touchPosition data;
 			touchRead(&data);
 
