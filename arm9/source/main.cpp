@@ -41,6 +41,12 @@ bool fatInitSuccess;
 
 int main(void) {
 	defaultExceptionHandler();
+
+	PrintConsole *console = consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, subBg1MapBase, subBg1TileBase, false, true);
+	consoleReservation = TileManSubBg1.reserve(128);
+	consoleArm7Setup(console, 1024);
+	
+	setupGFX();
 	
 	fatInitSuccess = fatInitDefault();
 
@@ -53,12 +59,6 @@ int main(void) {
 	irqSet(IRQ_VBLANK, onVBlank);
 
 	irqSet(IRQ_HBLANK, HBlankBatcher::ISR);
-
-	PrintConsole *console = consoleInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x256, subBg1MapBase, subBg1TileBase, false, true);
-	consoleReservation = TileManSubBg1.reserve(128);
-	consoleArm7Setup(console, 1024);
-	
-	setupGFX();
 	
 	//TODO: custom init
 	g_mode = std::make_unique<TestMode>();
