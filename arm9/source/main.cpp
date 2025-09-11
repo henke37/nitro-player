@@ -94,7 +94,7 @@ int main(void) {
 
 		readyForVblank = true;
 
-		swiWaitForVBlank();
+		cothread_yield_irq(IRQ_VBLANK);
 		{
 			unsigned long int startFrame = currentFrame;
 			bool beganInVblank = (REG_DISPSTAT & DISP_IN_VBLANK);
