@@ -4,7 +4,7 @@
 
 BLOCKSDS	?= /opt/blocksds/core
 
-CFLAGS    += -fstack-protector-strong -g
-CXXFLAGS  += -fstack-protector-strong -g -std=c++20 -Icommon
+CFLAGS    += -fstack-protector-strong -g -Wall
+CXXFLAGS  += -fstack-protector-strong -g -std=c++20 -Icommon -Wall
 
 include $(BLOCKSDS)/sys/default_makefiles/rom_arm9arm7/Makefile.arm7
