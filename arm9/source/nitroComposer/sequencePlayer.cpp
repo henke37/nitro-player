@@ -6,8 +6,22 @@
 #include <nds/arm9/cache.h>
 
 #include "nitroComposer/ipc.h"
+#include "../fifoMutex.h"
 
 namespace NitroComposer {
+
+	class FifoMutexLock {
+	public:
+		FifoMutexLock() {
+			mutex.aquire(FIFO_NITRO_COMPOSER);
+		}
+		~FifoMutexLock() {
+			mutex.release();
+		}
+
+	private:
+		FifoMutex mutex;
+	};
 
 	SequencePlayer::SequencePlayer() : sdat(nullptr) {
 		ipcPowerOn();
@@ -226,11 +240,14 @@ namespace NitroComposer {
 		buff->command = BaseIPC::CommandType::GetVar;
 		buff->var = var;
 
-		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
+		{
+			FifoMutexLock lock;
 
-		fifoWaitValue32(FIFO_NITRO_COMPOSER);
+			fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
 
-		return static_cast<std::int16_t> (fifoGetValue32(FIFO_NITRO_COMPOSER));
+			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
+			return static_cast<std::int16_t> (fifoGetValue32(FIFO_NITRO_COMPOSER));
+		}
 
 	}
 
