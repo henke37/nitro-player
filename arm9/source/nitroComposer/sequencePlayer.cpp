@@ -251,7 +251,7 @@ namespace NitroComposer {
 		{
 			FifoMutexLock lock;
 
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(GetVarIPC), (u8 *)buff.get());
 			assert(success);
 
 			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
@@ -266,7 +266,7 @@ namespace NitroComposer {
 		buff->command = BaseIPC::CommandType::SetMainVolume;
 		buff->volume = volume;
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetMainVolumeIPC), (u8 *)buff.get());
 		assert(success);
 	}
 
