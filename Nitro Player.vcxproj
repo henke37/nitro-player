@@ -98,6 +98,7 @@
     <ClCompile Include="arm9\source\cellDisplay.cpp" />
     <ClCompile Include="arm9\source\charSet.cpp" />
     <ClCompile Include="arm9\source\darkMagic.cpp" />
+    <ClCompile Include="arm9\source\fifoMutex.cpp" />
     <ClCompile Include="arm9\source\fileStream.cpp" />
     <ClCompile Include="arm9\source\fixedMath.cpp" />
     <ClCompile Include="arm9\source\fontRenderer.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="arm9\source\consts.h" />
     <ClInclude Include="arm9\source\corruptionTrap.h" />
     <ClInclude Include="arm9\source\darkMagic.h" />
+    <ClInclude Include="arm9\source\fifoMutex.h" />
     <ClInclude Include="arm9\source\fileStream.h" />
     <ClInclude Include="arm9\source\fixedMath.h" />
     <ClInclude Include="arm9\source\fontRenderer.h" />
