@@ -214,7 +214,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::setupTimer() {
-		timerStart(1, ClockDivider_64, -2728, ISR);
+		timerStart(LIBNDS_DEFAULT_TIMER_MUSIC, ClockDivider_64, -2728, ISR);
 	}
 
 	void SequencePlayer::ISR() {
