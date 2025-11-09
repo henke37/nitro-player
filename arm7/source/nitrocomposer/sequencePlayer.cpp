@@ -237,14 +237,6 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::setupTimer() {
-		timerStart(LIBNDS_DEFAULT_TIMER_MUSIC, ClockDivider_64, -2728, ISR);
-	}
-
-	void SequencePlayer::ISR() {
-		sequencePlayer.Update();
-	}
-
 	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex) const {
 		if(!(allowedChannels & BIT(voiceIndex)) && allowedChannels) return false;
 		if((externalChannelReservations & BIT(voiceIndex)) && externalChannelReservations) return false;
@@ -252,7 +244,7 @@ namespace NitroComposer {
 		return true;
 	}
 
-	SequencePlayer::Voice * SequencePlayer::PlayingSequence::allocateVoice(InstrumentBank::InstrumentType type) {
+	SequencePlayer::Voice *SequencePlayer::PlayingSequence::allocateVoice(InstrumentBank::InstrumentType type) {
 		auto voiceIndex = sequencePlayer.FindFreeVoice(type, this);
 		if(voiceIndex < 0) return nullptr;
 
@@ -261,6 +253,14 @@ namespace NitroComposer {
 		voices[voiceIndex] = voice;
 
 		return voice;
+	}
+
+	void SequencePlayer::setupTimer() {
+		timerStart(LIBNDS_DEFAULT_TIMER_MUSIC, ClockDivider_64, -2728, ISR);
+	}
+
+	void SequencePlayer::ISR() {
+		sequencePlayer.Update();
 	}
 
 	void SequencePlayer::Update() {
