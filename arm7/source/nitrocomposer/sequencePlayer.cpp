@@ -76,19 +76,20 @@ namespace NitroComposer {
 	void SequencePlayer::PlayingSequence::SetVar(std::uint8_t var, std::int16_t val) {
 		if(var < localVariableCount) {
 			localVariables[var] = val;
-		} else if(var - localVariableCount < globalVariableCount) {
-			sequencePlayer.globalVariables[var - localVariableCount] = val;
+		} else {
+			var -= localVariableCount;
+			assert(var < globalVariableCount);
+			sequencePlayer.globalVariables[var] = val;
 		}
 	}
 
 	std::int16_t SequencePlayer::PlayingSequence::GetVar(std::uint8_t var) const {
 		if(var < localVariableCount) {
 			return localVariables[var];
-		} else if(var - localVariableCount < globalVariableCount) {
-			return sequencePlayer.globalVariables[var - localVariableCount];
 		} else {
-			assert(0);
-			return -1;
+			var -= localVariableCount;
+			assert(var < globalVariableCount);
+			return sequencePlayer.globalVariables[var];
 		}
 	}
 
