@@ -249,7 +249,11 @@ namespace NitroComposer {
 		auto voiceIndex = sequencePlayer.FindFreeVoice(type, this);
 		if(voiceIndex < 0) return nullptr;
 
-		return voices[voiceIndex] = &sequencePlayer.voices[voiceIndex];
+		Voice *voice = &sequencePlayer.voices[voiceIndex];
+		voice->Kill();
+		voices[voiceIndex] = voice;
+
+		return voice;
 	}
 
 	void SequencePlayer::Update() {
