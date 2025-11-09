@@ -31,7 +31,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t trackId = readByteCommand();
 			std::uint32_t offset = readTriByteCommand();
-			player->StartTrack(trackId, offset);
+			sequence->StartTrack(trackId, offset);
 		} break;
 
 		case 0x94:
@@ -76,7 +76,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			player->SetVar(varId, val);
+			sequence->SetVar(varId, val);
 		} break;
 
 		case 0xB1:
@@ -84,7 +84,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			player->SetVar(varId, player->GetVar(varId) + val);
+			sequence->SetVar(varId, sequence->GetVar(varId) + val);
 		} break;
 
 		case 0xB2:
@@ -92,7 +92,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			player->SetVar(varId, player->GetVar(varId) - val);
+			sequence->SetVar(varId, sequence->GetVar(varId) - val);
 		} break;
 
 		case 0xB3:
@@ -100,7 +100,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			player->SetVar(varId, player->GetVar(varId) * val);
+			sequence->SetVar(varId, sequence->GetVar(varId) * val);
 		} break;
 
 		case 0xB4:
@@ -109,7 +109,7 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(!val) break;
-			player->SetVar(varId, player->GetVar(varId) / val);
+			sequence->SetVar(varId, sequence->GetVar(varId) / val);
 		} break;
 
 		case 0xB5:
@@ -118,9 +118,9 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
-				player->SetVar(varId, player->GetVar(varId) >> -val);
+				sequence->SetVar(varId, sequence->GetVar(varId) >> -val);
 			} else {
-				player->SetVar(varId, player->GetVar(varId) << val);
+				sequence->SetVar(varId, sequence->GetVar(varId) << val);
 			}
 		} break;
 
@@ -130,9 +130,9 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
-				player->SetVar(varId, -(std::rand() % (-val + 1)));
+				sequence->SetVar(varId, -(std::rand() % (-val + 1)));
 			} else {
-				player->SetVar(varId, std::rand() % (val + 1));
+				sequence->SetVar(varId, std::rand() % (val + 1));
 			}
 		} break;
 
@@ -141,7 +141,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			lastComparisonResult = player->GetVar(varId) == val;
+			lastComparisonResult = sequence->GetVar(varId) == val;
 		} break;
 
 		case 0xB9:
@@ -149,7 +149,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			lastComparisonResult = player->GetVar(varId) >= val;
+			lastComparisonResult = sequence->GetVar(varId) >= val;
 		} break;
 
 		case 0xBA:
@@ -157,7 +157,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			lastComparisonResult = player->GetVar(varId) > val;
+			lastComparisonResult = sequence->GetVar(varId) > val;
 		} break;
 
 		case 0xBB:
@@ -165,7 +165,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			lastComparisonResult = player->GetVar(varId) <= val;
+			lastComparisonResult = sequence->GetVar(varId) <= val;
 		} break;
 
 		case 0xBC:
@@ -173,7 +173,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			lastComparisonResult = player->GetVar(varId) < val;
+			lastComparisonResult = sequence->GetVar(varId) < val;
 		} break;
 
 		case 0xBD:
@@ -181,7 +181,7 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-			lastComparisonResult = player->GetVar(varId) != val;
+			lastComparisonResult = sequence->GetVar(varId) != val;
 		} break;
 
 		case 0xC0:
@@ -304,13 +304,13 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			assert(varId < numVariables);
-			consolePrintf("Var %d = %d\n", varId, player->GetVar(varId));
+			consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
 			consoleFlush();
 		} break;
 
 		case 0xE1:
 		{
-			player->tempo = readShortCommand();
+			sequence->tempo = readShortCommand();
 		} break;
 
 		case 0xFC:

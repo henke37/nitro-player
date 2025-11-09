@@ -96,6 +96,8 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Voice::Kill() {
+		this->track->sequence->voices[this->voiceIndex] = nullptr;
+
 		this->state = VoiceState::Free;
 		this->track = nullptr;
 		this->currentInstrument = nullptr;
@@ -112,7 +114,7 @@ namespace NitroComposer {
 		case InstrumentBank::InstrumentType::PCM:
 		{
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
-			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
+			auto &wave = track->sequence->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 
 			assert(wave.waveData);
 
@@ -170,7 +172,7 @@ namespace NitroComposer {
 		case InstrumentBank::InstrumentType::PCM:
 		{
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
-			auto &wave = track->player->GetWave(pcmInstrument->archive, pcmInstrument->wave);
+			auto &wave = track->sequence->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 			timer = wave.timerLen;
 			baseNote = pcmInstrument->baseNote;
 		} break;
@@ -195,7 +197,7 @@ namespace NitroComposer {
 
 	int SequencePlayer::Voice::ComputeVolume() const {
 		int volume = 0;// track->player->masterVol;
-		volume += track->player->sequenceVolume;
+		volume += track->sequence->sequenceVolume;
 		volume += Cnv_Sust(track->volume);
 		volume += Cnv_Sust(track->expression);
 		if(volume < -AMPL_K)

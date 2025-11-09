@@ -22,12 +22,25 @@ namespace NitroComposer {
 	const size_t fifoBuffSize = 32;
 
 	void SequencePlayer::Init() {
-		for(unsigned int var = 0; var < numVariables; ++var) {
-			variables[var] = -1;
+		for(unsigned int var = 0; var < globalVariableCount; ++var) {
+			globalVariables[var] = -1;
 		}
 
 		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
 			voices[voiceIndex].Init(voiceIndex);
+		}
+
+		playingSequence.Init();
+
+		externalChannelReservations = 0;
+		allowedChannels = 0xFF;
+
+		setupFifo();
+	}
+
+	void SequencePlayer::PlayingSequence::Init() {
+		for(unsigned int var = 0; var < localVariableCount; ++var) {
+			localVariables[var] = -1;
 		}
 
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
@@ -37,22 +50,9 @@ namespace NitroComposer {
 		for(unsigned int waveArchiveIndex = 0; waveArchiveIndex < numWaveArchs; ++waveArchiveIndex) {
 			waveArchs[waveArchiveIndex] = nullptr;
 		}
-
-		externalChannelReservations = 0;
-		allowedChannels = 0xFF;
-
-		setupFifo();
 	}
 
-	void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
-		variables[var] = val;
-	}
-
-	std::int16_t SequencePlayer::GetVar(std::uint8_t var) const {
-		return variables[var];
-	}
-
-	void SequencePlayer::PlaySequence(const std::uint8_t *sequenceData) {
+	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData) {
 		AbortSequence();
 
 		this->sequenceData = sequenceData;
@@ -61,19 +61,36 @@ namespace NitroComposer {
 		StartTrack(0, 0);
 	}
 
-	void SequencePlayer::AbortSequence() {
+	void SequencePlayer::PlayingSequence::AbortSequence() {
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].StopPlaying();
 		}
 	}
 
-	void SequencePlayer::StartTrack(std::uint8_t trackId, std::uint32_t offset) {
+	void SequencePlayer::PlayingSequence::StartTrack(std::uint8_t trackId, std::uint32_t offset) {
 		assert(trackId < trackCount);
 		auto &track = tracks[trackId];
 		track.StartPlaying(offset);
 	}
 
+	void SequencePlayer::PlayingSequence::SetVar(std::uint8_t var, std::int16_t val) {
+		if(var < localVariableCount) {
+			localVariables[var] = val;
+		} else if(var - localVariableCount < globalVariableCount) {
+			sequencePlayer.globalVariables[var - localVariableCount] = val;
+		}
+	}
 
+	std::int16_t SequencePlayer::PlayingSequence::GetVar(std::uint8_t var) const {
+		if(var < localVariableCount) {
+			return localVariables[var];
+		} else if(var - localVariableCount < globalVariableCount) {
+			return sequencePlayer.globalVariables[var - localVariableCount];
+		} else {
+			assert(0);
+			return -1;
+		}
+	}
 
 	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type) {
 		size_t channelCount;
@@ -117,7 +134,7 @@ namespace NitroComposer {
 		return -1;
 	}
 
-	const LoadedWave &SequencePlayer::GetWave(unsigned int archiveSlot, unsigned int waveIndex) {
+	const LoadedWave &SequencePlayer::PlayingSequence::GetWave(unsigned int archiveSlot, unsigned int waveIndex) {
 		assert(archiveSlot < numWaveArchs);
 		assert(this->waveArchs[archiveSlot]);
 		assert(waveIndex < this->waveArchs[archiveSlot]->waves.size());
@@ -150,13 +167,13 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::SetVar:
 		{
 			SetVarIPC *setVarIpc = static_cast<SetVarIPC *>(ipc);
-			SetVar(setVarIpc->var, setVarIpc->val);
+			playingSequence.SetVar(setVarIpc->var, setVarIpc->val);
 		} break;
 
 		case BaseIPC::CommandType::GetVar:
 		{
 			GetVarIPC *getVarIpc = static_cast<GetVarIPC *>(ipc);
-			std::int16_t val = GetVar(getVarIpc->var);
+			std::int16_t val = playingSequence.GetVar(getVarIpc->var);
 			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, val);
 			assert(success);
 		} break;
@@ -164,7 +181,7 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::SetTempo:
 		{
 			SetTempoIPC *setTempoIpc = static_cast<SetTempoIPC *>(ipc);
-			this->tempo = setTempoIpc->tempo;
+			this->playingSequence.tempo = setTempoIpc->tempo;
 		} break;
 		case BaseIPC::CommandType::SetMainVolume:
 		{
@@ -176,17 +193,17 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::LoadBank:
 		{
 			LoadBankIPC *loadBankIpc = static_cast<LoadBankIPC *>(ipc);
-			this->bank = loadBankIpc->bank;
+			this->playingSequence.bank = loadBankIpc->bank;
 
-			consolePrintf("Loaded %d instruments\n", this->bank->instruments.size());
+			consolePrintf("Loaded %d instruments\n", this->playingSequence.bank->instruments.size());
 			consoleFlush();
 		} break;
 
 		case BaseIPC::CommandType::LoadWaveArchive:
 		{
 			LoadWaveArchiveIPC *loadWaveArchiveIpc = static_cast<LoadWaveArchiveIPC *>(ipc);
-			assert(loadWaveArchiveIpc->slot < numWaveArchs);
-			this->waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
+			assert(loadWaveArchiveIpc->slot < PlayingSequence::numWaveArchs);
+			this->playingSequence.waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
 
 			if(!loadWaveArchiveIpc->archive) break;
 
@@ -198,8 +215,8 @@ namespace NitroComposer {
 		{
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
 			allowedChannels = playTrackIpc->channelMask;
-			sequenceVolume = playTrackIpc->sequenceVolume;
-			PlaySequence(playTrackIpc->sequenceData);
+			playingSequence.sequenceVolume = playTrackIpc->sequenceVolume;
+			playingSequence.PlaySequence(playTrackIpc->sequenceData);
 		} break;
 
 		case BaseIPC::CommandType::ReserveChannels:
@@ -228,22 +245,32 @@ namespace NitroComposer {
 		return true;
 	}
 
-	void SequencePlayer::Update() {
+	SequencePlayer::Voice * SequencePlayer::PlayingSequence::allocateVoice(InstrumentBank::InstrumentType type) {
+		auto voiceIndex = sequencePlayer.FindFreeVoice(type);
+		if(voiceIndex < 0) return nullptr;
 
+		return voices[voiceIndex] = &sequencePlayer.voices[voiceIndex];
+	}
+
+	void SequencePlayer::Update() {
+		playingSequence.Update();
+		UpdateVoices();
+	}
+
+	void SequencePlayer::PlayingSequence::Update() {
 		while(tempoTimer >= 240) {
 			tempoTimer -= 240;
 			TickVoices();
 			TickTracks();
 		}
 		tempoTimer += tempo;
-
-		UpdateVoices();
 	}
 
-	void SequencePlayer::TickVoices() {
+	void SequencePlayer::PlayingSequence::TickVoices() {
 		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
 			auto &voice = voices[voiceIndex];
-			voice.Tick();
+			if(!voice) continue;
+			voice->Tick();
 		}
 	}
 
@@ -254,7 +281,7 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::TickTracks() {
+	void SequencePlayer::PlayingSequence::TickTracks() {
 		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
 			auto &track = tracks[trackIndex];
 			track.Tick();

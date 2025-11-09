@@ -7,9 +7,9 @@ namespace NitroComposer {
 
 	SequencePlayer::Track::Track() {}
 
-	void SequencePlayer::Track::Init(SequencePlayer *player) {
-		assert(player);
-		this->player = player;
+	void SequencePlayer::Track::Init(PlayingSequence *sequence) {
+		assert(sequence);
+		this->sequence = sequence;
 
 		Reset();
 	}
@@ -88,16 +88,13 @@ namespace NitroComposer {
 
 		if(!noteInstrument) return;
 
-		auto voiceIndex = this->player->FindFreeVoice(noteInstrument->type);
-		if(voiceIndex < 0) return;
+		Voice *voice=sequence->allocateVoice(noteInstrument->type);
 
-		auto &voice = this->player->voices[voiceIndex];
-
-		voice.StartNote(this, noteInstrument, note, velocity, length);
+		voice->StartNote(this, noteInstrument, note, velocity, length);
 	}
 
 	void SequencePlayer::Track::SetNextCommand(std::uint32_t offset) {
-		this->nextCommand=this->player->sequenceData + offset;
+		this->nextCommand=this->sequence->sequenceData + offset;
 	}
 
 	const InstrumentBank::LeafInstrument *SequencePlayer::Track::ResolveInstrumentForNote(std::uint8_t note) const {
@@ -131,6 +128,6 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Track::SetInstrument(unsigned int instrumentId) {
-		currentInstrument = player->bank->instruments.at(instrumentId).get();
+		currentInstrument = sequence->bank->instruments.at(instrumentId).get();
 	}
 }
