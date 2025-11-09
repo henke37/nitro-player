@@ -217,8 +217,8 @@ namespace NitroComposer {
 
 			std::int16_t localVariables[localVariableCount];
 
-			std::uint8_t tempo;
-			std::uint8_t tempoTimer;
+			std::uint16_t tempo;
+			std::uint16_t tempoTimer;
 			std::uint8_t sequenceVolume;
 			const std::uint8_t *sequenceData;
 
