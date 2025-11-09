@@ -15,7 +15,6 @@ namespace NitroComposer {
 	public:
 		void Init();
 
-		signed int FindFreeVoice(InstrumentBank::InstrumentType type);
 
 	private:
 		void Update();
@@ -240,6 +239,7 @@ namespace NitroComposer {
 
 		std::uint8_t mainVolume;
 
+		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *);
 
 		std::uint8_t externalChannelReservations;
 		std::uint8_t allowedChannels;

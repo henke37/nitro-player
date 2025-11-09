@@ -92,7 +92,7 @@ namespace NitroComposer {
 		}
 	}
 
-	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type) {
+	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *) {
 		size_t channelCount;
 		const uint8_t *channelList;
 		switch(type) {
@@ -246,7 +246,7 @@ namespace NitroComposer {
 	}
 
 	SequencePlayer::Voice * SequencePlayer::PlayingSequence::allocateVoice(InstrumentBank::InstrumentType type) {
-		auto voiceIndex = sequencePlayer.FindFreeVoice(type);
+		auto voiceIndex = sequencePlayer.FindFreeVoice(type, this);
 		if(voiceIndex < 0) return nullptr;
 
 		return voices[voiceIndex] = &sequencePlayer.voices[voiceIndex];
