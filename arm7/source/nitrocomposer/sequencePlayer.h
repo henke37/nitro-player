@@ -213,6 +213,8 @@ namespace NitroComposer {
 			Track tracks[trackCount];
 			Voice *voices[voiceCount] = { nullptr };
 
+			void ResetLocalVars();
+
 			std::int16_t localVariables[localVariableCount];
 
 			std::uint8_t tempo;

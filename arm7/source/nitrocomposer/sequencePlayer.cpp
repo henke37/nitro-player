@@ -39,9 +39,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::PlayingSequence::Init() {
-		for(unsigned int var = 0; var < localVariableCount; ++var) {
-			localVariables[var] = -1;
-		}
+		ResetLocalVars();
 
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].Init(this);
@@ -52,8 +50,16 @@ namespace NitroComposer {
 		}
 	}
 
+	void SequencePlayer::PlayingSequence::ResetLocalVars() {
+		for(unsigned int var = 0; var < localVariableCount; ++var) {
+			localVariables[var] = -1;
+		}
+	}
+
 	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData) {
 		AbortSequence();
+
+		ResetLocalVars();
 
 		this->sequenceData = sequenceData;
 		this->tempo = 120;
