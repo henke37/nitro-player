@@ -80,7 +80,7 @@ namespace NitroComposer {
 
 		class Track {
 		public:
-			Track();
+			Track(std::uint8_t id);
 
 			void Init(PlayingSequence *sequence);
 			void Reset();
@@ -103,6 +103,8 @@ namespace NitroComposer {
 
 			bool noteWait;
 			bool tieMode;
+
+			const std::uint8_t id;
 
 			std::uint8_t priority;
 
@@ -221,7 +223,7 @@ namespace NitroComposer {
 			void TickTracks();
 
 			static constexpr unsigned int trackCount = 16;
-			Track tracks[trackCount];
+			Track tracks[trackCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 			Voice *voices[voiceCount] = { nullptr };
 
 			void ResetLocalVars();

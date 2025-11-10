@@ -5,7 +5,7 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track() {}
+	SequencePlayer::Track::Track(std::uint8_t id) :id(id) {}
 
 	void SequencePlayer::Track::Init(PlayingSequence *sequence) {
 		assert(sequence);
