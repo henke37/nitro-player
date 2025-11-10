@@ -64,6 +64,7 @@ namespace NitroComposer {
 
 	void SequencePlayer::Track::StopPlaying() {
 		this->isPlaying = false;
+		sequence->stoppedPlaying(this);
 	}
 
 

@@ -107,4 +107,5 @@ namespace NitroComposer {
 			assert(0);
 		}
 	}
+	void SequencePlayer::sendFifoSequenceStatus(const PlayingSequence &sequence) {}
 }

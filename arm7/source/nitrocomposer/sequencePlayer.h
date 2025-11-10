@@ -87,6 +87,7 @@ namespace NitroComposer {
 
 			void StartPlaying(std::uint32_t offset);
 			void StopPlaying();
+			bool GetIsPlaying() const { return isPlaying; }
 
 			void SetInstrument(unsigned int instrumentId);
 
@@ -206,6 +207,8 @@ namespace NitroComposer {
 
 			Voice *allocateVoice(InstrumentBank::InstrumentType type);
 
+			void stoppedPlaying(Track *track);
+
 			void TickVoices();
 			void TickTracks();
 
@@ -233,6 +236,8 @@ namespace NitroComposer {
 		void setupFifo();
 		static void fifoDatagramHandler(int num_bytes, void *userdata);
 		void fifoDatagramHandler(int num_bytes);
+
+		void sendFifoSequenceStatus(const PlayingSequence &sequence);
 
 		void setupTimer();
 		static void ISR();

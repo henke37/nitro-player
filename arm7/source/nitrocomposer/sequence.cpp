@@ -83,6 +83,14 @@ namespace NitroComposer {
 		return voice;
 	}
 
+	void SequencePlayer::PlayingSequence::stoppedPlaying(Track *track) {
+		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
+			auto &track = tracks[trackIndex];
+			if(track.GetIsPlaying()) return;
+		}
+		sequencePlayer.sendFifoSequenceStatus(*this);
+	}
+
 	void SequencePlayer::PlayingSequence::Update() {
 		while(tempoTimer >= 240) {
 			tempoTimer -= 240;
