@@ -21,10 +21,6 @@ namespace NitroComposer {
 			globalVariables[var] = -1;
 		}
 
-		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
-			voices[voiceIndex].Init(voiceIndex);
-		}
-
 		playingSequence.Init();
 
 		externalChannelReservations = 0;

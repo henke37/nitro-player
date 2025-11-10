@@ -35,7 +35,7 @@ namespace NitroComposer {
 
 		class Voice {
 		public:
-			void Init(unsigned int voiceIndex);
+			Voice(unsigned int voiceIndex);
 
 			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
 
@@ -52,7 +52,7 @@ namespace NitroComposer {
 
 			VoiceState state = VoiceState::Free;
 		private:
-			unsigned int voiceIndex;
+			const unsigned int voiceIndex;
 			void ConfigureControlRegisters();
 			void ConfigureVolumeRegister();
 			void ConfigureTimerRegister();
@@ -76,7 +76,7 @@ namespace NitroComposer {
 			int amplitude;
 		};
 		static constexpr unsigned int voiceCount = 16;
-		Voice voices[voiceCount];
+		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
 		class Track {
 		public:
