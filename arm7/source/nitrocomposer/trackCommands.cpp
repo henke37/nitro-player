@@ -202,6 +202,8 @@ namespace NitroComposer {
 		case 0xC4:
 		{
 			pitchBend = readByteCommand();
+			consolePrintf("Pitch Bend %d\n", pitchBend);
+			consoleFlush();
 		} break;
 
 		case 0xC5:
@@ -222,6 +224,8 @@ namespace NitroComposer {
 		case 0xC8:
 		{
 			tieMode = readByteCommand() != 0;
+			consolePrintf("Tie Mode %s\n", tieMode ? "Y" : "N");
+			consoleFlush();
 		} break;
 
 		case 0xC9:
@@ -229,6 +233,8 @@ namespace NitroComposer {
 			std::uint8_t note = readByteCommand();
 			lastPlayedNote = note + transpose;
 			portamento = true;
+			consolePrintf("Porta Start %u\n", note);
+			consoleFlush();
 		} break;
 
 		case 0xCA:
@@ -259,6 +265,8 @@ namespace NitroComposer {
 		case 0xCE:
 		{
 			portamento = readByteCommand() != 0;
+			consolePrintf("Porta %s\n", portamento?"Y":"N");
+			consoleFlush();
 		} break;
 
 		case 0xCF:
