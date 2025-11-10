@@ -90,11 +90,13 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Voice::Release() {
+		if(this->state == VoiceState::Free || this->state == VoiceState::Releasing) return;
 		this->state = VoiceState::Releasing;
 		this->length = 0;
 	}
 
 	void SequencePlayer::Voice::Kill() {
+		if(this->state == VoiceState::Free) return;
 		this->track->sequence->voices[this->voiceIndex] = nullptr;
 
 		this->state = VoiceState::Free;
