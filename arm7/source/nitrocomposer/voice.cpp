@@ -191,6 +191,8 @@ namespace NitroComposer {
 
 		int adjustment = (this->note - baseNote) * 64;
 
+		adjustment += track->pitchBend * track->pitchBendRange >> 1;
+
 		if(adjustment) timer = Timer_Adjust(timer, adjustment);
 
 		SCHANNEL_TIMER(voiceIndex) = -timer;
