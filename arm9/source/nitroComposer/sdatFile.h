@@ -46,6 +46,12 @@ namespace NitroComposer {
 		std::string GetNameForPlayer(unsigned int playerId) const;
 		std::string GetNameForStream(unsigned int streamId) const;
 
+		unsigned int GetSequenceCount() const { return static_cast<unsigned int>(sequenceInfos.size()); }
+		unsigned int GetBankCount() const { return static_cast<unsigned int>(bankInfos.size()); }
+		unsigned int GetWaveArchiveCount() const { return static_cast<unsigned int>(waveArchInfos.size()); }
+		unsigned int GetPlayerCount() const { return static_cast<unsigned int>(playerInfos.size()); }
+		unsigned int GetStreamCount() const { return static_cast<unsigned int>(streamInfos.size()); }
+
 	private:
 
 		void Load();
