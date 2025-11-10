@@ -589,9 +589,9 @@ namespace NitroComposer {
 	std::uint32_t SequencePlayer::Track::readTriByteCommand() {
 		std::uint32_t val = *nextCommand;
 		++nextCommand;
-		val = val | (*nextCommand << 8);
+		val |= (*nextCommand << 8);
 		++nextCommand;
-		val = val | (*nextCommand << 16);
+		val |= (*nextCommand << 16);
 		++nextCommand;
 
 		return val;
