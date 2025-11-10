@@ -226,6 +226,11 @@ namespace NitroComposer {
 			playingSequence.PlaySequence(playTrackIpc->sequenceData);
 		} break;
 
+		case BaseIPC::CommandType::StopSequence:
+		{
+			playingSequence.AbortSequence();
+		} break;
+
 		case BaseIPC::CommandType::ReserveChannels:
 		{
 			ReserveChannelsIPC *reserveIpc = static_cast<ReserveChannelsIPC *>(ipc);

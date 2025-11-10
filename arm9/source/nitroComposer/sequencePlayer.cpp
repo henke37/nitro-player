@@ -87,6 +87,13 @@ namespace NitroComposer {
 		assert(success);
 	}
 
+	void SequencePlayer::AbortSequence() {
+		std::unique_ptr<BaseIPC> buff = std::make_unique<BaseIPC>();
+		buff->command = BaseIPC::CommandType::StopSequence;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
+		assert(success);
+	}
+
 	void SequencePlayer::LoadBank(unsigned int bankId) {
 		if(bankId == loadedBankIndex) return;
 		loadedBankIndex = bankId;

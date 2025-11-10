@@ -20,6 +20,7 @@ namespace NitroComposer {
 		void PlaySequence(unsigned int sequenceId);
 		void PlaySequence(const std::string &sequenceName);
 		void PlaySequence(const std::unique_ptr<SequenceInfoRecord> &);
+		void AbortSequence();
 
 		void LoadBank(unsigned int bankId);
 		void LoadWaveFormsForCurrentBank();
