@@ -45,6 +45,8 @@ namespace NitroComposer {
 			bool IsPulseVoice() const { return voiceIndex >= 8 && voiceIndex <= 13; }
 			bool IsNoiseVoice() const { return voiceIndex >= 14; }
 
+			const Track *GetTrack() const { return track; }
+
 			void Release();
 			void Kill();
 
@@ -168,6 +170,9 @@ namespace NitroComposer {
 
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
 
+			void ReleaseAllVoices();
+			void KillAllVoices();
+
 			void SetNextCommand(std::uint32_t offset);
 
 			std::uint8_t readByteCommand();
@@ -195,6 +200,9 @@ namespace NitroComposer {
 
 			void PlaySequence(const std::uint8_t *sequenceData);
 			void AbortSequence();
+
+			void ReleaseAllVoices();
+			void KillAllVoices();
 
 			void Update();
 

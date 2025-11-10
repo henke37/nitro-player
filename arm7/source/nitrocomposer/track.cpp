@@ -128,6 +128,22 @@ namespace NitroComposer {
 		return nullptr;
 	}
 
+	void SequencePlayer::Track::ReleaseAllVoices() {
+		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
+			auto &voice = sequencePlayer.voices[voiceIndex];
+			if(voice.GetTrack() != this) continue;
+			voice.Release();
+		}
+	}
+
+	void SequencePlayer::Track::KillAllVoices() {
+		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
+			auto &voice = sequencePlayer.voices[voiceIndex];
+			if(voice.GetTrack() != this) continue;
+			voice.Kill();
+		}
+	}
+
 	void SequencePlayer::Track::SetInstrument(unsigned int instrumentId) {
 		currentInstrument = sequence->bank->instruments.at(instrumentId).get();
 	}

@@ -37,6 +37,8 @@ namespace NitroComposer {
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].StopPlaying();
 		}
+
+		ReleaseAllVoices();
 	}
 
 	void SequencePlayer::PlayingSequence::StartTrack(std::uint8_t trackId, std::uint32_t offset) {
@@ -112,6 +114,22 @@ namespace NitroComposer {
 		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
 			auto &track = tracks[trackIndex];
 			track.Tick();
+		}
+	}
+
+	void SequencePlayer::PlayingSequence::ReleaseAllVoices() {
+		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
+			auto &voice = voices[voiceIndex];
+			if(!voice) continue;
+			voice->Release();
+		}
+	}
+
+	void SequencePlayer::PlayingSequence::KillAllVoices() {
+		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
+			auto &voice = voices[voiceIndex];
+			if(!voice) continue;
+			voice->Kill();
 		}
 	}
 
