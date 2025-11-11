@@ -186,7 +186,7 @@ namespace NitroComposer {
 
 		case 0xC0:
 		{
-			pan = readByteCommand();
+			pan = readByteCommand() - 64;
 		} break;
 
 		case 0xC1:

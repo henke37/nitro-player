@@ -28,6 +28,7 @@ namespace NitroComposer {
 		volume = 127;
 		expression = 127;
 		transpose = 0;
+		pan = 0;
 
 		portamento = false;
 		lastPlayedNote = 60;

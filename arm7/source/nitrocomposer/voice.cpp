@@ -214,7 +214,11 @@ namespace NitroComposer {
 	}
 
 	std::uint8_t SequencePlayer::Voice::ComputePan() const {
-		return currentInstrument->pan;
+		int pan = currentInstrument->pan - 64;
+		pan += this->track->pan;
+		pan += 64;
+
+		return std::clamp(pan, 0, 127);
 	}
 
 	std::uint8_t SequencePlayer::Voice::GetAttack() const {
