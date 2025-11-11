@@ -74,6 +74,13 @@ namespace NitroComposer {
 			SequencePlayer *player;
 			const Track *track;
 
+			void SetupPortamento();
+			void UpdatePitchSweep();
+			std::uint32_t sweepCounter;
+			std::uint32_t sweepLength;
+			std::int16_t sweepPitch;
+			bool IsPitchSweeping() const;
+
 			void UpdateModulation();
 			bool IsModulationActive(ModulationMode mode) const;
 			int GetModulationValue() const;
@@ -143,6 +150,7 @@ namespace NitroComposer {
 			bool portamento;
 			std::uint8_t lastPlayedNote;
 			std::uint8_t portaTime;
+			std::int16_t sweepPitch;
 
 			bool lastComparisonResult;
 

@@ -321,6 +321,11 @@ namespace NitroComposer {
 			sequence->tempo = readShortCommand();
 		} break;
 
+		case 0xE3:
+		{
+			this->sweepPitch = readShortCommand();
+		} break;
+
 		case 0xFC:
 		{
 			assert(stackPointer > 0);

@@ -25,6 +25,8 @@ namespace NitroComposer {
 		this->modCounter = 0;
 		this->modDelayCounter = 0;
 
+		SetupPortamento();
+
 		ConfigureTimerRegister();
 		ConfigureControlRegisters();
 	}
@@ -78,6 +80,7 @@ namespace NitroComposer {
 		}
 
 		UpdateModulation();
+		UpdatePitchSweep();
 
 		ConfigureTimerRegister();
 		ConfigureVolumeRegister();
@@ -202,6 +205,9 @@ namespace NitroComposer {
 		if(IsModulationActive(ModulationMode::Vibrato)) {
 			adjustment += static_cast<int64_t>(GetModulationValue() * 60) >> 14;
 		}
+		if(IsPitchSweeping()) {
+			adjustment += (static_cast<int64_t>(this->sweepPitch) * (this->sweepLength - this->sweepCounter)) / sweepLength;
+		}
 
 		if(adjustment) timer = Timer_Adjust(timer, adjustment);
 
@@ -237,6 +243,37 @@ namespace NitroComposer {
 		}
 
 		return std::clamp(pan, 0, 127);
+	}
+
+	void SequencePlayer::Voice::SetupPortamento() {
+		this->sweepCounter = 0;
+		if(!track->portamento) {
+			this->sweepLength = 0;
+			return;
+		}
+		bool manualSweep = track->portaTime == 0;
+	
+		int diff = (static_cast<int>(track->lastPlayedNote) - static_cast<int>(this->note)) << 22;
+
+		this->sweepPitch = track->sweepPitch + (diff >> 16);
+
+		if(manualSweep) {
+			this->sweepLength = this->length;
+		} else {
+			int sq_time = static_cast<uint32_t>(track->portaTime) * static_cast<uint32_t>(track->portaTime);
+			int abs_sp = std::abs(this->sweepPitch);
+			this->sweepLength = (abs_sp * sq_time) >> 11;
+		}
+	}
+
+	void SequencePlayer::Voice::UpdatePitchSweep() {
+		if(this->sweepCounter < this->sweepLength) {
+			++this->sweepCounter;
+		}
+	}
+
+	bool SequencePlayer::Voice::IsPitchSweeping() const {
+		return this->sweepPitch && this->sweepLength && this->sweepCounter <= this->sweepLength;
 	}
 
 	void SequencePlayer::Voice::UpdateModulation() {
