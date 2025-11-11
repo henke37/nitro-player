@@ -22,6 +22,9 @@ namespace NitroComposer {
 		this->state = VoiceState::Attacking;
 		this->amplitude = AMPLITUDE_THRESHOLD;
 
+		this->modCounter = 0;
+		this->modDelayCounter = 0;
+
 		ConfigureTimerRegister();
 		ConfigureControlRegisters();
 	}
@@ -74,6 +77,9 @@ namespace NitroComposer {
 			break;
 		}
 
+		UpdateModulation();
+
+		ConfigureTimerRegister();
 		ConfigureVolumeRegister();
 	}
 
@@ -193,6 +199,10 @@ namespace NitroComposer {
 
 		adjustment += track->pitchBend * track->pitchBendRange >> 1;
 
+		if(IsModulationActive(ModulationMode::Vibrato)) {
+			adjustment += static_cast<int64_t>(GetModulationValue() * 60) >> 14;
+		}
+
 		if(adjustment) timer = Timer_Adjust(timer, adjustment);
 
 		SCHANNEL_TIMER(voiceIndex) = -timer;
@@ -206,6 +216,10 @@ namespace NitroComposer {
 		if(volume < -AMPL_K)
 			volume = -AMPL_K;
 
+		if(IsModulationActive(ModulationMode::Tremolo)) {
+			volume += GetModulationValue() >> 8;
+		}
+
 		volume += this->amplitude >> 7;
 		volume += Cnv_Sust(this->velocity);
 		volume += AMPL_K;
@@ -218,7 +232,31 @@ namespace NitroComposer {
 		pan += this->track->pan;
 		pan += 64;
 
+		if(IsModulationActive(ModulationMode::Pan)) {
+			pan += GetModulationValue() >> 8;
+		}
+
 		return std::clamp(pan, 0, 127);
+	}
+
+	void SequencePlayer::Voice::UpdateModulation() {
+		if(track->modDepth == 0) return;
+		if(this->modDelayCounter < track->modDelay) {
+			++this->modDelayCounter;
+			return;
+		}
+		uint16_t speed = static_cast<uint16_t>(track->modSpeed) << 6;
+		this->modCounter = (this->modCounter + speed) & 0x7FFF;
+	}
+
+	bool SequencePlayer::Voice::IsModulationActive(ModulationMode mode) const {
+		if(track->modDepth == 0) return false;
+		if(this->modDelayCounter < track->modDelay) return false;
+		return mode==track->modMode;
+	}
+
+	int SequencePlayer::Voice::GetModulationValue() const {
+		return Cnv_Sine(this->modCounter >> 8) * track->modRange * track->modDepth;
 	}
 
 	std::uint8_t SequencePlayer::Voice::GetAttack() const {

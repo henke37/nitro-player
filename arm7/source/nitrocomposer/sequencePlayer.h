@@ -33,6 +33,12 @@ namespace NitroComposer {
 
 		class Track;
 
+		enum class ModulationMode {
+			Vibrato = 0,//pitch
+			Tremolo = 1,//volume
+			Pan = 2
+		};
+
 		class Voice {
 		public:
 			Voice(unsigned int voiceIndex);
@@ -67,6 +73,12 @@ namespace NitroComposer {
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
 			const Track *track;
+
+			void UpdateModulation();
+			bool IsModulationActive(ModulationMode mode) const;
+			int GetModulationValue() const;
+			std::uint16_t modCounter;
+			std::uint16_t modDelayCounter;
 
 			std::uint8_t GetAttack() const;
 			std::uint8_t GetDecay() const;
@@ -119,12 +131,6 @@ namespace NitroComposer {
 
 			std::int8_t pitchBend;
 			std::uint8_t pitchBendRange;
-
-			enum class ModulationMode {
-				Vibrato = 0,//pitch
-				Tremolo = 1,//volume
-				Pan = 2
-			};
 
 			std::uint8_t modDepth;
 			std::uint8_t modSpeed;
