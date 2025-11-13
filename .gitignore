@@ -5,3 +5,4 @@
 *.nds
 /build
 *.ml?
+*.lnk

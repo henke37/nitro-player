@@ -32,7 +32,11 @@ namespace NitroComposer {
 		CommandType command;
 	};
 
-	struct PlayTrackIPC : BaseIPC {
+	struct SequencePlayerIPC : BaseIPC {
+
+	};
+
+	struct PlayTrackIPC : SequencePlayerIPC {
 		std::uint8_t *sequenceData;
 		std::uint32_t length;
 		std::uint32_t channelMask;
@@ -43,24 +47,24 @@ namespace NitroComposer {
 		std::uint8_t volume;
 	};
 
-	struct SetTempoIPC : BaseIPC {
+	struct SetTempoIPC : SequencePlayerIPC {
 		std::uint8_t tempo;
 	};
 
-	struct SetVarIPC : BaseIPC {
+	struct SetVarIPC : SequencePlayerIPC {
 		std::uint8_t var;
 		std::int16_t val;
 	};
 
-	struct GetVarIPC : BaseIPC {
+	struct GetVarIPC : SequencePlayerIPC {
 		std::uint8_t var;
 	};
 
-	struct LoadBankIPC : BaseIPC {
+	struct LoadBankIPC : SequencePlayerIPC {
 		const InstrumentBank *bank;
 	};
 
-	struct LoadWaveArchiveIPC : BaseIPC {
+	struct LoadWaveArchiveIPC : SequencePlayerIPC {
 		std::uint8_t slot;
 		const LoadedWaveArchive *archive;
 	};
@@ -69,20 +73,23 @@ namespace NitroComposer {
 		std::uint16_t reservations;
 	};
 
-	struct InitStreamIPC : BaseIPC {
+	struct StreamPlayerIPC : BaseIPC {
+	};
+
+	struct InitStreamIPC : StreamPlayerIPC {
 		WaveEncoding encoding;
 		bool stereo;
 		std::uint16_t timer;
 	};
 
-	struct StreamPushBlockIPC : BaseIPC {
+	struct StreamPushBlockIPC : StreamPlayerIPC {
 		std::uint32_t blockId;
 		std::uint32_t blockDataSize;
 		std::uint32_t blockSampleCount;
 		void *blockData[2];
 	};
 
-	struct StreamRetireBlockIPC : BaseIPC {
+	struct StreamRetireBlockIPC : StreamPlayerIPC {
 		std::uint32_t blockId;
 	};
 }
