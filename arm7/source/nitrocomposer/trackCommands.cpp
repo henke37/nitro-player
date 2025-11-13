@@ -5,6 +5,9 @@
 
 #include <nds/arm7/console.h>
 
+#define NITROCOMPOSER_LOG_EFFECTS
+#define NITROCOMPOSER_LOG_FLOW
+
 namespace NitroComposer {
 
 	void SequencePlayer::Track::ExecuteNextCommand() {
@@ -32,18 +35,31 @@ namespace NitroComposer {
 			std::uint8_t trackId = readByteCommand();
 			std::uint32_t offset = readTriByteCommand();
 			sequence->StartTrack(trackId, offset);
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("Start Track %d at 0x%x\n", id, trackId, offset);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0x94:
 		{
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("Track %d: Jump to 0x%x\n", id, offset);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0x95:
 		{
 			assert(stackPointer < 4);
 			std::uint32_t offset = readTriByteCommand();
+
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("Track %d: Call to 0x%x\n", id, offset);
+			consoleFlush();
+#endif
 
 			auto &stackRecord = stack[stackPointer];
 			stackRecord.nextCommand = nextCommand;
@@ -187,6 +203,10 @@ namespace NitroComposer {
 		case 0xC0:
 		{
 			pan = readByteCommand() - 64;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Pan %d\n", pan);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xC1:
@@ -202,8 +222,10 @@ namespace NitroComposer {
 		case 0xC4:
 		{
 			pitchBend = readByteCommand();
+#ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Pitch Bend %d\n", pitchBend);
 			consoleFlush();
+#endif
 		} break;
 
 		case 0xC5:
@@ -224,8 +246,10 @@ namespace NitroComposer {
 		case 0xC8:
 		{
 			tieMode = readByteCommand() != 0;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Tie Mode %s\n", tieMode ? "Y" : "N");
 			consoleFlush();
+#endif
 		} break;
 
 		case 0xC9:
@@ -233,8 +257,10 @@ namespace NitroComposer {
 			std::uint8_t note = readByteCommand();
 			lastPlayedNote = note + transpose;
 			portamento = true;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Porta Start %u\n", note);
 			consoleFlush();
+#endif
 		} break;
 
 		case 0xCA:
@@ -250,6 +276,20 @@ namespace NitroComposer {
 		case 0xCC:
 		{
 			modMode = ModulationMode(readByteCommand());
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			switch(modMode) {
+			case ModulationMode::Vibrato:
+				consolePuts("Mod: Vibrato\n");
+				break;
+			case ModulationMode::Tremolo:
+				consolePuts("Mod: Tremolo\n");
+				break;
+			case ModulationMode::Pan:
+				consolePuts("Mod: Pan\n");
+				break;
+			}
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xCD:
@@ -265,8 +305,10 @@ namespace NitroComposer {
 		case 0xCE:
 		{
 			portamento = readByteCommand() != 0;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Porta %s\n", portamento?"Y":"N");
 			consoleFlush();
+#endif
 		} break;
 
 		case 0xCF:
@@ -303,6 +345,11 @@ namespace NitroComposer {
 			stackRecord.loopCounter = loopCount;
 			stackRecord.type = StackEntryType::Loop;
 			++stackPointer;
+
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("Track %d: Loop start x%d\n", id, loopCount);
+			consoleFlush();
+#endif
 		}
 
 		case 0xD5:
@@ -314,13 +361,19 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readByteCommand();
 			assert(varId < numVariables);
+#ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
 			consoleFlush();
+#endif
 		} break;
 
 		case 0xE1:
 		{
 			sequence->tempo = readShortCommand();
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Tempo set to %d\n", sequence->tempo);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xE3:
@@ -338,6 +391,15 @@ namespace NitroComposer {
 			if(stackRecord.loopCounter) {
 				nextCommand = stackRecord.nextCommand;
 				++stackPointer;
+#ifdef NITROCOMPOSER_LOG_FLOW
+				consolePrintf("Track %d: Loop repeat, %d remaining\n", id, stackRecord.loopCounter);
+				consoleFlush();
+#endif
+			} else {
+#ifdef NITROCOMPOSER_LOG_FLOW
+				consolePrintf("Track %d: Loop end\n", id);
+				consoleFlush();
+#endif
 			}
 		} break;
 
@@ -348,6 +410,10 @@ namespace NitroComposer {
 			auto &stackRecord = stack[stackPointer];
 			assert(stackRecord.type == StackEntryType::Call);
 			nextCommand = stackRecord.nextCommand;
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("Track %d: Return from Call\n", id);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xFE:
