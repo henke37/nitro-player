@@ -296,9 +296,11 @@ namespace NitroComposer {
 
 		case 0xD4:
 		{
+			assert(stackPointer < 4);
+			std::uint8_t loopCount = readByteCommand();
 			auto &stackRecord = stack[stackPointer];
 			stackRecord.nextCommand = nextCommand;
-			stackRecord.loopCounter = readByteCommand();
+			stackRecord.loopCounter = loopCount;
 			stackRecord.type = StackEntryType::Loop;
 			++stackPointer;
 		}
