@@ -37,8 +37,6 @@ namespace NitroComposer {
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].StopPlaying();
 		}
-
-		ReleaseAllVoices();
 	}
 
 	void SequencePlayer::PlayingSequence::StartTrack(std::uint8_t trackId, std::uint32_t offset) {
@@ -90,6 +88,7 @@ namespace NitroComposer {
 			auto &track = tracks[trackIndex];
 			if(track.GetIsPlaying()) return;
 		}
+		ReleaseAllVoices();
 		sequencePlayer.sendFifoSequenceStatus(*this);
 	}
 
