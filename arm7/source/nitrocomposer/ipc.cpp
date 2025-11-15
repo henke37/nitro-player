@@ -24,7 +24,7 @@ namespace NitroComposer {
 
 	void SequencePlayer::fifoDatagramHandler(int num_bytes) {
 		u8 fifoBuffer[fifoBuffSize];
-		fifoGetDatamsg(FIFO_USER_01, fifoBuffSize, fifoBuffer);
+		fifoGetDatamsg(FIFO_NITRO_COMPOSER, fifoBuffSize, fifoBuffer);
 
 		auto ipc = reinterpret_cast<BaseIPC *>(fifoBuffer);
 
