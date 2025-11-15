@@ -20,8 +20,6 @@ private:
 
 	std::unique_ptr<NitroComposer::SDatFile> sdat;
 
-	NitroComposer::SequencePlayer seqPlayer;
-
 	bool isplaying = false;
 	unsigned int sequenceId = 0;
 };

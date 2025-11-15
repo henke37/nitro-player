@@ -1,6 +1,8 @@
 #ifndef NITROCOMPOSER_SEQUENCEPLAYER_H
 #define NITROCOMPOSER_SEQUENCEPLAYER_H
 
+#include <nds/cothread.h>
+
 #include "nitroComposer/ipc.h"
 
 #include "sseq.h"
@@ -52,8 +54,17 @@ namespace NitroComposer {
 
 		std::unique_ptr<std::uint8_t[]> sequenceData;
 
+		cosema_t asyncEvtSemaphore;
+
+		static void fifoISR();
+		static int msgPumpThread(void *arg);
+		void msgPump();
+
 		void ipcPowerOn();
+
+		friend class FifoMutexLock;
 	};
 
+	extern SequencePlayer sequencePlayer;
 }
 #endif

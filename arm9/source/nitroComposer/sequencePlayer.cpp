@@ -10,9 +10,16 @@
 
 namespace NitroComposer {
 
+	SequencePlayer sequencePlayer;
+
 	class FifoMutexLock {
 	public:
-		FifoMutexLock() {
+		FifoMutexLock(bool forPump=false) {
+			if(!forPump) {
+				while(sequencePlayer.asyncEvtSemaphore) {
+					cothread_yield();
+				}
+			}
 			mutex.aquire(FIFO_NITRO_COMPOSER);
 		}
 		~FifoMutexLock() {
@@ -24,9 +31,34 @@ namespace NitroComposer {
 	};
 
 	SequencePlayer::SequencePlayer() : sdat(nullptr) {
+		cosema_init(&asyncEvtSemaphore, 0);
+
+		cothread_create(msgPumpThread, this, 0x1000, COTHREAD_DETACHED);
+
 		ipcPowerOn();
 
 		powerOn(PM_SOUND_AMP);
+	}
+
+	void SequencePlayer::fifoISR() {
+		cosema_signal(&sequencePlayer.asyncEvtSemaphore);
+	}
+
+	int SequencePlayer::msgPumpThread(void *arg) {
+		SequencePlayer *player = static_cast<SequencePlayer *>(arg);
+		player->msgPump();
+		return 0;
+	}
+
+	void SequencePlayer::msgPump() {
+		while(true) {
+			cosema_wait(&asyncEvtSemaphore);
+			{
+				FifoMutexLock lock{ true };
+				// Process messages here if needed
+				puts("SequencePlayer msgPump processing FIFO message");
+			}
+		}
 	}
 
 	void SequencePlayer::ipcPowerOn() {
