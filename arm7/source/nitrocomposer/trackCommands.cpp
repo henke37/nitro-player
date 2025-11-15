@@ -36,7 +36,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			sequence->StartTrack(trackId, offset);
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("Start Track %d at 0x%x\n", id, trackId, offset);
+			consolePrintf("Start #%d at 0x%x\n", id, trackId, offset);
 			consoleFlush();
 #endif
 		} break;
@@ -46,7 +46,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("Track %d: Jump to 0x%x\n", id, offset);
+			consolePrintf("#%d: Jump to 0x%x\n", id, offset);
 			consoleFlush();
 #endif
 		} break;
@@ -57,7 +57,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("Track %d: Call to 0x%x\n", id, offset);
+			consolePrintf("#%d: Call to 0x%x\n", id, offset);
 			consoleFlush();
 #endif
 
@@ -347,7 +347,7 @@ namespace NitroComposer {
 			++stackPointer;
 
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("Track %d: Loop start x%d\n", id, loopCount);
+			consolePrintf("#%d: Loop start x%d\n", id, loopCount);
 			consoleFlush();
 #endif
 		}
@@ -392,12 +392,12 @@ namespace NitroComposer {
 				nextCommand = stackRecord.nextCommand;
 				++stackPointer;
 #ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("Track %d: Loop repeat, %d remaining\n", id, stackRecord.loopCounter);
+				consolePrintf("#%d: Loop repeat, %d remaining\n", id, stackRecord.loopCounter);
 				consoleFlush();
 #endif
 			} else {
 #ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("Track %d: Loop end\n", id);
+				consolePrintf("#%d: Loop end\n", id);
 				consoleFlush();
 #endif
 			}
@@ -411,7 +411,7 @@ namespace NitroComposer {
 			assert(stackRecord.type == StackEntryType::Call);
 			nextCommand = stackRecord.nextCommand;
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("Track %d: Return from Call\n", id);
+			consolePrintf("#%d: Return from Call\n", id);
 			consoleFlush();
 #endif
 		} break;

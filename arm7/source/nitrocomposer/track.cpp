@@ -43,6 +43,7 @@ namespace NitroComposer {
 		modSpeed = 0;
 
 		stackPointer = 0;
+		nextCommand = nullptr;
 	}
 
 	void SequencePlayer::Track::Tick() {
@@ -72,10 +73,10 @@ namespace NitroComposer {
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		note += transpose;
 		if(tieMode) {
-			consolePrintf("Tie-Note on %d,%d\n", note, velocity);
+			consolePrintf("#%d Tie-Note on %d,%d\n", id, note, velocity);
 			//NoteOnTie(note, velocity);
 		} else {
-			consolePrintf("Note on %d,%d,%d\n", note, velocity, length);
+			consolePrintf("#%d Note on %d,%d,%d\n", id, note, velocity, length);
 			NoteOnReal(note, velocity, length);
 		}
 		consoleFlush();
