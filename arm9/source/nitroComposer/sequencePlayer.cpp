@@ -14,12 +14,7 @@ namespace NitroComposer {
 
 	class FifoMutexLock {
 	public:
-		FifoMutexLock(bool forPump=false) {
-			if(!forPump) {
-				while(sequencePlayer.asyncEvtSemaphore) {
-					cothread_yield();
-				}
-			}
+		FifoMutexLock() {
 			mutex.aquire(FIFO_NITRO_COMPOSER);
 		}
 		~FifoMutexLock() {
@@ -41,6 +36,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::fifoISR() {
+		if(!fifoCheckDatamsg(FIFO_NITRO_COMPOSER)) return;
 		cosema_signal(&sequencePlayer.asyncEvtSemaphore);
 	}
 
@@ -54,7 +50,7 @@ namespace NitroComposer {
 		while(true) {
 			cosema_wait(&asyncEvtSemaphore);
 			{
-				FifoMutexLock lock{ true };
+				FifoMutexLock lock;
 				// Process messages here if needed
 				puts("SequencePlayer msgPump processing FIFO message");
 			}
