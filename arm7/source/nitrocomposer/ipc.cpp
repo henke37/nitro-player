@@ -66,6 +66,7 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::LoadBank:
 		{
 			LoadBankIPC *loadBankIpc = static_cast<LoadBankIPC *>(ipc);
+			playingSequence.AbortSequence(true);
 			this->playingSequence.bank = loadBankIpc->bank;
 
 			consolePrintf("Loaded %d instruments\n", this->playingSequence.bank->instruments.size());
@@ -76,6 +77,7 @@ namespace NitroComposer {
 		{
 			LoadWaveArchiveIPC *loadWaveArchiveIpc = static_cast<LoadWaveArchiveIPC *>(ipc);
 			assert(loadWaveArchiveIpc->slot < PlayingSequence::numWaveArchs);
+			playingSequence.AbortSequence(true);
 			this->playingSequence.waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
 
 			if(!loadWaveArchiveIpc->archive) break;
@@ -94,7 +96,7 @@ namespace NitroComposer {
 
 		case BaseIPC::CommandType::StopSequence:
 		{
-			playingSequence.AbortSequence();
+			playingSequence.AbortSequence(false);
 		} break;
 
 		case BaseIPC::CommandType::ReserveChannels:

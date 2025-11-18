@@ -25,7 +25,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData) {
-		AbortSequence();
+		AbortSequence(true);
 
 		ResetLocalVars();
 
@@ -35,9 +35,12 @@ namespace NitroComposer {
 		StartTrack(0, 0);
 	}
 
-	void SequencePlayer::PlayingSequence::AbortSequence() {
+	void SequencePlayer::PlayingSequence::AbortSequence(bool killVoices) {
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].StopPlaying();
+		}
+		if(killVoices) {
+			KillAllVoices();
 		}
 	}
 

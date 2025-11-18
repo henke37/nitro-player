@@ -215,7 +215,7 @@ namespace NitroComposer {
 
 
 			void PlaySequence(const std::uint8_t *sequenceData);
-			void AbortSequence();
+			void AbortSequence(bool killVoices);
 
 			void ReleaseAllVoices();
 			void KillAllVoices();
