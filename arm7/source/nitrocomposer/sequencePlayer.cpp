@@ -55,7 +55,7 @@ namespace NitroComposer {
 		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
 			auto voiceIndex = channelList[slotIndex];
 			auto &voice = voices[voiceIndex];
-			if(voice.state != VoiceState::Free) continue;
+			if(voice.GetState() != VoiceState::Free) continue;
 			if(!isVoiceAllowed(voiceIndex, sequence)) continue;
 			return voiceIndex;
 		}
@@ -63,7 +63,7 @@ namespace NitroComposer {
 		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
 			auto voiceIndex = channelList[slotIndex];
 			auto &voice = voices[voiceIndex];
-			if(voice.state != VoiceState::Releasing) continue;
+			if(voice.GetState() != VoiceState::Releasing) continue;
 			if(!isVoiceAllowed(voiceIndex, sequence)) continue;
 			return voiceIndex;
 		}

@@ -8,7 +8,7 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Voice::Voice(unsigned int voiceIndex) : voiceIndex(voiceIndex) {
+	SequencePlayer::Voice::Voice(std::uint8_t voiceIndex) : voiceIndex(voiceIndex) {
 	}
 
 	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length) {

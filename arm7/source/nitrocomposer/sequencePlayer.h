@@ -21,7 +21,7 @@ namespace NitroComposer {
 
 		void UpdateVoices();
 
-		enum class VoiceState {
+		enum class VoiceState : std::uint8_t {
 			Free,
 			Attacking,
 			Decaying,
@@ -33,7 +33,7 @@ namespace NitroComposer {
 
 		class Track;
 
-		enum class ModulationMode {
+		enum class ModulationMode : std::uint8_t {
 			Vibrato = 0,//pitch
 			Tremolo = 1,//volume
 			Pan = 2
@@ -41,7 +41,7 @@ namespace NitroComposer {
 
 		class Voice {
 		public:
-			Voice(unsigned int voiceIndex);
+			Voice(std::uint8_t voiceIndex);
 
 			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
 
@@ -56,9 +56,9 @@ namespace NitroComposer {
 			void Release();
 			void Kill();
 
-			VoiceState state = VoiceState::Free;
+			VoiceState GetState() const { return state; }
+
 		private:
-			const unsigned int voiceIndex;
 			void ConfigureControlRegisters();
 			void ConfigureVolumeRegister();
 			void ConfigureTimerRegister();
@@ -66,13 +66,19 @@ namespace NitroComposer {
 			int ComputeVolume() const;
 			std::uint8_t ComputePan() const;
 
-			std::uint8_t note;
-			std::uint8_t velocity;
-			unsigned int length;
-
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
 			const Track *track;
+
+			int amplitude;
+
+			unsigned int length;
+			std::uint8_t note;
+			std::uint8_t velocity;
+
+			VoiceState state = VoiceState::Free;
+
+			const std::uint8_t voiceIndex;
 
 			void SetupPortamento();
 			void UpdatePitchSweep();
@@ -91,11 +97,7 @@ namespace NitroComposer {
 			std::uint8_t GetDecay() const;
 			std::uint8_t GetSustain() const;
 			std::uint8_t GetRelease() const;
-
-			int amplitude;
 		};
-		static constexpr unsigned int voiceCount = 16;
-		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
 		class Track {
 		public:
@@ -117,6 +119,10 @@ namespace NitroComposer {
 		private:
 			PlayingSequence *sequence;
 			const InstrumentBank::BaseInstrument *currentInstrument;
+
+			const std::uint8_t *nextCommand;
+
+			int waitCounter;
 
 			bool isPlaying;
 
@@ -141,36 +147,32 @@ namespace NitroComposer {
 
 			std::uint8_t modDepth;
 			std::uint8_t modSpeed;
+			std::uint16_t modDelay;
 			ModulationMode modMode;
 			std::uint8_t modRange;
-			std::uint16_t modDelay;
 
-			std::int8_t transpose;
-
+			std::int16_t sweepPitch;
 			bool portamento;
 			std::uint8_t lastPlayedNote;
 			std::uint8_t portaTime;
-			std::int16_t sweepPitch;
+
+			std::int8_t transpose;
 
 			bool lastComparisonResult;
 
-			const std::uint8_t *nextCommand;
-
-			enum class StackEntryType {
+			enum class StackEntryType : std::uint8_t {
 				Call,
 				Loop
 			};
 
 			struct StackEntry {
-				StackEntryType type;
 				const std::uint8_t *nextCommand;
 				unsigned int loopCounter;
+				StackEntryType type;
 			};
 
+			std::uint8_t stackPointer;
 			StackEntry stack[4];
-			unsigned int stackPointer;
-
-			int waitCounter;
 
 			void ExecuteNextCommand();
 			void ExecuteNextRandomCommand();
@@ -200,7 +202,7 @@ namespace NitroComposer {
 
 			friend class Voice;
 		};
-
+		static constexpr unsigned int voiceCount = 16;
 
 		static constexpr unsigned int localVariableCount = 16;
 		static constexpr unsigned int globalVariableCount = 16;
@@ -238,25 +240,27 @@ namespace NitroComposer {
 			void TickVoices();
 			void TickTracks();
 
-			static constexpr unsigned int trackCount = 16;
-			Track tracks[trackCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
-			Voice *voices[voiceCount] = { nullptr };
-
 			void ResetLocalVars();
-
-			std::int16_t localVariables[localVariableCount];
 
 			std::uint16_t tempo;
 			std::uint16_t tempoTimer;
 			std::uint8_t sequenceVolume;
-			const std::uint8_t *sequenceData;
-			size_t sequenceDataLength;
 
 			std::uint16_t allowedChannels;
+
+			const std::uint8_t *sequenceData;
+			size_t sequenceDataLength;
 
 			const InstrumentBank *bank;
 			static constexpr unsigned int numWaveArchs = 4;
 			const LoadedWaveArchive *waveArchs[numWaveArchs];
+
+			Voice *voices[voiceCount] = { nullptr };
+
+			std::int16_t localVariables[localVariableCount];
+
+			static constexpr unsigned int trackCount = 16;
+			Track tracks[trackCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
 			friend class Track;
 			friend class SequencePlayer;
@@ -291,13 +295,15 @@ namespace NitroComposer {
 		void setupTimer();
 		static void ISR();
 
-		PlayingSequence playingSequence;
-
 		std::uint8_t mainVolume;
 
-		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence);
-
 		std::uint16_t externalChannelReservations;
+
+		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+
+		PlayingSequence playingSequence;
+
+		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence);
 
 		bool isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const;
 	};
