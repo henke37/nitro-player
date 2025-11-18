@@ -257,6 +257,26 @@ namespace NitroComposer {
 			friend class SequencePlayer;
 		};
 
+		class StreamPlayer {
+		public:
+			StreamPlayer()=default;
+			~StreamPlayer()=default;
+
+			StreamPlayer(const StreamPlayer &) = delete;
+			StreamPlayer &operator=(const StreamPlayer &) = delete;
+
+			void Init(WaveEncoding encoding, bool stereo, std::uint16_t timer);
+			void Stop();
+
+		private:
+			bool stereo;
+			std::uint16_t timer;
+			WaveEncoding encoding;
+
+			void AddBlock();
+			void FreeBlock();
+		};
+
 		void setupFifo();
 		static void fifoDatagramHandler(int num_bytes, void *userdata);
 		void fifoDatagramHandler(int num_bytes);
