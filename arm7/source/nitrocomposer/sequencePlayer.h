@@ -292,8 +292,8 @@ namespace NitroComposer {
 
 		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *);
 
-		std::uint8_t externalChannelReservations;
-		std::uint8_t allowedChannels;
+		std::uint16_t externalChannelReservations;
+		std::uint16_t allowedChannels;
 
 		bool isVoiceAllowed(std::uint8_t voiceIndex) const;
 	};

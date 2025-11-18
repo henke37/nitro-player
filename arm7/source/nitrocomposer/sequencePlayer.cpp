@@ -24,7 +24,7 @@ namespace NitroComposer {
 		playingSequence.Init();
 
 		externalChannelReservations = 0;
-		allowedChannels = 0xFF;
+		allowedChannels = 0xFFFF;
 
 		setupFifo();
 	}
