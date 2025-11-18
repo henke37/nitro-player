@@ -24,13 +24,12 @@ namespace NitroComposer {
 		playingSequence.Init();
 
 		externalChannelReservations = 0;
-		allowedChannels = 0xFFFF;
 
 		setupFifo();
 	}
 
 
-	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *) {
+	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence) {
 		size_t channelCount;
 		const uint8_t *channelList;
 		switch(type) {
@@ -55,16 +54,18 @@ namespace NitroComposer {
 
 		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
 			auto voiceIndex = channelList[slotIndex];
-			if(!isVoiceAllowed(voiceIndex)) continue;
 			auto &voice = voices[voiceIndex];
-			if(voice.state == VoiceState::Free) return voiceIndex;
+			if(voice.state != VoiceState::Free) continue;
+			if(!isVoiceAllowed(voiceIndex, sequence)) continue;
+			return voiceIndex;
 		}
 
 		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
 			auto voiceIndex = channelList[slotIndex];
-			if(!isVoiceAllowed(voiceIndex)) continue;
 			auto &voice = voices[voiceIndex];
-			if(voice.state == VoiceState::Releasing) return voiceIndex;
+			if(voice.state != VoiceState::Releasing) continue;
+			if(!isVoiceAllowed(voiceIndex, sequence)) continue;
+			return voiceIndex;
 		}
 
 		//TODO: voice stealing
@@ -72,8 +73,8 @@ namespace NitroComposer {
 		return -1;
 	}
 
-	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex) const {
-		if(!(allowedChannels & BIT(voiceIndex)) && allowedChannels) return false;
+	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const {
+		if(sequence->allowedChannels && !(sequence->allowedChannels & BIT(voiceIndex))) return false;
 		if((externalChannelReservations & BIT(voiceIndex)) && externalChannelReservations) return false;
 
 		return true;

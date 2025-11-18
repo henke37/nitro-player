@@ -249,6 +249,8 @@ namespace NitroComposer {
 			std::uint8_t sequenceVolume;
 			const std::uint8_t *sequenceData;
 
+			std::uint16_t allowedChannels;
+
 			const InstrumentBank *bank;
 			static constexpr unsigned int numWaveArchs = 4;
 			const LoadedWaveArchive *waveArchs[numWaveArchs];
@@ -290,12 +292,11 @@ namespace NitroComposer {
 
 		std::uint8_t mainVolume;
 
-		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *);
+		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence);
 
 		std::uint16_t externalChannelReservations;
-		std::uint16_t allowedChannels;
 
-		bool isVoiceAllowed(std::uint8_t voiceIndex) const;
+		bool isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const;
 	};
 
 	int Cnv_Attack(int attk);

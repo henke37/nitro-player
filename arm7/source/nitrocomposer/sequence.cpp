@@ -7,6 +7,8 @@ namespace NitroComposer {
 	void SequencePlayer::PlayingSequence::Init() {
 		ResetLocalVars();
 
+		allowedChannels = 0xFFFF;
+
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].Init(this);
 		}
