@@ -107,6 +107,7 @@ namespace NitroComposer {
 		std::unique_ptr<PlayTrackIPC> buff = std::make_unique<PlayTrackIPC>();
 		buff->command = BaseIPC::CommandType::PlaySequence;
 		buff->sequenceData = sequenceData.get();
+		buff->startPos = 0;
 		buff->length = dataLen;
 		buff->channelMask = player->channelMask;
 		buff->sequenceVolume = sequenceInfo->vol;

@@ -39,6 +39,7 @@ namespace NitroComposer {
 	struct PlayTrackIPC : SequencePlayerIPC {
 		std::uint8_t *sequenceData;
 		std::uint32_t length;
+		std::ptrdiff_t startPos;
 		std::uint16_t channelMask;
 		std::uint8_t sequenceVolume;
 	};

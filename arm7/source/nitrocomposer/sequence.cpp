@@ -24,7 +24,7 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData, size_t length) {
+	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData, size_t length, std::ptrdiff_t startPos) {
 		AbortSequence(true);
 
 		ResetLocalVars();
@@ -33,7 +33,7 @@ namespace NitroComposer {
 		this->sequenceDataLength = length;
 		this->tempo = 120;
 
-		StartTrack(0, 0);
+		StartTrack(0, startPos);
 	}
 
 	void SequencePlayer::PlayingSequence::AbortSequence(bool killVoices) {
@@ -45,7 +45,7 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::PlayingSequence::StartTrack(std::uint8_t trackId, std::uint32_t offset) {
+	void SequencePlayer::PlayingSequence::StartTrack(std::uint8_t trackId, std::ptrdiff_t offset) {
 		assert(trackId < trackCount);
 		auto &track = tracks[trackId];
 		track.StartPlaying(offset);

@@ -59,7 +59,7 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::Track::StartPlaying(std::uint32_t offset) {
+	void SequencePlayer::Track::StartPlaying(std::ptrdiff_t offset) {
 		this->isPlaying = true;
 		SetNextCommand(offset);
 	}
@@ -96,7 +96,7 @@ namespace NitroComposer {
 		voice->StartNote(this, noteInstrument, note, velocity, length);
 	}
 
-	void SequencePlayer::Track::SetNextCommand(std::uint32_t offset) {
+	void SequencePlayer::Track::SetNextCommand(std::ptrdiff_t offset) {
 		assert(offset < this->sequence->sequenceDataLength);
 		this->nextCommand=this->sequence->sequenceData + offset;
 	}

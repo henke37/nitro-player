@@ -106,7 +106,7 @@ namespace NitroComposer {
 
 			void Tick();
 
-			void StartPlaying(std::uint32_t offset);
+			void StartPlaying(std::ptrdiff_t offset);
 			void StopPlaying();
 			bool GetIsPlaying() const { return isPlaying; }
 
@@ -189,7 +189,7 @@ namespace NitroComposer {
 			void ReleaseAllVoices();
 			void KillAllVoices();
 
-			void SetNextCommand(std::uint32_t offset);
+			void SetNextCommand(std::ptrdiff_t offset);
 
 			std::uint8_t readByteCommand();
 			std::uint16_t readShortCommand();
@@ -216,7 +216,7 @@ namespace NitroComposer {
 			std::int16_t GetVar(std::uint8_t var) const;
 
 
-			void PlaySequence(const std::uint8_t *sequenceData, size_t length);
+			void PlaySequence(const std::uint8_t *sequenceData, size_t length, std::ptrdiff_t startPos=0);
 			void AbortSequence(bool killVoices);
 
 			void ReleaseAllVoices();
@@ -227,7 +227,7 @@ namespace NitroComposer {
 			bool isVoiceAllowed(std::uint8_t voiceIndex) const;
 
 		private:
-			void StartTrack(std::uint8_t trackId, std::uint32_t offset);
+			void StartTrack(std::uint8_t trackId, std::ptrdiff_t offset);
 
 			const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
 
