@@ -196,6 +196,8 @@ namespace NitroComposer {
 			std::uint32_t readTriByteCommand();
 			unsigned int readMidiVarLen();
 
+			size_t getCommandBytesLeft() const;
+
 			friend class Voice;
 		};
 
@@ -214,7 +216,7 @@ namespace NitroComposer {
 			std::int16_t GetVar(std::uint8_t var) const;
 
 
-			void PlaySequence(const std::uint8_t *sequenceData);
+			void PlaySequence(const std::uint8_t *sequenceData, size_t length);
 			void AbortSequence(bool killVoices);
 
 			void ReleaseAllVoices();
@@ -248,6 +250,7 @@ namespace NitroComposer {
 			std::uint16_t tempoTimer;
 			std::uint8_t sequenceVolume;
 			const std::uint8_t *sequenceData;
+			size_t sequenceDataLength;
 
 			std::uint16_t allowedChannels;
 

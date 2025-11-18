@@ -24,12 +24,13 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData) {
+	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData, size_t length) {
 		AbortSequence(true);
 
 		ResetLocalVars();
 
 		this->sequenceData = sequenceData;
+		this->sequenceDataLength = length;
 		this->tempo = 120;
 
 		StartTrack(0, 0);

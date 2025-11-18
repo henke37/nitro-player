@@ -644,13 +644,19 @@ namespace NitroComposer {
 		}
 	}
 
+	size_t SequencePlayer::Track::getCommandBytesLeft() const {
+		return sequence->sequenceDataLength - (nextCommand - sequence->sequenceData);
+	}
+
 	std::uint8_t SequencePlayer::Track::readByteCommand() {
+		assert(getCommandBytesLeft() >= 1);
 		std::uint8_t val = *nextCommand;
 		++nextCommand;
 		return val;
 	}
 
 	std::uint16_t SequencePlayer::Track::readShortCommand() {
+		assert(getCommandBytesLeft() >= 2);
 		std::uint16_t val = *nextCommand;
 		++nextCommand;
 		val = val | (*nextCommand << 8);
@@ -660,6 +666,7 @@ namespace NitroComposer {
 	}
 
 	std::uint32_t SequencePlayer::Track::readTriByteCommand() {
+		assert(getCommandBytesLeft() >= 3);
 		std::uint32_t val = *nextCommand;
 		++nextCommand;
 		val |= (*nextCommand << 8);
