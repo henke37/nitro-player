@@ -241,6 +241,7 @@ namespace NitroComposer {
 			void TickTracks();
 
 			void ResetLocalVars();
+			void ResetTracks();
 
 			std::uint16_t tempo;
 			std::uint16_t tempoTimer;

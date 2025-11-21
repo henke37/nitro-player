@@ -24,10 +24,17 @@ namespace NitroComposer {
 		}
 	}
 
+	void SequencePlayer::PlayingSequence::ResetTracks() {
+		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
+			tracks[trackIndex].Reset();
+		}
+	}
+
 	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData, size_t length, std::ptrdiff_t startPos) {
 		AbortSequence(true);
 
 		ResetLocalVars();
+		ResetTracks();
 
 		this->sequenceData = sequenceData;
 		this->sequenceDataLength = length;
