@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -90,6 +90,7 @@
     <ClCompile Include="..\arm7\source\nitrocomposer\math.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\sequence.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\sequencePlayer.cpp" />
+    <ClCompile Include="..\arm7\source\nitrocomposer\streamPlayer.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\track.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\trackCommands.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\voice.cpp" />

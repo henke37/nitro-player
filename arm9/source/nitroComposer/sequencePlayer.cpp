@@ -50,10 +50,27 @@ namespace NitroComposer {
 		while(true) {
 			cosema_wait(&asyncEvtSemaphore);
 			{
-				FifoMutexLock lock;
-				// Process messages here if needed
+				u8 fifoBuffer[fifoBuffSize];
+				fifoGetDatamsg(FIFO_NITRO_COMPOSER, fifoBuffSize, fifoBuffer);
+
+				auto ipc = reinterpret_cast<AsyncEventIPC *>(fifoBuffer);
+
+				dispatchAsyncEvent(ipc);
 				puts("SequencePlayer msgPump processing FIFO message");
 			}
+		}
+	}
+
+	void SequencePlayer::dispatchAsyncEvent(const AsyncEventIPC *event) {
+		switch(event->eventId) {
+		case AsyncEventIPC::EventType::SequenceEnded:
+		{
+			// TODO: multiple players
+			this->sequenceEnded();
+		} break;
+		default:
+			sassert(false, "Unknown async event %u", static_cast<std::uint8_t>(event->eventId));
+			break;
 		}
 	}
 
@@ -121,6 +138,10 @@ namespace NitroComposer {
 		buff->command = BaseIPC::CommandType::StopSequence;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
 		assert(success);
+	}
+
+	void SequencePlayer::sequenceEnded() {
+		puts("Sequence ended");
 	}
 
 	void SequencePlayer::LoadBank(unsigned int bankId) {

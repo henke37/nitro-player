@@ -11,8 +11,10 @@ namespace NitroComposer {
 
 #define FIFO_NITRO_COMPOSER FIFO_USER_01
 
+	const size_t fifoBuffSize = 32;
+
 	struct BaseIPC {
-		enum class CommandType {
+		enum class CommandType : std::uint8_t {
 			Invalid,
 			PowerOn,
 			LoadBank,
@@ -32,6 +34,26 @@ namespace NitroComposer {
 		CommandType command;
 	};
 
+	struct AsyncEventIPC {
+		enum class EventType : std::uint8_t {
+			SequenceEnded
+		};
+
+		EventType eventId;
+	};
+
+	struct SequenceStatusEventIPC : AsyncEventIPC {
+		//TODO std::uint8_t playerId;
+	};
+
+	struct ReserveChannelsIPC : BaseIPC {
+		std::uint16_t reservations;
+	};
+
+	struct SetMainVolumeIPC : BaseIPC {
+		std::uint8_t volume;
+	};
+
 	struct SequencePlayerIPC : BaseIPC {
 
 	};
@@ -42,10 +64,6 @@ namespace NitroComposer {
 		std::ptrdiff_t startPos;
 		std::uint16_t channelMask;
 		std::uint8_t sequenceVolume;
-	};
-
-	struct SetMainVolumeIPC : BaseIPC {
-		std::uint8_t volume;
 	};
 
 	struct SetTempoIPC : SequencePlayerIPC {
@@ -68,10 +86,6 @@ namespace NitroComposer {
 	struct LoadWaveArchiveIPC : SequencePlayerIPC {
 		std::uint8_t slot;
 		const LoadedWaveArchive *archive;
-	};
-
-	struct ReserveChannelsIPC : BaseIPC {
-		std::uint16_t reservations;
 	};
 
 	struct StreamPlayerIPC : BaseIPC {

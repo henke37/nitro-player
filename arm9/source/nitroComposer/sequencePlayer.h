@@ -54,11 +54,14 @@ namespace NitroComposer {
 
 		std::unique_ptr<std::uint8_t[]> sequenceData;
 
+		void sequenceEnded();
+
 		cosema_t asyncEvtSemaphore;
 
 		static void fifoISR();
 		static int msgPumpThread(void *arg);
 		void msgPump();
+		void dispatchAsyncEvent(const AsyncEventIPC *event);
 
 		void ipcPowerOn();
 

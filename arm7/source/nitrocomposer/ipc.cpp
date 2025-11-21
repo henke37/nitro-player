@@ -12,8 +12,6 @@
 
 namespace NitroComposer {
 
-	const size_t fifoBuffSize = 32;
-
 	void SequencePlayer::setupFifo() {
 		fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, fifoDatagramHandler, nullptr);
 	}
@@ -109,5 +107,10 @@ namespace NitroComposer {
 			assert(0);
 		}
 	}
-	void SequencePlayer::sendFifoSequenceStatus(const PlayingSequence &sequence) {}
+	void SequencePlayer::sendFifoSequenceStatus(const PlayingSequence &sequence) {
+		SequenceStatusEventIPC statusIpc;
+		statusIpc.eventId = AsyncEventIPC::EventType::SequenceEnded;
+		//TODO statusIpc.playerId = playerId;
+		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequenceStatusEventIPC), (u8 *)&statusIpc);
+	}
 }
