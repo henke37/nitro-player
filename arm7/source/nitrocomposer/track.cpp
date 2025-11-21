@@ -97,7 +97,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Track::SetNextCommand(std::ptrdiff_t offset) {
-		assert(offset < this->sequence->sequenceDataLength);
+		assert((size_t)offset < this->sequence->sequenceDataLength);
 		this->nextCommand=this->sequence->sequenceData + offset;
 	}
 

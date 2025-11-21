@@ -36,7 +36,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			sequence->StartTrack(trackId, offset);
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Start #%d at 0x%x\n", id, trackId, offset);
+			consolePrintf("#%d Start #%d at 0x%x\n", id, trackId, (unsigned)offset);
 			consoleFlush();
 #endif
 		} break;
@@ -46,7 +46,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Jump to 0x%x\n", id, offset);
+			consolePrintf("#%d Jump to 0x%x\n", id, (unsigned)offset);
 			consoleFlush();
 #endif
 		} break;
@@ -57,7 +57,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Call to 0x%x\n", id, offset);
+			consolePrintf("#%d Call to 0x%x\n", id, (unsigned)offset);
 			consoleFlush();
 #endif
 
