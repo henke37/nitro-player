@@ -418,7 +418,11 @@ namespace NitroComposer {
 
 		case 0xFE:
 		{
-			nextCommand += 2;
+			std::uint16_t tracks = readShortCommand();
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("#%d Alloc %x\n", id, tracks);
+			consoleFlush();
+#endif
 		}
 
 		case 0xFF: {
