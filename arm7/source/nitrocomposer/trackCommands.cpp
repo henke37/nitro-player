@@ -422,6 +422,10 @@ namespace NitroComposer {
 		}
 
 		case 0xFF: {
+#ifdef NITROCOMPOSER_LOG_FLOW
+			consolePrintf("#%d Fin.\n", id);
+			consoleFlush();
+#endif
 			StopPlaying();
 		} break;
 
