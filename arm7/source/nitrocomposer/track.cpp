@@ -5,7 +5,7 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track(std::uint8_t id) :id(id) {}
+	SequencePlayer::Track::Track(std::uint8_t id) : isPlaying(false), id(id) {}
 
 	void SequencePlayer::Track::Init(PlayingSequence *sequence) {
 		assert(sequence);
@@ -54,7 +54,7 @@ namespace NitroComposer {
 			return;
 		}
 
-		while(!waitCounter) {
+		while((waitCounter==0) && isPlaying) {
 			ExecuteNextCommand();
 		}
 	}
@@ -65,6 +65,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Track::StopPlaying() {
+		if(!this->isPlaying) return;
 		this->isPlaying = false;
 		sequence->stoppedPlaying(this);
 	}
