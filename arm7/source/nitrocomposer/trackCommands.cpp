@@ -423,7 +423,7 @@ namespace NitroComposer {
 			consolePrintf("#%d Alloc %x\n", id, tracks);
 			consoleFlush();
 #endif
-		}
+		} break;
 
 		case 0xFF: {
 #ifdef NITROCOMPOSER_LOG_FLOW
