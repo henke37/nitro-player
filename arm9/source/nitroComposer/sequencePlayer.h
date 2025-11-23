@@ -90,6 +90,7 @@ namespace NitroComposer {
 		std::vector<RegisteredPlayer> registeredPlayers;
 		std::int32_t registerPlayer(SequencePlayer *player);
 		void unregisterPlayer(SequencePlayer *player);
+		SequencePlayer *findPlayerById(std::int32_t id);
 		std::int32_t nextPlayerId = 1;
 
 		friend class SequencePlayer;

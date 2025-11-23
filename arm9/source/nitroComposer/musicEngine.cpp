@@ -53,7 +53,9 @@ namespace NitroComposer {
 		case AsyncEventIPC::EventType::SequenceEnded:
 		{
 			// TODO: multiple players
-			//this->sequenceEnded();
+			auto statusEvt = static_cast<const SequenceStatusEventIPC *>(event);
+			auto player = findPlayerById(statusEvt->playerId);
+			player->sequenceEnded();
 		} break;
 		default:
 			sassert(false, "Unknown async event %u", static_cast<std::uint8_t>(event->eventId));
@@ -81,6 +83,16 @@ namespace NitroComposer {
 			}
 		}
 		sassert(false, "Tried to unregister unregistered player");
+	}
+
+	SequencePlayer *MusicEngine::findPlayerById(std::int32_t id) {
+		assert(id > 0);
+		for(auto &regPlayer : registeredPlayers) {
+			if(regPlayer.id == id) {
+				return regPlayer.player;
+			}
+		}
+		return nullptr;
 	}
 
 	void MusicEngine::SetMainVolume(std::uint8_t volume) {

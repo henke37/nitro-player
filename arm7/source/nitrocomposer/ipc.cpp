@@ -110,7 +110,7 @@ namespace NitroComposer {
 	void SequencePlayer::sendFifoSequenceStatus(const PlayingSequence &sequence) {
 		SequenceStatusEventIPC statusIpc;
 		statusIpc.eventId = AsyncEventIPC::EventType::SequenceEnded;
-		//TODO statusIpc.playerId = playerId;
+		statusIpc.playerId = 1;//TODO: multiple players
 		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequenceStatusEventIPC), (u8 *)&statusIpc);
 	}
 }
