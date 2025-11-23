@@ -6,23 +6,23 @@ TestMode::~TestMode() {}
 
 void TestMode::Load() {
 	sdat = std::make_unique<NitroComposer::SDatFile>("sound_data.sdat");
-	NitroComposer::sequencePlayer.SetSdat(sdat.get());
+	sequencePlayer.SetSdat(sdat.get());
 	printf("Sdat loaded ok.\n");
 
 	PlaySequence("BGM02DS_REQ");
 
-	printf("Getvar: %hi\n", NitroComposer::sequencePlayer.GetVar(1));
+	printf("Getvar: %hi\n", sequencePlayer.GetVar(1));
 }
 
 void TestMode::PlaySequence(const std::string &sequenceName) {
 	isplaying = true;
-	NitroComposer::sequencePlayer.PlaySequence(sequenceName);
+	sequencePlayer.PlaySequence(sequenceName);
 	printf("Loaded sequence %s.\n", sequenceName.c_str());
 }
 
 void TestMode::PlaySequence(unsigned int sequenceId) {
 	isplaying = true;
-	NitroComposer::sequencePlayer.PlaySequence(sequenceId);
+	sequencePlayer.PlaySequence(sequenceId);
 	printf("Loaded sequence %s.\n", sdat->GetNameForSequence(sequenceId).c_str());
 }
 
@@ -34,7 +34,7 @@ void TestMode::Update() {
 	if(isplaying) {
 		if(keysDown() & KEY_B) {
 			isplaying = false;
-			NitroComposer::sequencePlayer.AbortSequence();
+			sequencePlayer.AbortSequence();
 		}
 	} else {
 		if(keysDown() & KEY_A) {

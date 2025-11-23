@@ -116,6 +116,7 @@
     <ClCompile Include="arm9\source\ndsfile.cpp" />
     <ClCompile Include="arm9\source\nftr.cpp" />
     <ClCompile Include="arm9\source\nineslice.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\musicEngine.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sbnk.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sdatFile.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sequencePlayer.cpp" />

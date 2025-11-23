@@ -22,6 +22,8 @@ private:
 
 	bool isplaying = false;
 	unsigned int sequenceId = 0;
+
+	NitroComposer::SequencePlayer sequencePlayer;
 };
 
 #endif

@@ -10,7 +10,22 @@
 #include "swar.h"
 #include "sdatFile.h"
 
+#include "../fifoMutex.h"
+
 namespace NitroComposer {
+
+	class FifoMutexLock {
+	public:
+		FifoMutexLock() {
+			mutex.aquire(FIFO_NITRO_COMPOSER);
+		}
+		~FifoMutexLock() {
+			mutex.release();
+		}
+
+	private:
+		FifoMutex mutex;
+	};
 
 	class SequencePlayer {
 	public:
@@ -38,8 +53,6 @@ namespace NitroComposer {
 		void SetVar(std::uint8_t var, std::int16_t val);
 		std::int16_t GetVar(std::uint8_t var) const;
 
-		void SetMainVolume(std::uint8_t volume);
-
 	private:
 		const SDatFile *sdat;
 
@@ -56,6 +69,14 @@ namespace NitroComposer {
 
 		void sequenceEnded();
 
+	};
+
+	class MusicEngine {
+	public:
+		MusicEngine();
+		~MusicEngine();
+		void SetMainVolume(std::uint8_t volume);
+	private:
 		cosema_t asyncEvtSemaphore;
 
 		static void fifoISR();
@@ -68,6 +89,6 @@ namespace NitroComposer {
 		friend class FifoMutexLock;
 	};
 
-	extern SequencePlayer sequencePlayer;
+	extern MusicEngine musicEngine;
 }
 #endif
