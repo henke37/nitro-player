@@ -78,4 +78,11 @@ namespace NitroComposer {
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetMainVolumeIPC), (u8 *)buff.get());
 		assert(success);
 	}
+
+	FifoMutexLock::FifoMutexLock() {
+		mutex.aquire(FIFO_NITRO_COMPOSER);
+	}
+	FifoMutexLock::~FifoMutexLock() {
+		mutex.release();
+	}
 }

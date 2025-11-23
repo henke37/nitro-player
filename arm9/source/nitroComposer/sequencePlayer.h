@@ -16,12 +16,8 @@ namespace NitroComposer {
 
 	class FifoMutexLock {
 	public:
-		FifoMutexLock() {
-			mutex.aquire(FIFO_NITRO_COMPOSER);
-		}
-		~FifoMutexLock() {
-			mutex.release();
-		}
+		FifoMutexLock();
+		~FifoMutexLock();
 
 	private:
 		FifoMutex mutex;
