@@ -50,6 +50,7 @@ namespace NitroComposer {
 		std::int16_t GetVar(std::uint8_t var) const;
 
 	private:
+		std::int32_t playerId = -1;
 		const SDatFile *sdat;
 
 		std::unique_ptr<SSEQ> sseq;
@@ -64,7 +65,7 @@ namespace NitroComposer {
 		std::unique_ptr<std::uint8_t[]> sequenceData;
 
 		void sequenceEnded();
-
+		friend class MusicEngine;
 	};
 
 	class MusicEngine {
@@ -82,6 +83,16 @@ namespace NitroComposer {
 
 		void ipcPowerOn();
 
+		struct RegisteredPlayer {
+			SequencePlayer *player;
+			std::int32_t id;
+		};
+		std::vector<RegisteredPlayer> registeredPlayers;
+		std::int32_t registerPlayer(SequencePlayer *player);
+		void unregisterPlayer(SequencePlayer *player);
+		std::int32_t nextPlayerId = 1;
+
+		friend class SequencePlayer;
 		friend class FifoMutexLock;
 	};
 

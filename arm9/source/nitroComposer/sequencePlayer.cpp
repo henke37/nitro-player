@@ -8,8 +8,12 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::SequencePlayer() : sdat(nullptr) {}
-	SequencePlayer::~SequencePlayer() {}
+	SequencePlayer::SequencePlayer() : sdat(nullptr) {
+		playerId = musicEngine.registerPlayer(this);
+	}
+	SequencePlayer::~SequencePlayer() {
+		musicEngine.unregisterPlayer(this);
+	}
 
 	void SequencePlayer::SetSdat(const SDatFile *sdat) {
 		if(this->sdat == sdat) return;
@@ -51,6 +55,7 @@ namespace NitroComposer {
 
 		std::unique_ptr<PlayTrackIPC> buff = std::make_unique<PlayTrackIPC>();
 		buff->command = BaseIPC::CommandType::PlaySequence;
+		buff->playerId = playerId;
 		buff->sequenceData = sequenceData.get();
 		buff->startPos = 0;
 		buff->length = dataLen;
@@ -62,8 +67,9 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::AbortSequence() {
-		std::unique_ptr<BaseIPC> buff = std::make_unique<BaseIPC>();
+		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
 		buff->command = BaseIPC::CommandType::StopSequence;
+		buff->playerId = playerId;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
 		assert(success);
 	}
@@ -88,6 +94,7 @@ namespace NitroComposer {
 
 		std::unique_ptr<LoadBankIPC> buff = std::make_unique<LoadBankIPC>();
 		buff->command = BaseIPC::CommandType::LoadBank;
+		buff->playerId = playerId;
 		buff->bank = sbnk.get();
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadBankIPC), (u8 *)buff.get());
@@ -104,6 +111,7 @@ namespace NitroComposer {
 		if(archiveId >= 0xFFFF) {
 			std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
 			buff->command = BaseIPC::CommandType::LoadWaveArchive;
+			buff->playerId = playerId;
 			buff->slot = archiveSlot;
 			buff->archive = nullptr;
 			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
@@ -118,6 +126,7 @@ namespace NitroComposer {
 		{
 			std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
 			buff->command = BaseIPC::CommandType::LoadWaveArchive;
+			buff->playerId = playerId;
 			buff->slot = archiveSlot;
 			buff->archive = &loadedArchive;
 			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
@@ -222,6 +231,7 @@ namespace NitroComposer {
 	void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
 		std::unique_ptr<SetVarIPC> buff = std::make_unique<SetVarIPC>();
 		buff->command = BaseIPC::CommandType::SetVar;
+		buff->playerId = playerId;
 		buff->var = var;
 		buff->val = val;
 
@@ -231,6 +241,7 @@ namespace NitroComposer {
 	std::int16_t SequencePlayer::GetVar(std::uint8_t var) const {
 		std::unique_ptr<GetVarIPC> buff = std::make_unique<GetVarIPC>();
 		buff->command = BaseIPC::CommandType::GetVar;
+		buff->playerId = playerId;
 		buff->var = var;
 
 		{

@@ -43,7 +43,7 @@ namespace NitroComposer {
 	};
 
 	struct SequenceStatusEventIPC : AsyncEventIPC {
-		//TODO std::uint8_t playerId;
+		std::int32_t playerId;
 	};
 
 	struct ReserveChannelsIPC : BaseIPC {
@@ -55,7 +55,7 @@ namespace NitroComposer {
 	};
 
 	struct SequencePlayerIPC : BaseIPC {
-
+		std::int32_t playerId;
 	};
 
 	struct PlayTrackIPC : SequencePlayerIPC {

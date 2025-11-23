@@ -67,7 +67,21 @@ namespace NitroComposer {
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
 		assert(success);
 	}
+
+	std::int32_t MusicEngine::registerPlayer(SequencePlayer *player) {
+		registeredPlayers.push_back({ player, nextPlayerId });
+		return nextPlayerId++;
+	}
 	
+	void MusicEngine::unregisterPlayer(SequencePlayer *player) {
+		for(auto itr = registeredPlayers.begin(); itr != registeredPlayers.end(); ++itr) {
+			if(itr->player == player) {
+				registeredPlayers.erase(itr);
+				return;
+			}
+		}
+		sassert(false, "Tried to unregister unregistered player");
+	}
 
 	void MusicEngine::SetMainVolume(std::uint8_t volume) {
 
