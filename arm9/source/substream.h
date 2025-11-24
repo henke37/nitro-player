@@ -21,10 +21,10 @@ public:
 	size_t getLength() const;
 
 private:
-	BinaryReadStream *realStream;
-	size_t offset;
-	size_t limit;
-	bool ownsStream;
+	BinaryReadStream * const realStream;
+	const size_t offset;
+	const size_t limit;
+	const bool ownsStream;
 	
 	size_t virtualPos;
 	
