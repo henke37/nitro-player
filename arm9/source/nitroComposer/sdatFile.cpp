@@ -315,7 +315,7 @@ namespace NitroComposer {
 			for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
 				std::uint32_t offset = *itr;
 				if(offset == 0) {
-					//bankInfos.emplace_back(nullptr);
+					bankInfos.emplace_back(nullptr);
 					continue;
 				}
 				reader.setPos(offset);
