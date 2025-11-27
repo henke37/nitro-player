@@ -18,13 +18,11 @@ void TestMode::LoadSDat(const std::string &fileName) {
 }
 
 void TestMode::PlaySequence(const std::string &sequenceName) {
-	isplaying = true;
 	sequencePlayer.PlaySequence(sequenceName);
 	printf("Loaded sequence %s.\n", sequenceName.c_str());
 }
 
 void TestMode::PlaySequence(unsigned int sequenceId) {
-	isplaying = true;
 	sequencePlayer.PlaySequence(sequenceId);
 	printf("Loaded sequence %s.\n", sdat->GetNameForSequence(sequenceId).c_str());
 }
@@ -34,9 +32,8 @@ void TestMode::Unload() {
 }
 
 void TestMode::Update() {
-	if(isplaying) {
+	if(sequencePlayer.IsPlaying()) {
 		if(keysDown() & KEY_B) {
-			isplaying = false;
 			sequencePlayer.AbortSequence();
 		}
 	} else {
