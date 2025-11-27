@@ -11,6 +11,7 @@ public:
 	~TestMode();
 
 	void Load() override;
+	void LoadSDat(const std::string &fileName);
 	void Unload() override;
 	void Update() override;
 private:

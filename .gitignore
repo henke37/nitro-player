@@ -1,8 +1,8 @@
 /.vs
-/FileSystem/sound_data.sdat
 *.vcxproj.filters
 *.vcxproj.user
 *.nds
 /build
 *.ml?
 *.lnk
+*.sdat

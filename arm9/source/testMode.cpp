@@ -5,13 +5,15 @@ TestMode::TestMode() {}
 TestMode::~TestMode() {}
 
 void TestMode::Load() {
-	sdat = std::make_unique<NitroComposer::SDatFile>("sound_data.sdat");
-	sequencePlayer.SetSdat(sdat.get());
-	printf("Sdat loaded ok.\n");
-
-	PlaySequence("BGM02DS_REQ");
+	LoadSDat("MPDS_sound.sdat");
 
 	printf("Getvar: %hi\n", sequencePlayer.GetVar(1));
+}
+
+void TestMode::LoadSDat(const std::string &fileName) {
+	sdat = std::make_unique<NitroComposer::SDatFile>(fileName);
+	sequencePlayer.SetSdat(sdat.get());
+	printf("Sdat loaded ok.\n");
 }
 
 void TestMode::PlaySequence(const std::string &sequenceName) {
