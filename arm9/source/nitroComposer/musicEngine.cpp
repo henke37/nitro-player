@@ -22,7 +22,9 @@ namespace NitroComposer {
 		powerOn(PM_SOUND_AMP);
 	}
 
-	MusicEngine::~MusicEngine() {}
+	MusicEngine::~MusicEngine() {
+		fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, nullptr, nullptr);
+	}
 
 	void MusicEngine::fifoHandler(int num_bytes, void *userdata) {
 		MusicEngine *engine = static_cast<MusicEngine *>(userdata);
