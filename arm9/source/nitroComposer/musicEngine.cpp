@@ -15,6 +15,8 @@ namespace NitroComposer {
 
 		cothread_create(msgPumpThread, this, 0x1000, COTHREAD_DETACHED);
 
+		fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, fifoHandler, this);
+
 		ipcPowerOn();
 
 		powerOn(PM_SOUND_AMP);
@@ -22,9 +24,9 @@ namespace NitroComposer {
 
 	MusicEngine::~MusicEngine() {}
 
-	void MusicEngine::fifoISR() {
-		if(!fifoCheckDatamsg(FIFO_NITRO_COMPOSER)) return;
-		cosema_signal(&musicEngine.asyncEvtSemaphore);
+	void MusicEngine::fifoHandler(int num_bytes, void *userdata) {
+		MusicEngine *engine = static_cast<MusicEngine *>(userdata);
+		cosema_signal(&engine->asyncEvtSemaphore);
 	}
 
 	int MusicEngine::msgPumpThread(void *arg) {
@@ -38,7 +40,8 @@ namespace NitroComposer {
 			cosema_wait(&asyncEvtSemaphore);
 			{
 				u8 fifoBuffer[fifoBuffSize];
-				fifoGetDatamsg(FIFO_NITRO_COMPOSER, fifoBuffSize, fifoBuffer);
+				int written=fifoGetDatamsg(FIFO_NITRO_COMPOSER, fifoBuffSize, fifoBuffer);
+				sassert(written >= (int)sizeof(AsyncEventIPC), "Too short async msg %i",written);
 
 				auto ipc = reinterpret_cast<AsyncEventIPC *>(fifoBuffer);
 
@@ -52,7 +55,6 @@ namespace NitroComposer {
 		switch(event->eventId) {
 		case AsyncEventIPC::EventType::SequenceEnded:
 		{
-			// TODO: multiple players
 			auto statusEvt = static_cast<const SequenceStatusEventIPC *>(event);
 			auto player = findPlayerById(statusEvt->playerId);
 			player->sequenceEnded();

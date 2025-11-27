@@ -1,5 +1,7 @@
 #include "sequencePlayer.h"
 
+#include <nds/arm7/console.h>
+
 #include <cassert>
 
 namespace NitroComposer {

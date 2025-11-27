@@ -36,7 +36,7 @@ namespace NitroComposer {
 
 	struct AsyncEventIPC {
 		enum class EventType : std::uint8_t {
-			SequenceEnded
+			SequenceEnded = 102
 		};
 
 		EventType eventId;
