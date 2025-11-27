@@ -49,6 +49,8 @@ namespace NitroComposer {
 		void SetVar(std::uint8_t var, std::int16_t val);
 		std::int16_t GetVar(std::uint8_t var) const;
 
+		bool IsPlaying() const { return isPlaying; }
+
 	private:
 		std::int32_t playerId = -1;
 		const SDatFile *sdat;
@@ -63,6 +65,8 @@ namespace NitroComposer {
 		std::uint16_t channelMask;
 
 		std::unique_ptr<std::uint8_t[]> sequenceData;
+
+		bool isPlaying = false;
 
 		void sequenceEnded();
 		friend class MusicEngine;

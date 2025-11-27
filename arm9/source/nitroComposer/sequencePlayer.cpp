@@ -64,6 +64,8 @@ namespace NitroComposer {
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)buff.get());
 		assert(success);
+
+		isPlaying = true;
 	}
 
 	void SequencePlayer::AbortSequence() {
@@ -72,10 +74,13 @@ namespace NitroComposer {
 		buff->playerId = playerId;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
 		assert(success);
+
+		isPlaying = false;
 	}
 
 	void SequencePlayer::sequenceEnded() {
 		puts("Sequence ended");
+		isPlaying = false;
 	}
 
 	void SequencePlayer::LoadBank(unsigned int bankId) {
