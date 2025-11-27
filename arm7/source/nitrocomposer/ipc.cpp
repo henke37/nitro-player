@@ -108,9 +108,13 @@ namespace NitroComposer {
 		}
 	}
 	void SequencePlayer::sendFifoSequenceStatus(const PlayingSequence &sequence) {
+		bool success;
 		SequenceStatusEventIPC statusIpc;
 		statusIpc.eventId = AsyncEventIPC::EventType::SequenceEnded;
 		statusIpc.playerId = 1;//TODO: multiple players
-		fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequenceStatusEventIPC), (u8 *)&statusIpc);
+		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequenceStatusEventIPC), (u8 *)&statusIpc);
+		assert(success);
+		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
+		assert(success);
 	}
 }

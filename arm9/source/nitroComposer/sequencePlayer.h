@@ -80,7 +80,7 @@ namespace NitroComposer {
 	private:
 		cosema_t asyncEvtSemaphore;
 
-		static void fifoHandler(int num_bytes, void *userdata);
+		static void fifoHandler(void *, void *userdata);
 		static int msgPumpThread(void *arg);
 		void msgPump();
 		void dispatchAsyncEvent(const AsyncEventIPC *event);

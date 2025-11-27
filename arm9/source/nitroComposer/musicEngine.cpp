@@ -15,7 +15,9 @@ namespace NitroComposer {
 
 		cothread_create(msgPumpThread, this, 0x1000, COTHREAD_DETACHED);
 
-		fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, fifoHandler, this);
+		bool success = fifoSetAddressHandler(FIFO_NITRO_COMPOSER, fifoHandler, this);
+		//fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, fifoHandler, this);
+		assert(success);
 
 		ipcPowerOn();
 
@@ -23,10 +25,10 @@ namespace NitroComposer {
 	}
 
 	MusicEngine::~MusicEngine() {
-		fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, nullptr, nullptr);
+		fifoSetAddressHandler(FIFO_NITRO_COMPOSER, nullptr, nullptr);
 	}
 
-	void MusicEngine::fifoHandler(int num_bytes, void *userdata) {
+	void MusicEngine::fifoHandler(void *, void *userdata) {
 		MusicEngine *engine = static_cast<MusicEngine *>(userdata);
 		cosema_signal(&engine->asyncEvtSemaphore);
 	}
@@ -48,7 +50,6 @@ namespace NitroComposer {
 				auto ipc = reinterpret_cast<AsyncEventIPC *>(fifoBuffer);
 
 				dispatchAsyncEvent(ipc);
-				puts("MusicEngine msgPump processing FIFO message");
 			}
 		}
 	}
