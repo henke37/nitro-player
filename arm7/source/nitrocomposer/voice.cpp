@@ -12,6 +12,12 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length) {
+		assert(track);
+		assert(instrument);
+		assert(instrument->type != InstrumentBank::InstrumentType::Null);
+		assert(instrument->type != InstrumentBank::InstrumentType::Drumkit);
+		assert(instrument->type != InstrumentBank::InstrumentType::Split);
+
 		this->currentInstrument = instrument;
 		this->track = track;
 
