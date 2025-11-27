@@ -13,6 +13,7 @@ void TestMode::Load() {
 void TestMode::LoadSDat(const std::string &fileName) {
 	sdat = std::make_unique<NitroComposer::SDatFile>(fileName);
 	sequencePlayer.SetSdat(sdat.get());
+	sequenceId = 0;
 	printf("Sdat loaded ok.\n");
 }
 
