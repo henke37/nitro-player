@@ -40,6 +40,9 @@ namespace NitroComposer {
 	void SequencePlayer::Voice::Update() {
 		if(state == SequencePlayer::VoiceState::Free) return;
 
+		assert(track);
+		assert(currentInstrument);
+
 		if(!(SCHANNEL_CR(voiceIndex) & SCHANNEL_ENABLE)) {
 			Kill();
 			return;
