@@ -31,14 +31,25 @@ namespace NitroComposer {
 
 	void StreamPlayer::PlayStream(const std::unique_ptr<StreamInfoRecord> &info) {
 		auto strm = sdat->OpenStream(info);
-		PlayStream(std::make_unique<SingleStreamBlockSource>(std::move(strm)));
+
+		assert(strm->GetChannels() <= 2);
+
+		this->blockSource = std::make_unique<SingleStreamBlockSource>(std::move(strm));
+
+		this->currentEncoding=strm->GetEncoding();
+		this->channels = strm->GetChannels();
+		this->sampleRate = strm->GetSampleRate();
+		this->timer = strm->GetTimer();
+
+		sendInitStreamIPC();
 	}
-	void StreamPlayer::sendInitStreamIPC(WaveEncoding encoding, bool stereo, std::uint16_t timer) {
+
+	void StreamPlayer::sendInitStreamIPC() {
 		InitStreamIPC ipc;
 
 		ipc.command = BaseIPC::CommandType::InitStream;
-		ipc.encoding = encoding;
-		ipc.stereo = stereo;
+		ipc.encoding = currentEncoding;
+		ipc.stereo = channels>1;
 		ipc.timer = timer;
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(InitStreamIPC), (u8 *)&ipc);

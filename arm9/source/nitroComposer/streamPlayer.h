@@ -46,14 +46,19 @@ namespace NitroComposer {
 		void PlayStream(const std::string &streamName);
 		void PlayStream(const std::unique_ptr<StreamInfoRecord> &);
 
-		void PlayStream(std::unique_ptr<IBlockSource> blockSource);
+		void PlayStream(std::unique_ptr<IBlockSource> &&blockSource);
 	private:
 		const SDatFile *sdat;
 		std::unique_ptr<IBlockSource> blockSource;
 
+		WaveEncoding currentEncoding;
+		std::uint8_t channels;
+		std::uint16_t sampleRate;
+		std::uint16_t timer;
+
 		bool isPlaying = false;
 
-		void sendInitStreamIPC(WaveEncoding encoding, bool stereo, std::uint16_t timer);
+		void sendInitStreamIPC();
 	};
 };
 #endif
