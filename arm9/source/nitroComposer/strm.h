@@ -14,6 +14,19 @@ namespace NitroComposer {
 
 		void ReadBlock() const;
 
+		WaveEncoding GetEncoding() const { return encoding; }
+		bool GetLoops() const { return loops; }
+		std::uint8_t GetChannels() const { return channels; }
+		std::uint16_t GetSampleRate() const { return sampleRate; }
+		std::uint16_t GetTimer() const { return timer; }
+		std::uint32_t GetLoopOffset() const { return loopOffset; }
+		std::uint32_t GetSamples() const { return samples; }
+		std::uint32_t GetBlockCount() const { return blockCount; }
+		std::uint32_t GetBlockLen() const { return blockLen; }
+		std::uint32_t GetBlockSamples() const { return blockSamples; }
+		std::uint32_t GetLastBlockLen() const { return lastBlockLen; }
+		std::uint32_t GetLastBlockSamples() const { return lastBlockSamples; }
+
 	private:
 		void Parse();
 		SectionedFile sections;
