@@ -36,11 +36,6 @@ namespace NitroComposer {
 
 		this->blockSource = std::make_unique<SingleStreamBlockSource>(std::move(strm));
 
-		this->currentEncoding=strm->GetEncoding();
-		this->channels = strm->GetChannels();
-		this->sampleRate = strm->GetSampleRate();
-		this->timer = strm->GetTimer();
-
 		sendInitStreamIPC();
 	}
 
@@ -48,9 +43,9 @@ namespace NitroComposer {
 		InitStreamIPC ipc;
 
 		ipc.command = BaseIPC::CommandType::InitStream;
-		ipc.encoding = currentEncoding;
-		ipc.stereo = channels>1;
-		ipc.timer = timer;
+		ipc.encoding = blockSource->GetEncoding();
+		ipc.stereo = blockSource->GetChannels()>1;
+		ipc.timer = blockSource->GetTimer();
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(InitStreamIPC), (u8 *)&ipc);
 		assert(success);
