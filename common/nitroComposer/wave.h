@@ -6,7 +6,7 @@
 
 namespace NitroComposer {
 
-	enum class WaveEncoding {
+	enum class WaveEncoding : std::uint8_t {
 		PCM8 = 0,
 		PCM16 = 1,
 		ADPCM = 2,
