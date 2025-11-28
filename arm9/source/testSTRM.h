@@ -3,6 +3,7 @@
 
 #include "gameMode.h"
 #include "nitroComposer.h"
+#include "nitroComposer/streamPlayer.h"
 
 #include <memory>
 
@@ -16,6 +17,8 @@ public:
 	void Update() override;
 private:
 	std::unique_ptr<NitroComposer::SDatFile> sdat;
+
+	NitroComposer::StreamPlayer player;
 };
 
 #endif

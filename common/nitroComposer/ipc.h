@@ -15,20 +15,20 @@ namespace NitroComposer {
 
 	struct BaseIPC {
 		enum class CommandType : std::uint8_t {
-			Invalid,
-			PowerOn,
-			LoadBank,
-			LoadWaveArchive,
-			PlaySequence,
-			StopSequence,
-			SetTempo,
-			SetMainVolume,
-			GetVar,
-			SetVar,
-			ReserveChannels,
-			InitStream,
-			StreamPushBlock,
-			StreamRetireBlock
+			Invalid = 0,
+			PowerOn = 1,
+			SetMainVolume = 2,
+			ReserveChannels = 50,
+			LoadBank = 101,
+			LoadWaveArchive = 102,
+			PlaySequence = 120,
+			StopSequence = 121,
+			SetTempo = 122,
+			GetVar = 110,
+			SetVar = 111,
+			InitStream = 200,
+			StopStream = 201,
+			StreamPushBlock = 202
 		};
 
 		CommandType command;
@@ -36,7 +36,9 @@ namespace NitroComposer {
 
 	struct AsyncEventIPC {
 		enum class EventType : std::uint8_t {
-			SequenceEnded = 102
+			SequenceEnded = 102,
+			StreamEnded = 201,
+			StreamRetireBlock = 203
 		};
 
 		EventType eventId;

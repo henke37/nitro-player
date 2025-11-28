@@ -9,8 +9,9 @@ void TestSTRM::Unload() {}
 void TestSTRM::Load() {
 	sdat = std::make_unique<NitroComposer::SDatFile>("sound_data.sdat");
 
-	auto &info = sdat->GetStreamInfo("STRM_BGM03DS_REQ");
-	auto strm = sdat->OpenStream(info);
+	player.SetSdat(sdat.get());
+	player.PlayStream("STRM_BGM03DS_REQ");
+
 	puts("Loaded STRM.");
 }
 
