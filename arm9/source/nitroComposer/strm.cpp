@@ -3,6 +3,8 @@
 #include "../binaryReader.h"
 #include "../substream.h"
 
+#include <nds/arm9/sassert.h>
+
 namespace NitroComposer {
 
 	STRM::STRM(const std::string &fileName) : sections(fileName) {
@@ -15,6 +17,9 @@ namespace NitroComposer {
 
 	std::unique_ptr<StreamBlock> STRM::ReadBlock(std::uint32_t blockIndex) {
 		std::unique_ptr<BinaryReadStream> data = sections.getSectionData("DATA");
+		sassert(data, "STRM has no DATA section!");
+
+		sassert(blockIndex < blockCount, "BlockIndex %li out of bounds (%li)!",blockIndex,blockCount);
 
 		bool isLastBlock = (blockIndex + 1) == blockCount;
 		size_t blockSize = isLastBlock ? lastBlockLen : blockLen;
