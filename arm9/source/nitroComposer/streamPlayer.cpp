@@ -31,10 +31,22 @@ namespace NitroComposer {
 
 	void StreamPlayer::PlayStream(const std::unique_ptr<StreamInfoRecord> &info) {
 		auto strm = sdat->OpenStream(info);
-
 		assert(strm->GetChannels() <= 2);
 
 		this->blockSource = std::make_unique<SingleStreamBlockSource>(std::move(strm));
+
+		StartPlayback();
+	}
+
+	void StreamPlayer::PlayStream(std::unique_ptr<IBlockSource> &&blockSource) {
+		assert(blockSource);
+		this->blockSource = std::move(blockSource);
+
+		StartPlayback();
+	}
+
+	void StreamPlayer::StartPlayback() {
+		assert(blockSource);
 
 		sendInitStreamIPC();
 	}

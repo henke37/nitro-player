@@ -71,6 +71,8 @@ namespace NitroComposer {
 
 		bool isPlaying = false;
 
+		void StartPlayback();
+
 		void sendInitStreamIPC();
 	};
 };
