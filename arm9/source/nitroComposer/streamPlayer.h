@@ -31,6 +31,8 @@ namespace NitroComposer {
 		SingleStreamBlockSource(std::unique_ptr<STRM> &&stream);
 		~SingleStreamBlockSource();
 
+		std::uint32_t GetCurrentPos() const { return currentPos; }
+
 		std::unique_ptr<StreamBlock> GetNextBlock() override;
 
 		WaveEncoding GetEncoding() const override { return stream->GetEncoding(); }
@@ -39,6 +41,7 @@ namespace NitroComposer {
 		std::uint16_t GetTimer() const override { return stream->GetTimer(); }
 	private:
 		std::unique_ptr<STRM> stream;
+		std::uint32_t currentPos = 0;
 
 		struct ChunkPos {
 			std::uint32_t chunkIndex;
@@ -46,6 +49,7 @@ namespace NitroComposer {
 		};
 
 		ChunkPos ChunkForAbsolutePos(std::uint32_t absPos) const;
+		std::unique_ptr<StreamBlock> GetBlockAtAbsPos(std::uint32_t absPos) const;
 	};
 
 	class PlaylistBlockSource : public IBlockSource {

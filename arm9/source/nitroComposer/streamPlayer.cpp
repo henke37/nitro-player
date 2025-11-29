@@ -13,6 +13,19 @@ namespace NitroComposer {
 		assert(this->stream);
 	}
 	SingleStreamBlockSource::~SingleStreamBlockSource() {}
+	std::unique_ptr<StreamBlock> SingleStreamBlockSource::GetNextBlock() {
+		assert(stream);
+		if(currentPos >= stream->GetSamples()) {
+			if(!stream->GetLoops()) {
+				currentPos = 0;
+				return nullptr;
+			}
+			currentPos = stream->GetLoopOffset();
+		}
+		auto block = GetBlockAtAbsPos(currentPos);
+		currentPos += block->sampleCount;
+		return block;
+	}
 	SingleStreamBlockSource::SingleStreamBlockSource(const std::string &fileName)
 		: SingleStreamBlockSource(std::make_unique<STRM>(fileName)) {}
 	SingleStreamBlockSource::SingleStreamBlockSource(std::unique_ptr<BinaryReadStream> &&stream) 
@@ -25,6 +38,14 @@ namespace NitroComposer {
 		pos.chunkIndex = absPos / stream->GetBlockSamples();
 		pos.sampleOffset = absPos % stream->GetBlockSamples();
 		return pos;
+	}
+
+	std::unique_ptr<StreamBlock> SingleStreamBlockSource::GetBlockAtAbsPos(std::uint32_t absPos) const {
+		assert(stream);
+		auto chunkPos = ChunkForAbsolutePos(absPos);
+		auto block = stream->ReadBlock(chunkPos.chunkIndex);
+		block->startPos = chunkPos.sampleOffset;
+		return block;
 	}
 
 
