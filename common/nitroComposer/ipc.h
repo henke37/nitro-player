@@ -103,6 +103,7 @@ namespace NitroComposer {
 		std::uint32_t blockId;
 		std::uint32_t blockDataSize;
 		std::uint32_t blockSampleCount;
+		std::uint32_t startPos;
 		void *blockData[2];
 	};
 

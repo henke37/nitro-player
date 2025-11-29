@@ -77,11 +77,17 @@ namespace NitroComposer {
 		const SDatFile *sdat;
 		std::unique_ptr<IBlockSource> blockSource;
 
+		std::uint32_t nextBlockId = 0;
+		std::vector<std::unique_ptr<StreamBlock>> blocks;
+		void addBlock(std::unique_ptr<StreamBlock> &&block);
+		void retireBlock(std::uint32_t blockId);
+
 		bool isPlaying = false;
 
 		void StartPlayback();
 
 		void sendInitStreamIPC();
+		void sendPushBlockIPC(const std::unique_ptr<StreamBlock> &block);
 	};
 };
 #endif

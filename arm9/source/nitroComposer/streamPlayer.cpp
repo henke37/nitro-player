@@ -53,6 +53,22 @@ namespace NitroComposer {
 		StartPlayback();
 	}
 
+	void StreamPlayer::addBlock(std::unique_ptr<StreamBlock> &&block) {
+		block->blockId = nextBlockId++;
+		blocks.emplace_back(std::move(block));
+	}
+
+	void StreamPlayer::retireBlock(std::uint32_t blockId) {
+		auto itr = blocks.begin();
+		for(; itr != blocks.end(); ++itr) {
+			if((*itr)->blockId == blockId) {
+				blocks.erase(itr);
+				return;
+			}
+		}
+		assert(false);
+	}
+
 	void StreamPlayer::StartPlayback() {
 		assert(blockSource);
 
@@ -68,6 +84,22 @@ namespace NitroComposer {
 		ipc.timer = blockSource->GetTimer();
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(InitStreamIPC), (u8 *)&ipc);
+		assert(success);
+	}
+	void StreamPlayer::sendPushBlockIPC(const std::unique_ptr<StreamBlock> &block) {
+		assert(block);
+
+		StreamPushBlockIPC ipc;
+		ipc.command = BaseIPC::CommandType::StreamPushBlock;
+		ipc.blockId = block->blockId;
+		ipc.blockDataSize = block->dataSize;
+		ipc.blockSampleCount = block->sampleCount;
+		ipc.startPos = block->startPos;
+
+		for(unsigned int channel = 0; channel < 2; ++channel) {
+			ipc.blockData[channel] = block->blockData[channel].get();
+		}
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPushBlockIPC), (u8 *)&ipc);
 		assert(success);
 	}
 }

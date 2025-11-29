@@ -8,8 +8,9 @@ namespace NitroComposer {
 
 	struct StreamBlock {
 	public:
-		std::uint32_t sampleCount;
+		std::uint32_t blockId;
 		size_t dataSize;
+		std::uint32_t sampleCount;
 		std::uint32_t startPos;
 		std::unique_ptr<std::uint8_t[]> blockData[2];
 	};
