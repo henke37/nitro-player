@@ -13,6 +13,29 @@ namespace NitroComposer {
 		Parse();
 	}
 
+	std::unique_ptr<StreamBlock> STRM::ReadBlock(std::uint32_t blockIndex) {
+		std::unique_ptr<BinaryReadStream> data = sections.getSectionData("DATA");
+
+		bool isLastBlock = (blockIndex + 1) == blockCount;
+		size_t blockSize = isLastBlock ? lastBlockLen : blockLen;
+		std::uint32_t blockSamplesCount = isLastBlock ? lastBlockSamples : blockSamples;
+
+		std::uint32_t blockOffset = blockIndex * blockLen * channels;
+
+		std::unique_ptr<StreamBlock> block=std::make_unique<StreamBlock>();
+		block->sampleCount = blockSamplesCount;
+		block->dataSize = blockSize;
+		block->startPos = 0;
+
+		for(unsigned int channel = 0; channel < channels; ++channel) {
+			data->setPos(blockOffset + blockSize * channel);
+			block->blockData[channel] = std::make_unique<std::uint8_t[]>(blockSize);
+			data->read(block->blockData[channel].get(), blockSize);
+		}
+
+		return block;
+	}
+
 	void STRM::Parse() {
 		BinaryReader reader(sections.getSectionData("HEAD"));
 		reader.skip(4);

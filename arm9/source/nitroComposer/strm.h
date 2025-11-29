@@ -6,13 +6,21 @@
 
 namespace NitroComposer {
 
+	struct StreamBlock {
+	public:
+		std::uint32_t sampleCount;
+		size_t dataSize;
+		std::uint32_t startPos;
+		std::unique_ptr<std::uint8_t[]> blockData[2];
+	};
+
 	class STRM {
 
 	public:
 		STRM(const std::string &fileName);
 		STRM(std::unique_ptr<BinaryReadStream> &&stream);
 
-		void ReadBlock() const;
+		std::unique_ptr<StreamBlock> ReadBlock(std::uint32_t blockIndex);
 
 		WaveEncoding GetEncoding() const { return encoding; }
 		bool GetLoops() const { return loops; }

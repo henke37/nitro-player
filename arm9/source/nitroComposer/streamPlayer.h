@@ -16,6 +16,8 @@ namespace NitroComposer {
 	public:
 		virtual ~IBlockSource() = default;
 
+		virtual std::unique_ptr<StreamBlock> GetNextBlock() = 0;
+
 		virtual WaveEncoding GetEncoding() const = 0;
 		virtual std::uint8_t GetChannels() const = 0;
 		virtual std::uint16_t GetSampleRate() const = 0;
@@ -28,6 +30,8 @@ namespace NitroComposer {
 		SingleStreamBlockSource(std::unique_ptr<BinaryReadStream> &&stream);
 		SingleStreamBlockSource(std::unique_ptr<STRM> &&stream);
 		~SingleStreamBlockSource();
+
+		std::unique_ptr<StreamBlock> GetNextBlock() override;
 
 		WaveEncoding GetEncoding() const override { return stream->GetEncoding(); }
 		std::uint8_t GetChannels() const override { return stream->GetChannels(); }
@@ -42,6 +46,8 @@ namespace NitroComposer {
 	public:
 		PlaylistBlockSource();
 		~PlaylistBlockSource();
+
+		std::unique_ptr<StreamBlock> GetNextBlock() override;
 
 		WaveEncoding GetEncoding() const override;
 		std::uint8_t GetChannels() const override;
