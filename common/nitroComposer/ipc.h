@@ -106,7 +106,7 @@ namespace NitroComposer {
 		void *blockData[2];
 	};
 
-	struct StreamRetireBlockIPC : StreamPlayerIPC {
+	struct StreamRetireBlockIPC : AsyncEventIPC {
 		std::uint32_t blockId;
 	};
 }
