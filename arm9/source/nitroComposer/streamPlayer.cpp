@@ -19,6 +19,14 @@ namespace NitroComposer {
 		: SingleStreamBlockSource(std::make_unique<STRM>(std::move(stream))) {}
 
 
+
+	void StreamPlayer::StopStream() {
+		std::unique_ptr<StreamPlayerIPC> buff = std::make_unique<StreamPlayerIPC>();
+		buff->command = BaseIPC::CommandType::StopStream;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerIPC), (u8 *)buff.get());
+		assert(success);
+	}
+
 	void StreamPlayer::PlayStream(unsigned int streamId) {
 		auto &info = sdat->GetStreamInfo(streamId);
 		PlayStream(info);

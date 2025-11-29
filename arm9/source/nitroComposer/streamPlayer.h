@@ -60,6 +60,8 @@ namespace NitroComposer {
 
 		void SetSdat(const SDatFile *sdat);
 
+		void StopStream();
+
 		void PlayStream(unsigned int streamId);
 		void PlayStream(const std::string &streamName);
 		void PlayStream(const std::unique_ptr<StreamInfoRecord> &);
