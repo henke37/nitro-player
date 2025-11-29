@@ -23,6 +23,8 @@ namespace NitroComposer {
 		FifoMutex mutex;
 	};
 
+	class StreamPlayer;
+
 	class SequencePlayer {
 	public:
 		SequencePlayer();
@@ -97,6 +99,9 @@ namespace NitroComposer {
 		SequencePlayer *findPlayerById(std::int32_t id);
 		std::int32_t nextPlayerId = 1;
 
+		StreamPlayer *currentStreamPlayer = nullptr;
+
+		friend class StreamPlayer;
 		friend class SequencePlayer;
 		friend class FifoMutexLock;
 	};

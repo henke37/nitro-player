@@ -1,13 +1,19 @@
 #include "streamPlayer.h"
+#include "sequencePlayer.h"
 
 #include <cassert>
 #include <nds/arm9/sassert.h>
 #include <nds/fifocommon.h>
 
 namespace NitroComposer {
-	StreamPlayer::StreamPlayer() {}
-	StreamPlayer::~StreamPlayer() {}
-
+	StreamPlayer::StreamPlayer() {
+		assert(!musicEngine.currentStreamPlayer);
+		musicEngine.currentStreamPlayer = this;
+	}
+	StreamPlayer::~StreamPlayer() {
+		assert(musicEngine.currentStreamPlayer == this);
+		musicEngine.currentStreamPlayer = nullptr;
+	}
 
 	SingleStreamBlockSource::SingleStreamBlockSource(std::unique_ptr<STRM> &&stream) : stream(std::move(stream)) {
 		assert(this->stream);
@@ -101,6 +107,8 @@ namespace NitroComposer {
 	void StreamPlayer::StartPlayback() {
 		assert(blockSource);
 
+		isPlaying = true;
+
 		sendInitStreamIPC();
 	}
 
@@ -130,5 +138,8 @@ namespace NitroComposer {
 		}
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPushBlockIPC), (u8 *)&ipc);
 		assert(success);
+	}
+	void StreamPlayer::streamEnded() {
+		isPlaying = false;
 	}
 }

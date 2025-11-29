@@ -1,4 +1,5 @@
 #include "sequencePlayer.h"
+#include "streamPlayer.h"
 
 #include <nds/arm9/sassert.h>
 #include <nds/fifocommon.h>
@@ -61,6 +62,17 @@ namespace NitroComposer {
 			auto statusEvt = static_cast<const SequenceStatusEventIPC *>(event);
 			auto player = findPlayerById(statusEvt->playerId);
 			player->sequenceEnded();
+		} break;
+		case AsyncEventIPC::EventType::StreamRetireBlock:
+		{
+			assert(currentStreamPlayer);
+			auto retireEvt = static_cast<const StreamRetireBlockIPC *>(event);
+			currentStreamPlayer->retireBlock(retireEvt->blockId);
+		} break;
+		case AsyncEventIPC::EventType::StreamEnded:
+		{
+			assert(currentStreamPlayer);
+			currentStreamPlayer->streamEnded();
 		} break;
 		default:
 			sassert(false, "Unknown async event %u", static_cast<std::uint8_t>(event->eventId));

@@ -76,6 +76,8 @@ namespace NitroComposer {
 
 		void SetSdat(const SDatFile *sdat);
 
+		bool IsPlaying() const { return isPlaying; }
+
 		void StopStream();
 
 		void PlayStream(unsigned int streamId);
@@ -98,6 +100,10 @@ namespace NitroComposer {
 
 		void sendInitStreamIPC();
 		void sendPushBlockIPC(const std::unique_ptr<StreamBlock> &block);
+
+		void streamEnded();
+
+		friend class MusicEngine;
 	};
 };
 #endif
