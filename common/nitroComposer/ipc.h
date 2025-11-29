@@ -28,7 +28,9 @@ namespace NitroComposer {
 			SetVar = 111,
 			InitStream = 200,
 			StopStream = 201,
-			StreamPushBlock = 202
+			StreamPushBlock = 202,
+			StreamSetVolume = 203,
+			StreamSetPan = 204
 		};
 
 		CommandType command;
@@ -92,6 +94,14 @@ namespace NitroComposer {
 	};
 
 	struct StreamPlayerIPC : BaseIPC {
+	};
+
+	struct StreamVolumeIPC : StreamPlayerIPC {
+		std::uint8_t volume;
+	};
+
+	struct StreamPanIPC : StreamPlayerIPC {
+		std::uint8_t pan;
 	};
 
 	struct InitStreamIPC : StreamPlayerIPC {

@@ -15,6 +15,30 @@ namespace NitroComposer {
 		musicEngine.currentStreamPlayer = nullptr;
 	}
 
+	void StreamPlayer::SetVolume(std::uint8_t volume) {
+		assert(volume <= 127);
+		if(this->volume == volume) return;
+		this->volume = volume;
+
+		StreamVolumeIPC ipc;
+		ipc.command = BaseIPC::CommandType::StreamSetVolume;
+		ipc.volume = volume;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamVolumeIPC), (u8 *)&ipc);
+		assert(success);
+	}
+
+	void StreamPlayer::SetPan(std::uint8_t pan) {
+		assert(pan <= 127);
+		if(this->pan == pan) return;
+		this->pan = pan;
+
+		StreamPanIPC ipc;
+		ipc.command = BaseIPC::CommandType::StreamSetPan;
+		ipc.pan = pan;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPanIPC), (u8 *)&ipc);
+		assert(success);
+	}
+
 	SingleStreamBlockSource::SingleStreamBlockSource(std::unique_ptr<STRM> &&stream) : stream(std::move(stream)) {
 		assert(this->stream);
 	}

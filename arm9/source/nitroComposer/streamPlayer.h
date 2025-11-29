@@ -78,6 +78,11 @@ namespace NitroComposer {
 
 		bool IsPlaying() const;
 
+		void SetVolume(std::uint8_t volume);
+		std::uint8_t GetVolume() const { return volume; }
+		void SetPan(std::uint8_t pan);
+		std::uint8_t GetPan() const { return pan; }
+
 		void StopStream();
 
 		void PlayStream(unsigned int streamId);
@@ -100,7 +105,7 @@ namespace NitroComposer {
 		void ensueEnoughQueuedBlocks();
 		static const std::uint32_t minQueuedSamples = 4096;
 
-		enum class PlaybackState {
+		enum class PlaybackState : std::uint8_t {
 			Stopped=0,
 			Starting,
 			Playing,
@@ -108,6 +113,9 @@ namespace NitroComposer {
 			Finishing
 		};
 		PlaybackState playbackState = PlaybackState::Stopped;
+
+		std::uint8_t volume = 127;
+		std::uint8_t pan = 64;
 
 		void StartPlayback();
 
