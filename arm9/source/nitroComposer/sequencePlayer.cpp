@@ -72,7 +72,7 @@ namespace NitroComposer {
 		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
 		buff->command = BaseIPC::CommandType::StopSequence;
 		buff->playerId = playerId;
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)buff.get());
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
 		assert(success);
 
 		isPlaying = false;
