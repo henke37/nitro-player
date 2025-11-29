@@ -38,6 +38,7 @@ namespace NitroComposer {
 		enum class EventType : std::uint8_t {
 			SequenceEnded = 102,
 			StreamEnded = 201,
+			StreamOutOfData = 202,
 			StreamRetireBlock = 203
 		};
 

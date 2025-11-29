@@ -74,6 +74,11 @@ namespace NitroComposer {
 			assert(currentStreamPlayer);
 			currentStreamPlayer->streamEnded();
 		} break;
+		case AsyncEventIPC::EventType::StreamOutOfData:
+		{
+			assert(currentStreamPlayer);
+			currentStreamPlayer->outOfData();
+		} break;
 		default:
 			sassert(false, "Unknown async event %u", static_cast<std::uint8_t>(event->eventId));
 			break;

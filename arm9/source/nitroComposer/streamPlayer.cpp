@@ -56,6 +56,8 @@ namespace NitroComposer {
 
 
 	void StreamPlayer::StopStream() {
+		if(playbackState == PlaybackState::Stopped) return;
+
 		std::unique_ptr<StreamPlayerIPC> buff = std::make_unique<StreamPlayerIPC>();
 		buff->command = BaseIPC::CommandType::StopStream;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerIPC), (u8 *)buff.get());
@@ -90,10 +92,16 @@ namespace NitroComposer {
 
 	void StreamPlayer::addBlock(std::unique_ptr<StreamBlock> &&block) {
 		block->blockId = nextBlockId++;
+		if(nextBlockId==0) nextBlockId = 1;
 		blocks.emplace_back(std::move(block));
 	}
 
 	void StreamPlayer::retireBlock(std::uint32_t blockId) {
+		removeBlock(blockId);
+		ensueEnoughQueuedBlocks();
+	}
+
+	void StreamPlayer::removeBlock(uint32_t blockId) {
 		auto itr = blocks.begin();
 		for(; itr != blocks.end(); ++itr) {
 			if((*itr)->blockId == blockId) {
@@ -104,12 +112,60 @@ namespace NitroComposer {
 		assert(false);
 	}
 
+	std::uint32_t StreamPlayer::GetOutstandingSamples() const {
+		std::uint32_t samples = 0;
+
+		for(const auto &block : blocks) {
+			assert(block->startPos < block->sampleCount);
+			samples += block->sampleCount - block->startPos;
+		}
+
+		return samples;
+	}
+
+	void StreamPlayer::ensueEnoughQueuedBlocks() {
+		
+		switch(playbackState) {
+			case PlaybackState::Stopped:
+			case PlaybackState::Finishing:
+				return;
+			case PlaybackState::BufferUnderrun:
+			case PlaybackState::Starting:
+			case PlaybackState::Playing:
+				break;
+		}
+
+		assert(blockSource);
+		while(GetOutstandingSamples() < minQueuedSamples) {
+			auto blockOwned = blockSource->GetNextBlock();
+			if(!blockOwned) {
+				playbackState = PlaybackState::Finishing;
+				return;
+			}
+
+			assert(blockOwned->dataSize > 0);
+			assert(blockOwned->sampleCount > 0);
+			assert(blockOwned->startPos < blockOwned->sampleCount);
+
+			StreamBlock *block = blockOwned.get();
+			addBlock(std::move(blockOwned));
+			sendPushBlockIPC(block);
+		}
+
+		if(playbackState == PlaybackState::BufferUnderrun) {
+			playbackState = PlaybackState::Playing;
+		}
+	}
+
 	void StreamPlayer::StartPlayback() {
 		assert(blockSource);
 
-		isPlaying = true;
+		playbackState = PlaybackState::Starting;
 
 		sendInitStreamIPC();
+		ensueEnoughQueuedBlocks();
+
+		playbackState = PlaybackState::Playing;
 	}
 
 	void StreamPlayer::sendInitStreamIPC() {
@@ -123,8 +179,12 @@ namespace NitroComposer {
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(InitStreamIPC), (u8 *)&ipc);
 		assert(success);
 	}
-	void StreamPlayer::sendPushBlockIPC(const std::unique_ptr<StreamBlock> &block) {
+	void StreamPlayer::sendPushBlockIPC(const StreamBlock *block) {
 		assert(block);
+		assert(block->blockId != 0);
+		assert(block->dataSize > 0);
+		assert(block->sampleCount > 0);
+		assert(block->startPos < block->sampleCount);
 
 		StreamPushBlockIPC ipc;
 		ipc.command = BaseIPC::CommandType::StreamPushBlock;
@@ -140,6 +200,21 @@ namespace NitroComposer {
 		assert(success);
 	}
 	void StreamPlayer::streamEnded() {
-		isPlaying = false;
+		assert(playbackState != PlaybackState::Stopped);
+		playbackState = PlaybackState::Stopped;
+	}
+	void StreamPlayer::outOfData() {
+		switch(playbackState) {
+			case PlaybackState::Stopped:
+			case PlaybackState::Finishing:
+				return;
+			case PlaybackState::BufferUnderrun:
+				return;
+			case PlaybackState::Starting:
+				return;
+			case PlaybackState::Playing:
+				playbackState = PlaybackState::BufferUnderrun;
+				break;
+		}
 	}
 }

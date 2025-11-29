@@ -76,7 +76,7 @@ namespace NitroComposer {
 
 		void SetSdat(const SDatFile *sdat);
 
-		bool IsPlaying() const { return isPlaying; }
+		bool IsPlaying() const;
 
 		void StopStream();
 
@@ -89,19 +89,33 @@ namespace NitroComposer {
 		const SDatFile *sdat;
 		std::unique_ptr<IBlockSource> blockSource;
 
-		std::uint32_t nextBlockId = 0;
+		std::uint32_t nextBlockId = 1;
 		std::vector<std::unique_ptr<StreamBlock>> blocks;
 		void addBlock(std::unique_ptr<StreamBlock> &&block);
 		void retireBlock(std::uint32_t blockId);
 
-		bool isPlaying = false;
+		void removeBlock(uint32_t blockId);
+
+		std::uint32_t GetOutstandingSamples() const;
+		void ensueEnoughQueuedBlocks();
+		static const std::uint32_t minQueuedSamples = 4096;
+
+		enum class PlaybackState {
+			Stopped=0,
+			Starting,
+			Playing,
+			BufferUnderrun,
+			Finishing
+		};
+		PlaybackState playbackState = PlaybackState::Stopped;
 
 		void StartPlayback();
 
 		void sendInitStreamIPC();
-		void sendPushBlockIPC(const std::unique_ptr<StreamBlock> &block);
+		void sendPushBlockIPC(const StreamBlock *block);
 
 		void streamEnded();
+		void outOfData();
 
 		friend class MusicEngine;
 	};
