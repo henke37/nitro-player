@@ -40,6 +40,12 @@ namespace NitroComposer {
 	private:
 		std::unique_ptr<STRM> stream;
 
+		struct ChunkPos {
+			std::uint32_t chunkIndex;
+			std::uint32_t sampleOffset;
+		};
+
+		ChunkPos ChunkForAbsolutePos(std::uint32_t absPos) const;
 	};
 
 	class PlaylistBlockSource : public IBlockSource {

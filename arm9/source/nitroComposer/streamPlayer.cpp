@@ -18,6 +18,14 @@ namespace NitroComposer {
 	SingleStreamBlockSource::SingleStreamBlockSource(std::unique_ptr<BinaryReadStream> &&stream) 
 		: SingleStreamBlockSource(std::make_unique<STRM>(std::move(stream))) {}
 
+	SingleStreamBlockSource::ChunkPos SingleStreamBlockSource::ChunkForAbsolutePos(std::uint32_t absPos) const {
+		assert(stream);
+		assert(absPos < stream->GetSamples());
+		ChunkPos pos;
+		pos.chunkIndex = absPos / stream->GetBlockSamples();
+		pos.sampleOffset = absPos % stream->GetBlockSamples();
+		return pos;
+	}
 
 
 	void StreamPlayer::StopStream() {
