@@ -28,6 +28,17 @@ namespace NitroComposer {
 		setupFifo();
 	}
 
+	void SequencePlayer::ReserveChannel(std::uint8_t hwChannel) {
+		assert(hwChannel < voiceCount);
+		assert(!(externalChannelReservations & BIT(hwChannel)));
+		externalChannelReservations |= BIT(hwChannel);
+	}
+
+	void SequencePlayer::UnreserveChannel(std::uint8_t hwChannel) {
+		assert(hwChannel < voiceCount);
+		assert(externalChannelReservations & BIT(hwChannel));
+		externalChannelReservations &= ~BIT(hwChannel);
+	}
 
 	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence) {
 		size_t channelCount;

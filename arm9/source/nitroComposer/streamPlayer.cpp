@@ -7,13 +7,29 @@
 #include <nds/arm9/cache.h>
 
 namespace NitroComposer {
-	StreamPlayer::StreamPlayer() {
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannel) {
 		assert(!musicEngine.currentStreamPlayer);
 		musicEngine.currentStreamPlayer = this;
 
-		BaseIPC ipc;
+		StreamPlayerAllocIPC ipc;
 		ipc.command = BaseIPC::CommandType::AllocStreamPlayer;
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)&ipc);
+		ipc.playbackBuffSize = playbackBuffSize;
+		ipc.channelCount = 1;
+		ipc.hwChannels[0] = hwChannel;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerAllocIPC), (u8 *)&ipc);
+		assert(success);
+	}
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) {
+		assert(!musicEngine.currentStreamPlayer);
+		musicEngine.currentStreamPlayer = this;
+
+		StreamPlayerAllocIPC ipc;
+		ipc.command = BaseIPC::CommandType::AllocStreamPlayer;
+		ipc.playbackBuffSize = playbackBuffSize;
+		ipc.channelCount = 2;
+		ipc.hwChannels[0] = hwChannelLeft;
+		ipc.hwChannels[1] = hwChannelRight;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerAllocIPC), (u8 *)&ipc);
 		assert(success);
 	}
 	StreamPlayer::~StreamPlayer() {

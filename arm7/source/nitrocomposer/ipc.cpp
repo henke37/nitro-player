@@ -98,16 +98,16 @@ namespace NitroComposer {
 			playingSequence.AbortSequence(false);
 		} break;
 
-		case BaseIPC::CommandType::ReserveChannels:
-		{
-			ReserveChannelsIPC *reserveIpc = static_cast<ReserveChannelsIPC *>(ipc);
-			externalChannelReservations = reserveIpc->reservations;
-		}
-
 		case BaseIPC::CommandType::AllocStreamPlayer:
 		{
 			assert(!streamPlayer);
-			streamPlayer = std::make_unique<StreamPlayer>();
+			StreamPlayerAllocIPC *allocIpc = static_cast<StreamPlayerAllocIPC *>(ipc);
+			assert(allocIpc->channelCount == 1 || allocIpc->channelCount == 2);
+			if(allocIpc->channelCount == 1) {
+				streamPlayer = std::make_unique<StreamPlayer>(allocIpc->playbackBuffSize, allocIpc->hwChannels[0]);
+			} else {
+				streamPlayer = std::make_unique<StreamPlayer>(allocIpc->playbackBuffSize, allocIpc->hwChannels[0], allocIpc->hwChannels[1]);
+			}
 		} break;
 
 		case BaseIPC::CommandType::DeallocStreamPlayer:

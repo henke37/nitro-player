@@ -16,7 +16,8 @@ namespace NitroComposer {
 	public:
 		void Init();
 
-
+		void ReserveChannel(std::uint8_t hwChannel);
+		void UnreserveChannel(std::uint8_t hwChannel);
 	private:
 		void Update();
 

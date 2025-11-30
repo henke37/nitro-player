@@ -17,7 +17,8 @@ namespace NitroComposer {
 
 	class StreamPlayer {
 	public:
-		StreamPlayer();
+		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannel);
+		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight);
 		~StreamPlayer();
 
 		enum class PlaybackState : std::uint8_t {
@@ -52,29 +53,41 @@ namespace NitroComposer {
 
 		class StreamChannel {
 		public:
-			StreamChannel();
-			~StreamChannel();
-
 			enum class StereoChannel : std::uint8_t {
 				Center = 0,
 				Left = 1,
-				Right = 2
+				Right = 2,
+				Invalid = 0xFF
 			};
+
+			StreamChannel();
+			StreamChannel(std::uint32_t bufferSize, std::uint8_t hwChannel, StereoChannel stereoChannel);
+			~StreamChannel();
+
+			std::uint8_t GetHwChannel() const { return hwChannel; }
+			bool IsAllocated() const { return hwChannel < 16; }
+
+			void SetStereoChannel(StereoChannel channel) { stereoChannel = channel; }
+
+			void Update();
 
 		private:
 			std::unique_ptr<std::uint8_t[]> playbackBuffer;
 			std::uint32_t bufferSize;
 			std::uint32_t writePosition;
 
-			StereoChannel stereoChannel;
-
 			std::uint8_t hwChannel;
+
+			StereoChannel stereoChannel;
 
 			std::uint8_t GetVolume() const;
 			std::uint8_t GetPan() const;
 
 			void setRegisters();
 		};
+
+		StreamChannel channels[2];
+		void updateChannels();
 
 		std::uint8_t volume = 127;
 		std::uint8_t pan = 64;

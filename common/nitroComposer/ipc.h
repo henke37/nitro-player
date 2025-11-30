@@ -18,7 +18,6 @@ namespace NitroComposer {
 			Invalid = 0,
 			PowerOn = 1,
 			SetMainVolume = 2,
-			ReserveChannels = 50,
 			LoadBank = 101,
 			LoadWaveArchive = 102,
 			PlaySequence = 120,
@@ -51,10 +50,6 @@ namespace NitroComposer {
 
 	struct SequenceStatusEventIPC : AsyncEventIPC {
 		std::int32_t playerId;
-	};
-
-	struct ReserveChannelsIPC : BaseIPC {
-		std::uint16_t reservations;
 	};
 
 	struct SetMainVolumeIPC : BaseIPC {
@@ -96,6 +91,12 @@ namespace NitroComposer {
 	};
 
 	struct StreamPlayerIPC : BaseIPC {
+	};
+
+	struct StreamPlayerAllocIPC : StreamPlayerIPC {
+		std::uint32_t playbackBuffSize;
+		std::uint8_t channelCount;
+		std::uint8_t hwChannels[2];
 	};
 
 	struct StreamVolumeIPC : StreamPlayerIPC {

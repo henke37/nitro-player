@@ -1,6 +1,6 @@
 #include "testSTRM.h"
 
-TestSTRM::TestSTRM() {}
+TestSTRM::TestSTRM() : player(4092, 2, 3) {}
 
 TestSTRM::~TestSTRM() {}
 

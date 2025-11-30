@@ -11,11 +11,33 @@ namespace NitroComposer {
 
 	std::unique_ptr<StreamPlayer> streamPlayer;
 
-	StreamPlayer::StreamPlayer() : playbackState(PlaybackState::Uninitialized) {
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannel) : 
+		playbackState(PlaybackState::Uninitialized),
+		channels{
+			StreamChannel(playbackBuffSize, hwChannel, StreamChannel::StereoChannel::Center),
+			StreamChannel()
+		}
+	{
 		assert(!streamPlayer);
+		sequencePlayer.ReserveChannel(hwChannel);
+	}
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) :
+		playbackState(PlaybackState::Uninitialized),
+		channels{
+			StreamChannel(playbackBuffSize, hwChannelLeft, StreamChannel::StereoChannel::Left),
+			StreamChannel(playbackBuffSize, hwChannelRight, StreamChannel::StereoChannel::Right)
+		}
+	{
+		assert(!streamPlayer);
+		sequencePlayer.ReserveChannel(hwChannelLeft);
+		sequencePlayer.ReserveChannel(hwChannelRight);
 	}
 	StreamPlayer::~StreamPlayer() {
 		assert(streamPlayer.get() == this);
+		sequencePlayer.UnreserveChannel(channels[0].GetHwChannel());
+		if(channels[1].IsAllocated()) {
+			sequencePlayer.UnreserveChannel(channels[1].GetHwChannel());
+		}
 	}
 
 	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t timer) {
@@ -23,6 +45,14 @@ namespace NitroComposer {
 		this->streamEncoding = encoding;
 		this->stereo = stereo;
 		this->timer = timer;
+
+		if(stereo) {
+			assert(channels[1].IsAllocated());
+			channels[0].SetStereoChannel(StreamChannel::StereoChannel::Left);
+			channels[1].SetStereoChannel(StreamChannel::StereoChannel::Right);
+		} else {
+			channels[0].SetStereoChannel(StreamChannel::StereoChannel::Center);
+		}
 
 		switch(encoding) {
 			case WaveEncoding::PCM8:
@@ -75,23 +105,51 @@ namespace NitroComposer {
 		assert(false);
 	}
 
-	StreamPlayer::StreamChannel::StreamChannel() : writePosition(0) {
-		bufferSize = 4096;
+	StreamPlayer::StreamChannel::StreamChannel() : bufferSize(0), hwChannel(0xFF), stereoChannel(StereoChannel::Invalid) {}
+
+	StreamPlayer::StreamChannel::StreamChannel(std::uint32_t bufferSize, std::uint8_t hwChannel, StereoChannel stereoChannel) :
+		bufferSize(bufferSize),
+		writePosition(0),
+		hwChannel(hwChannel),
+		stereoChannel(stereoChannel) {
 		playbackBuffer = std::make_unique<std::uint8_t[]>(bufferSize);
 	}
 	StreamPlayer::StreamChannel::~StreamChannel() {}
 
 	void StreamPlayer::StreamChannel::setRegisters() {
+		assert(stereoChannel != StereoChannel::Invalid);
+		assert(hwChannel < 16);
+
 		REG_SOUNDXSAD(hwChannel) = (std::uint32_t)(playbackBuffer.get());
 		REG_SOUNDXTMR(hwChannel) = streamPlayer->timer;
 		REG_SOUNDXLEN(hwChannel) = bufferSize / 4;
 		REG_SOUNDXPNT(hwChannel) = 0;
 
-		SCHANNEL_CR(hwChannel) = SOUNDXCNT_ENABLE |
-			((int)streamPlayer->playbackEncoding << 29) |
-			SOUNDXCNT_REPEAT |
-			SOUNDXCNT_PAN(GetPan()) |
-			SOUNDXCNT_VOL_MUL(GetVolume());
+		std::uint32_t ctrlVal = 0;
+
+		switch(streamPlayer->playbackState) {
+			case PlaybackState::Uninitialized:
+			case PlaybackState::Stopped:
+			case PlaybackState::InitialBuffering:
+			case PlaybackState::BufferingUnderrun:
+				// Do nothing
+				break;
+			case PlaybackState::Playing:
+				ctrlVal |= SOUNDXCNT_ENABLE;
+			break;
+		}
+
+		ctrlVal |= ((int)streamPlayer->playbackEncoding << 29);
+		ctrlVal |= SOUNDXCNT_REPEAT;
+		ctrlVal |= SOUNDXCNT_PAN(GetPan());
+		ctrlVal |= SOUNDXCNT_VOL_MUL(GetVolume());
+
+		SCHANNEL_CR(hwChannel) = ctrlVal;
+	}
+
+	void StreamPlayer::updateChannels() {
+		channels[0].Update();
+		if(stereo) channels[1].Update();
 	}
 
 	std::uint8_t StreamPlayer::StreamChannel::GetVolume() const {
