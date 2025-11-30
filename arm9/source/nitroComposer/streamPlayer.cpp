@@ -4,6 +4,7 @@
 #include <cassert>
 #include <nds/arm9/sassert.h>
 #include <nds/fifocommon.h>
+#include <nds/arm9/cache.h>
 
 namespace NitroComposer {
 	StreamPlayer::StreamPlayer() {
@@ -219,6 +220,8 @@ namespace NitroComposer {
 
 		for(unsigned int channel = 0; channel < 2; ++channel) {
 			ipc.blockData[channel] = block->blockData[channel].get();
+
+			DC_FlushRange(ipc.blockData[channel], block->dataSize);
 		}
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPushBlockIPC), (u8 *)&ipc);
 		assert(success);
