@@ -54,10 +54,19 @@ namespace NitroComposer {
 		public:
 			StreamChannel();
 			~StreamChannel();
+
+			enum class StereoChannel : std::uint8_t {
+				Center = 0,
+				Left = 1,
+				Right = 2
+			};
+
 		private:
 			std::unique_ptr<std::uint8_t[]> playbackBuffer;
 			std::uint32_t bufferSize;
 			std::uint32_t writePosition;
+
+			StereoChannel stereoChannel;
 
 			std::uint8_t hwChannel;
 

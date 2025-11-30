@@ -5,6 +5,7 @@
 #include <nds/arm7/audio.h>
 
 #include <cassert>
+#include <algorithm>
 
 namespace NitroComposer {
 
@@ -91,5 +92,26 @@ namespace NitroComposer {
 			SOUNDXCNT_REPEAT |
 			SOUNDXCNT_PAN(GetPan()) |
 			SOUNDXCNT_VOL_MUL(GetVolume());
+	}
+
+	std::uint8_t StreamPlayer::StreamChannel::GetVolume() const {
+		return streamPlayer->volume;
+	}
+
+	std::uint8_t StreamPlayer::StreamChannel::GetPan() const {
+		int pan = 64 + streamPlayer->pan;
+		switch(stereoChannel) {
+			case StereoChannel::Center:
+				break;
+			case StereoChannel::Left:
+				pan -= 64;
+				break;
+			case StereoChannel::Right:
+				pan += 64;
+				break;
+			default:
+				assert(false);
+		}
+		return std::clamp(pan, 0, 127);
 	}
 }
