@@ -39,6 +39,16 @@ namespace NitroComposer {
 	}
 	void StreamPlayer::Stop() {}
 
+	void StreamPlayer::SetVolume(std::uint8_t volume) {
+		assert(volume <= 127);
+		this->volume = volume;
+	}
+
+	void StreamPlayer::SetPan(std::uint8_t pan) {
+		assert(pan <= 127);
+		this->pan = pan;
+	}
+
 	void StreamPlayer::AddBlock(std::unique_ptr<StreamBlock> &&block) {
 		assert(block);
 		assert(block->blockDataSize > 0);

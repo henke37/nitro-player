@@ -33,6 +33,9 @@ namespace NitroComposer {
 
 		void Init(WaveEncoding encoding, bool stereo, std::uint16_t timer);
 		void Stop();
+
+		void SetVolume(std::uint8_t volume);
+		void SetPan(std::uint8_t pan);
 	private:
 
 	private:
@@ -64,7 +67,8 @@ namespace NitroComposer {
 			void setRegisters();
 		};
 
-		
+		std::uint8_t volume = 127;
+		std::uint8_t pan = 64;
 
 		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 		void sendFifoStreamOutOfData();

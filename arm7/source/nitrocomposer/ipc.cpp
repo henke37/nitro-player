@@ -129,6 +129,20 @@ namespace NitroComposer {
 			streamPlayer->Stop();
 		} break;
 
+		case BaseIPC::CommandType::StreamSetVolume:
+		{
+			assert(streamPlayer);
+			auto setVolumeIpc = static_cast<StreamVolumeIPC *>(ipc);
+			streamPlayer->SetVolume(setVolumeIpc->volume);
+		} break;
+
+		case BaseIPC::CommandType::StreamSetPan:
+		{
+			assert(streamPlayer);
+			auto setPanIpc = static_cast<StreamPanIPC *>(ipc);
+			streamPlayer->SetPan(setPanIpc->pan);
+		} break;
+
 		case BaseIPC::CommandType::StreamPushBlock:
 		{
 			assert(streamPlayer);
