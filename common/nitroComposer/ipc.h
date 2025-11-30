@@ -26,11 +26,13 @@ namespace NitroComposer {
 			SetTempo = 122,
 			GetVar = 110,
 			SetVar = 111,
-			InitStream = 200,
-			StopStream = 201,
-			StreamPushBlock = 202,
-			StreamSetVolume = 203,
-			StreamSetPan = 204
+			AllocStreamPlayer = 200,
+			DeallocStreamPlayer = 201,
+			InitStream = 210,
+			StopStream = 211,
+			StreamPushBlock = 222,
+			StreamSetVolume = 213,
+			StreamSetPan = 214
 		};
 
 		CommandType command;

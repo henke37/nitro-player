@@ -10,6 +10,7 @@
 namespace NitroComposer {
 
 	class LoadedWaveArchive;
+	class StreamPlayer;
 
 	class SequencePlayer {
 	public:

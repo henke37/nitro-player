@@ -104,6 +104,47 @@ namespace NitroComposer {
 			externalChannelReservations = reserveIpc->reservations;
 		}
 
+		case BaseIPC::CommandType::AllocStreamPlayer:
+		{
+			assert(!streamPlayer);
+			streamPlayer = std::make_unique<StreamPlayer>();
+		} break;
+
+		case BaseIPC::CommandType::DeallocStreamPlayer:
+		{
+			assert(streamPlayer);
+			streamPlayer.reset();
+		} break;
+
+		case BaseIPC::CommandType::InitStream:
+		{
+			assert(streamPlayer);
+			auto initStreamIpc = static_cast<InitStreamIPC *>(ipc);
+			streamPlayer->Init(initStreamIpc->encoding, initStreamIpc->stereo, initStreamIpc->timer);
+		} break;
+
+		case BaseIPC::CommandType::StopStream:
+		{
+			assert(streamPlayer);
+			streamPlayer->Stop();
+		} break;
+
+		case BaseIPC::CommandType::StreamPushBlock:
+		{
+			assert(streamPlayer);
+			auto pushBlockIpc = static_cast<StreamPushBlockIPC *>(ipc);
+
+			std::unique_ptr<StreamBlock> block;
+			block->blockId = pushBlockIpc->blockId;
+			block->blockDataSize = pushBlockIpc->blockDataSize;
+			block->blockSampleCount = pushBlockIpc->blockSampleCount;
+			block->startPos = pushBlockIpc->startPos;
+			block->blockData[0] = pushBlockIpc->blockData[0];
+			block->blockData[1] = pushBlockIpc->blockData[1];
+
+			streamPlayer->AddBlock(std::move(block));
+		} break;
+
 		default:
 			assert(0);
 		}
@@ -124,6 +165,15 @@ namespace NitroComposer {
 		ipc.eventId = AsyncEventIPC::EventType::StreamRetireBlock;
 		ipc.blockId = blockId;
 		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamRetireBlockIPC), (u8 *)&ipc);
+		assert(success);
+		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
+		assert(success);
+	}
+	void StreamPlayer::sendFifoStreamOutOfData() {
+		bool success;
+		AsyncEventIPC ipc;
+		ipc.eventId = AsyncEventIPC::EventType::StreamOutOfData;
+		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(AsyncEventIPC), (u8 *)&ipc);
 		assert(success);
 		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
 		assert(success);

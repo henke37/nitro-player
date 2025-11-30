@@ -10,10 +10,20 @@ namespace NitroComposer {
 	StreamPlayer::StreamPlayer() {
 		assert(!musicEngine.currentStreamPlayer);
 		musicEngine.currentStreamPlayer = this;
+
+		BaseIPC ipc;
+		ipc.command = BaseIPC::CommandType::AllocStreamPlayer;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)&ipc);
+		assert(success);
 	}
 	StreamPlayer::~StreamPlayer() {
 		assert(musicEngine.currentStreamPlayer == this);
 		musicEngine.currentStreamPlayer = nullptr;
+
+		BaseIPC ipc;
+		ipc.command = BaseIPC::CommandType::DeallocStreamPlayer;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)&ipc);
+		assert(success);
 	}
 
 	void StreamPlayer::SetVolume(std::uint8_t volume) {
