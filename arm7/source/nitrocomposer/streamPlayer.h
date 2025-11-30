@@ -1,6 +1,8 @@
 #ifndef NITROCOMPOSER_STREAMPLAYER_H
 #define NITROCOMPOSER_STREAMPLAYER_H
 
+#include <memory>
+
 #include "nitroComposer/wave.h"
 
 namespace NitroComposer {
@@ -26,10 +28,16 @@ namespace NitroComposer {
 		void FreeBlock();
 
 		class StreamChannel {
-			public:
+		public:
 			StreamChannel();
 			~StreamChannel();
+		private:
+			std::unique_ptr<std::uint8_t[]> playbackBuffer;
+			std::uint32_t bufferSize;
+			std::uint32_t writePosition;
 		};
+
+		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 	};
 }
 

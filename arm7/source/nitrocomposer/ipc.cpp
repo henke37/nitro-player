@@ -1,4 +1,5 @@
 #include "sequencePlayer.h"
+#include "streamPlayer.h"
 
 #include <nds/fifocommon.h>
 #include <nds/interrupts.h>
@@ -113,6 +114,16 @@ namespace NitroComposer {
 		statusIpc.eventId = AsyncEventIPC::EventType::SequenceEnded;
 		statusIpc.playerId = 1;//TODO: multiple players
 		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequenceStatusEventIPC), (u8 *)&statusIpc);
+		assert(success);
+		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
+		assert(success);
+	}
+	void StreamPlayer::sendFifoStreamRetireBlock(std::uint32_t blockId) {
+		bool success;
+		StreamRetireBlockIPC ipc;
+		ipc.eventId = AsyncEventIPC::EventType::StreamRetireBlock;
+		ipc.blockId = blockId;
+		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamRetireBlockIPC), (u8 *)&ipc);
 		assert(success);
 		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
 		assert(success);

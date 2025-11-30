@@ -14,4 +14,9 @@ namespace NitroComposer {
 		this->timer = timer;
 	}
 	void StreamPlayer::Stop() {}
+
+	StreamPlayer::StreamChannel::StreamChannel() : writePosition(0) {
+		bufferSize = 4096;
+		playbackBuffer = std::make_unique<std::uint8_t[]>(bufferSize);
+	}
 }
