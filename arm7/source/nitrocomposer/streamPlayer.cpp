@@ -1,4 +1,4 @@
-#include "sequencePlayer.h"
+#include "streamPlayer.h"
 
 #include <nds/arm7/console.h>
 #include <nds/arm7/audio.h>
@@ -7,11 +7,11 @@
 
 namespace NitroComposer {
 
-	void SequencePlayer::StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t timer) {
+	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t timer) {
 		assert(encoding != WaveEncoding::Generated);
 		this->encoding = encoding;
 		this->stereo = stereo;
 		this->timer = timer;
 	}
-	void SequencePlayer::StreamPlayer::Stop() {}
+	void StreamPlayer::Stop() {}
 }
