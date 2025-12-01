@@ -46,6 +46,9 @@ namespace NitroComposer {
 		WaveEncoding streamEncoding;
 		WaveEncoding playbackEncoding;
 
+		std::uint8_t volume = 127;
+		std::uint8_t pan = 64;
+
 		void AddBlock(std::unique_ptr<StreamBlock> &&block);
 		void FreeBlock(std::uint32_t blockId);
 		void RemoveBlock(std::uint32_t blockId);
@@ -88,9 +91,6 @@ namespace NitroComposer {
 
 		StreamChannel channels[2];
 		void updateChannels();
-
-		std::uint8_t volume = 127;
-		std::uint8_t pan = 64;
 
 		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 		void sendFifoStreamOutOfData();
