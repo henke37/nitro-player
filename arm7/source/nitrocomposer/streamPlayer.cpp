@@ -60,7 +60,7 @@ namespace NitroComposer {
 				this->playbackEncoding = encoding;
 				break;
 			case WaveEncoding::ADPCM:
-				this->playbackEncoding = WaveEncoding::PCM8;
+				this->playbackEncoding = WaveEncoding::PCM16;
 				break;
 			default:
 				assert(false);
