@@ -86,6 +86,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\arm7\source\main.cpp" />
+    <ClCompile Include="..\arm7\source\nitrocomposer\adpcm.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\ipc.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\math.cpp" />
     <ClCompile Include="..\arm7\source\nitrocomposer\sequence.cpp" />
@@ -96,6 +97,7 @@
     <ClCompile Include="..\arm7\source\nitrocomposer\voice.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\arm7\source\nitrocomposer\adpcm.h" />
     <ClInclude Include="..\arm7\source\nitrocomposer\sequencePlayer.h" />
     <ClInclude Include="..\arm7\source\nitrocomposer\streamPlayer.h" />
     <ClInclude Include="..\common\nitrocomposer\bank.h" />
