@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "adpcm.h"
+
 #include "nitroComposer/wave.h"
 
 namespace NitroComposer {
@@ -78,6 +80,8 @@ namespace NitroComposer {
 			std::unique_ptr<std::uint8_t[]> playbackBuffer;
 			std::uint32_t bufferSize;
 			std::uint32_t writePosition;
+
+			AdpcmDecoder adpcmDecoder;
 
 			std::uint8_t hwChannel;
 
