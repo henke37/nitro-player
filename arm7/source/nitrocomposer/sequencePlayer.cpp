@@ -32,6 +32,8 @@ namespace NitroComposer {
 		assert(hwChannel < voiceCount);
 		assert(!(externalChannelReservations & BIT(hwChannel)));
 		externalChannelReservations |= BIT(hwChannel);
+
+		voices[hwChannel].Kill();
 	}
 
 	void SequencePlayer::UnreserveChannel(std::uint8_t hwChannel) {
