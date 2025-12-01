@@ -65,7 +65,7 @@ namespace NitroComposer {
 	}
 
 	void AdpcmDecoder::DecodeData(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount) {
-		for(size_t samplesOutput = 0; samplesOutput < outputSampleCount; samplesOutput += 2) {
+		for(size_t samplesOutput = 0; samplesOutput < outputSampleCount; samplesOutput += samplesPerOctet) {
 			uint8_t b = *(inputData++);
 
 			parseNibble(b & 0x0F);
@@ -75,6 +75,14 @@ namespace NitroComposer {
 			*(outputData++) = predictor;
 		}
 
+	}
+
+	void AdpcmDecoder::FastForwardData(const std::uint8_t *inputData, size_t sampleCount) {
+		for(size_t samplesSkipped = 0; samplesSkipped < sampleCount; samplesSkipped += samplesPerOctet) {
+			uint8_t b = *(inputData++);
+			parseNibble(b & 0x0F);
+			parseNibble((b >> 4) & 0x0F);
+		}
 	}
 
 } // namespace NitroComposer

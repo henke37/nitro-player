@@ -11,9 +11,12 @@ namespace NitroComposer {
 		AdpcmDecoder() = default;
 		~AdpcmDecoder() = default;
 
-		static const size_t chunkSize = 4;
+		static constexpr size_t chunkSize = 4;
+		static constexpr size_t samplesPerOctet = 2;
+
 		void ReadChunkHeader(const std::uint8_t *inputData);
 		void Init(std::int16_t predictor, int stepIndex);
+		void FastForwardData(const std::uint8_t *inputData, size_t sampleCount);
 		void DecodeData(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount);
 		void DecodeBlock(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount);
 	private:
