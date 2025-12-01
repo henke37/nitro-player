@@ -10,13 +10,15 @@ namespace NitroComposer {
 	public:
 		AdpcmDecoder() = default;
 		~AdpcmDecoder() = default;
-		void Reset();
+
+		static const size_t chunkSize = 4;
+		void ReadChunkHeader(const std::uint8_t *inputData);
+		void Init(std::int16_t predictor, int stepIndex);
+		void DecodeData(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount);
 		void DecodeBlock(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount);
 	private:
 		static const int indexTable[16];
 		static const int stepTable[89];
-
-		void Init(std::int16_t predictor, int stepIndex);
 
 		void parseNibble(int nibble);
 

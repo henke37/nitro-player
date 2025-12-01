@@ -21,6 +21,10 @@ namespace NitroComposer {
 		-1, -1, -1, -1, 2, 4, 6, 8
 	};
 
+	void AdpcmDecoder::ReadChunkHeader(const std::uint8_t *inputData) {
+		predictor = static_cast<std::int16_t>(inputData[0] | (inputData[1]<<8));
+		stepIndex = static_cast<std::int16_t>(inputData[2] | (inputData[3]<<8));
+	}
 
 	void AdpcmDecoder::Init(std::int16_t predictor, int stepIndex) {
 		this->predictor = predictor;
@@ -52,6 +56,25 @@ namespace NitroComposer {
 		//predictor+=(nibbleToNumber(nibble) + 0.5) * step / 4;
 
 		step = stepTable[stepIndex];
+	}
+
+	void AdpcmDecoder::DecodeBlock(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount) {
+		ReadChunkHeader(inputData);
+		inputData += chunkSize;
+		DecodeData(inputData, outputData, outputSampleCount);
+	}
+
+	void AdpcmDecoder::DecodeData(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount) {
+		for(size_t samplesOutput = 0; samplesOutput < outputSampleCount; samplesOutput += 2) {
+			uint8_t b = *(inputData++);
+
+			parseNibble(b & 0x0F);
+			*(outputData++) = predictor;
+
+			parseNibble((b >> 4) & 0x0F);
+			*(outputData++) = predictor;
+		}
+
 	}
 
 } // namespace NitroComposer
