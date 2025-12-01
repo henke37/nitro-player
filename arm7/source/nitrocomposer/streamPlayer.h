@@ -36,7 +36,7 @@ namespace NitroComposer {
 		void Stop();
 
 		void SetVolume(std::uint8_t volume);
-		void SetPan(std::uint8_t pan);
+		void SetPan(std::int8_t pan);
 	private:
 
 	private:

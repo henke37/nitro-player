@@ -54,8 +54,9 @@ namespace NitroComposer {
 		assert(success);
 	}
 
-	void StreamPlayer::SetPan(std::uint8_t pan) {
-		assert(pan <= 127);
+	void StreamPlayer::SetPan(std::int8_t pan) {
+		assert(pan <= 64);
+		assert(pan > -63);
 		if(this->pan == pan) return;
 		this->pan = pan;
 

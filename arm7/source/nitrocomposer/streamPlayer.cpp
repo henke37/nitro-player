@@ -75,8 +75,9 @@ namespace NitroComposer {
 		this->volume = volume;
 	}
 
-	void StreamPlayer::SetPan(std::uint8_t pan) {
-		assert(pan <= 127);
+	void StreamPlayer::SetPan(std::int8_t pan) {
+		assert(pan > -63);
+		assert(pan <= 64);
 		this->pan = pan;
 	}
 
@@ -157,7 +158,7 @@ namespace NitroComposer {
 	}
 
 	std::uint8_t StreamPlayer::StreamChannel::GetPan() const {
-		int pan = 64 + streamPlayer->pan;
+		int pan = streamPlayer->pan;
 		switch(stereoChannel) {
 			case StereoChannel::Center:
 				break;

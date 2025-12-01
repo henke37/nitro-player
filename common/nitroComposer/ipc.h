@@ -104,7 +104,7 @@ namespace NitroComposer {
 	};
 
 	struct StreamPanIPC : StreamPlayerIPC {
-		std::uint8_t pan;
+		std::int8_t pan;
 	};
 
 	struct InitStreamIPC : StreamPlayerIPC {

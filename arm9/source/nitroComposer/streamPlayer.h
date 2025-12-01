@@ -81,8 +81,8 @@ namespace NitroComposer {
 
 		void SetVolume(std::uint8_t volume);
 		std::uint8_t GetVolume() const { return volume; }
-		void SetPan(std::uint8_t pan);
-		std::uint8_t GetPan() const { return pan; }
+		void SetPan(std::int8_t pan);
+		std::int8_t GetPan() const { return pan; }
 
 		void StopStream();
 
@@ -116,7 +116,7 @@ namespace NitroComposer {
 		PlaybackState playbackState = PlaybackState::Stopped;
 
 		std::uint8_t volume = 127;
-		std::uint8_t pan = 64;
+		std::int8_t pan = 0;
 
 		void StartPlayback();
 
