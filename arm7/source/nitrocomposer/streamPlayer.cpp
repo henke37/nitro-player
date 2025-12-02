@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <cstring>
 
 namespace NitroComposer {
 
@@ -146,6 +147,64 @@ namespace NitroComposer {
 		ctrlVal |= SOUNDXCNT_VOL_MUL(GetVolume());
 
 		SCHANNEL_CR(hwChannel) = ctrlVal;
+	}
+
+	void StreamPlayer::StreamChannel::writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount) {
+		const std::uint8_t *data;
+
+		assert((writePosition + sampleCount) <= bufferSizeInSamples());
+
+		switch(stereoChannel) {
+		case StereoChannel::Center:
+		case StereoChannel::Left:
+			data = reinterpret_cast<const std::uint8_t *>(block->blockData[0]);
+			break;
+		case StereoChannel::Right:
+			data = reinterpret_cast<const std::uint8_t *>(block->blockData[1]);
+			break;
+		default:
+			assert(0);
+		}
+
+		switch(streamPlayer->streamEncoding) {
+			case WaveEncoding::PCM8: {
+				size_t dataSize = sampleCount;
+				const std::uint8_t *readStart = data + startPos;
+				std::uint8_t *writeStart = playbackBuffer.get() + writePosition;
+				memcpy(writeStart, readStart, dataSize);
+				break;
+			}
+			case WaveEncoding::PCM16: {
+				size_t dataSize = sampleCount * sizeof(std::uint16_t);
+				const std::uint8_t *readStart = data + startPos * sizeof(std::uint16_t);
+				std::int16_t *writeStart = reinterpret_cast<std::int16_t *>(playbackBuffer.get()) + writePosition;
+				memcpy(writeStart, readStart, dataSize);
+				break;
+			}
+			case WaveEncoding::ADPCM: {
+				assert((sampleCount % 2) == 0);
+				const std::uint8_t * readStart = data + AdpcmDecoder::chunkHeaderSize + startPos/2;
+				std::int16_t *writeStart = reinterpret_cast<std::int16_t *>(playbackBuffer.get()) + writePosition;
+				adpcmDecoder.DecodeData(readStart, writeStart, sampleCount);
+				
+				break;
+			}
+			default:
+				assert(false);
+		}
+
+		writePosition += sampleCount;
+	}
+
+	size_t StreamPlayer::StreamChannel::bufferSizeInSamples() const {
+		switch(streamPlayer->playbackEncoding) {
+		case WaveEncoding::PCM8:
+			return this->bufferSize;
+		case WaveEncoding::PCM16:
+			return this->bufferSize / sizeof(std::int16_t);
+		default:
+			assert(0);
+		}
 	}
 
 	void StreamPlayer::updateChannels() {

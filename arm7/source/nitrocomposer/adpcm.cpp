@@ -60,7 +60,7 @@ namespace NitroComposer {
 
 	void AdpcmDecoder::DecodeBlock(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount) {
 		ReadChunkHeader(inputData);
-		inputData += chunkSize;
+		inputData += chunkHeaderSize;
 		DecodeData(inputData, outputData, outputSampleCount);
 	}
 

@@ -11,7 +11,7 @@ namespace NitroComposer {
 		AdpcmDecoder() = default;
 		~AdpcmDecoder() = default;
 
-		static constexpr size_t chunkSize = 4;
+		static constexpr size_t chunkHeaderSize = 4;
 		static constexpr size_t samplesPerOctet = 2;
 
 		void ReadChunkHeader(const std::uint8_t *inputData);

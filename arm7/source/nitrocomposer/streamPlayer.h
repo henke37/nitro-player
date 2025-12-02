@@ -78,8 +78,8 @@ namespace NitroComposer {
 
 		private:
 			std::unique_ptr<std::uint8_t[]> playbackBuffer;
-			std::uint32_t bufferSize;
-			std::uint32_t writePosition;
+			std::uint32_t bufferSize;//in octets
+			std::uint32_t writePosition;//in samples
 
 			AdpcmDecoder adpcmDecoder;
 
@@ -91,6 +91,10 @@ namespace NitroComposer {
 			std::uint8_t GetPan() const;
 
 			void setRegisters();
+
+			void writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount);
+
+			size_t bufferSizeInSamples() const;
 		};
 
 		StreamChannel channels[2];
