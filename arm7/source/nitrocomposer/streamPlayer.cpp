@@ -314,9 +314,20 @@ namespace NitroComposer {
 			currentBlock = nullptr;
 			currentBlockReadPosition = 0;
 
-			playbackState = PlaybackState::BufferingUnderrun;
+			switch(playbackState) {
+			case PlaybackState::Playing:
+				playbackState = PlaybackState::BufferingUnderrun;
+				sendFifoStreamOutOfData();
+				break;
+			case PlaybackState::InitialBuffering:
+			case PlaybackState::BufferingUnderrun:
+				break;
 
-			sendFifoStreamOutOfData();
+			case PlaybackState::Stopped:
+			case PlaybackState::Uninitialized:
+				assert(0);
+			}
+
 			return;
 		}
 
