@@ -93,7 +93,7 @@ namespace NitroComposer {
 		blocks.push_back(std::move(block));
 	}
 
-	void StreamPlayer::FreeBlock(std::uint32_t blockId) {
+	void StreamPlayer::RetireBlock(std::uint32_t blockId) {
 		RemoveBlock(blockId);
 		sendFifoStreamRetireBlock(blockId);
 	}
@@ -149,22 +149,41 @@ namespace NitroComposer {
 		SCHANNEL_CR(hwChannel) = ctrlVal;
 	}
 
-	void StreamPlayer::StreamChannel::writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount) {
-		const std::uint8_t *data;
+	void StreamPlayer::StreamChannel::NewBlock(const StreamBlock *block) {
+		const std::uint8_t *data = GetBlockData(block);
 
-		assert((writePosition + sampleCount) <= bufferSizeInSamples());
-
-		switch(stereoChannel) {
-		case StereoChannel::Center:
-		case StereoChannel::Left:
-			data = reinterpret_cast<const std::uint8_t *>(block->blockData[0]);
+		switch(streamPlayer->streamEncoding) {
+		case WaveEncoding::ADPCM:
+			adpcmDecoder.ReadChunkHeader(data);
 			break;
-		case StereoChannel::Right:
-			data = reinterpret_cast<const std::uint8_t *>(block->blockData[1]);
+		case WaveEncoding::PCM8:
+		case WaveEncoding::PCM16:
 			break;
 		default:
 			assert(0);
 		}
+	}
+
+	void StreamPlayer::StreamChannel::FastForward(const StreamBlock *block, int startPos, std::uint32_t sampleCount) {
+		const std::uint8_t *data = GetBlockData(block);
+
+		switch(streamPlayer->streamEncoding) {
+		case WaveEncoding::ADPCM: {
+			const std::uint8_t *readStart = data + AdpcmDecoder::chunkHeaderSize + startPos / 2;
+			adpcmDecoder.FastForwardData(readStart, sampleCount);
+		} break;
+		case WaveEncoding::PCM8:
+		case WaveEncoding::PCM16:
+			break;
+		default:
+			assert(0);
+		}
+	}
+
+	void StreamPlayer::StreamChannel::writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount) {
+		assert((writePosition + sampleCount) <= bufferSizeInSamples());
+
+		const std::uint8_t *data=GetBlockData(block);
 
 		switch(streamPlayer->streamEncoding) {
 			case WaveEncoding::PCM8: {
@@ -196,6 +215,20 @@ namespace NitroComposer {
 		writePosition += sampleCount;
 	}
 
+	const std::uint8_t *StreamPlayer::StreamChannel::GetBlockData(const NitroComposer::StreamBlock *block) {
+		switch(stereoChannel) {
+		case StereoChannel::Center:
+		case StereoChannel::Left:
+			return reinterpret_cast<const std::uint8_t *>(block->blockData[0]);
+			break;
+		case StereoChannel::Right:
+			return reinterpret_cast<const std::uint8_t *>(block->blockData[1]);
+			break;
+		default:
+			assert(0);
+		}
+	}
+
 	size_t StreamPlayer::StreamChannel::bufferSizeInSamples() const {
 		switch(streamPlayer->playbackEncoding) {
 		case WaveEncoding::PCM8:
@@ -207,9 +240,65 @@ namespace NitroComposer {
 		}
 	}
 
-	void StreamPlayer::updateChannels() {
-		channels[0].Update();
-		if(stereo) channels[1].Update();
+	size_t StreamPlayer::StreamChannel::writeDistanceToEnd() const {
+		return bufferSizeInSamples()-writePosition;
+	}
+
+	void StreamPlayer::writeToChannels(std::uint32_t samplesLeftToWrite) {
+
+		while(samplesLeftToWrite) {
+
+			if(!currentBlock) {
+				getNextBlock();
+			}
+
+			switch(playbackState) {
+			case NitroComposer::StreamPlayer::PlaybackState::Playing:
+				break;
+			case NitroComposer::StreamPlayer::PlaybackState::Uninitialized:
+			case NitroComposer::StreamPlayer::PlaybackState::Stopped:
+			case NitroComposer::StreamPlayer::PlaybackState::InitialBuffering:
+			case NitroComposer::StreamPlayer::PlaybackState::BufferingUnderrun:
+				return;
+			default:
+				assert(0);
+				break;
+			}
+
+			std::uint32_t samplesLeftInBlock = currentBlock->blockSampleCount - currentBlockReadPosition;
+			std::uint32_t samplesToWrite = std::min(samplesLeftToWrite, samplesLeftInBlock);
+
+			channels[0].writeToPlaybackBuffer(currentBlock, currentBlockReadPosition, samplesToWrite);
+			if(stereo) {
+				channels[1].writeToPlaybackBuffer(currentBlock, currentBlockReadPosition, samplesToWrite);
+			}
+
+			if(samplesToWrite == samplesLeftInBlock) {
+				RetireBlock(currentBlock->blockId);
+				getNextBlock();
+			} else {
+				currentBlockReadPosition += samplesToWrite;
+			}
+
+			samplesLeftToWrite -= samplesToWrite;
+		}
+	}
+
+	void StreamPlayer::fastForwardToStartOfCurrentBlock() {
+		channels[0].FastForward(currentBlock, 0, currentBlock->startPos);
+		if(stereo) channels[1].FastForward(currentBlock, 0, currentBlock->startPos);
+
+		currentBlockReadPosition = currentBlock->startPos;
+	}
+
+	void StreamPlayer::getNextBlock() {
+		currentBlock = blocks.front().get();
+		currentBlockReadPosition = 0;
+
+		channels[0].NewBlock(currentBlock);
+		if(stereo) channels[1].NewBlock(currentBlock);
+
+		fastForwardToStartOfCurrentBlock();
 	}
 
 	std::uint8_t StreamPlayer::StreamChannel::GetVolume() const {

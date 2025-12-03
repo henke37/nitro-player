@@ -52,9 +52,14 @@ namespace NitroComposer {
 		std::uint8_t pan = 64;
 
 		void AddBlock(std::unique_ptr<StreamBlock> &&block);
-		void FreeBlock(std::uint32_t blockId);
+		void RetireBlock(std::uint32_t blockId);
 		void RemoveBlock(std::uint32_t blockId);
 		std::vector<std::unique_ptr<StreamBlock>> blocks;
+
+		const StreamBlock *currentBlock;
+		std::uint32_t currentBlockReadPosition;//in samples
+
+		void getNextBlock();
 
 		class StreamChannel {
 		public:
@@ -74,7 +79,13 @@ namespace NitroComposer {
 
 			void SetStereoChannel(StereoChannel channel) { stereoChannel = channel; }
 
-			void Update();
+			void NewBlock(const StreamBlock *block);
+
+			void FastForward(const StreamBlock *block, int startPos, std::uint32_t sampleCount);
+
+			void writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount);
+
+			const uint8_t *GetBlockData(const NitroComposer::StreamBlock *block);
 
 		private:
 			std::unique_ptr<std::uint8_t[]> playbackBuffer;
@@ -92,13 +103,14 @@ namespace NitroComposer {
 
 			void setRegisters();
 
-			void writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount);
-
 			size_t bufferSizeInSamples() const;
+			size_t writeDistanceToEnd() const;
 		};
 
 		StreamChannel channels[2];
-		void updateChannels();
+
+		void writeToChannels(std::uint32_t sampleCount);
+		void fastForwardToStartOfCurrentBlock();
 
 		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 		void sendFifoStreamOutOfData();
