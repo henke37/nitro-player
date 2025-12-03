@@ -164,7 +164,7 @@ namespace NitroComposer {
 		}
 	}
 
-	void StreamPlayer::StreamChannel::FastForward(const StreamBlock *block, int startPos, std::uint32_t sampleCount) {
+	void StreamPlayer::StreamChannel::FastForward(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount) {
 		const std::uint8_t *data = GetBlockData(block);
 
 		switch(streamPlayer->streamEncoding) {
@@ -180,7 +180,24 @@ namespace NitroComposer {
 		}
 	}
 
-	void StreamPlayer::StreamChannel::writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount) {
+	void StreamPlayer::StreamChannel::AddToPlayback(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount) {
+		assert(sampleCount < bufferSizeInSamples());
+
+		size_t samplesLeftToWrite = sampleCount;
+
+		while(samplesLeftToWrite) {
+			size_t writeDistance = writeDistanceToEnd();
+			size_t samplesToWrite = std::min(samplesLeftToWrite, writeDistance);
+			writeToPlaybackBuffer(block, startPos, samplesToWrite);
+			samplesLeftToWrite -= samplesToWrite;
+			startPos += samplesToWrite;
+			if(writeDistance == samplesToWrite) {
+				writePosition = 0;
+			}
+		}
+	}
+
+	void StreamPlayer::StreamChannel::writeToPlaybackBuffer(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount) {
 		assert((writePosition + sampleCount) <= bufferSizeInSamples());
 
 		const std::uint8_t *data=GetBlockData(block);
@@ -269,9 +286,9 @@ namespace NitroComposer {
 			std::uint32_t samplesLeftInBlock = currentBlock->blockSampleCount - currentBlockReadPosition;
 			std::uint32_t samplesToWrite = std::min(samplesLeftToWrite, samplesLeftInBlock);
 
-			channels[0].writeToPlaybackBuffer(currentBlock, currentBlockReadPosition, samplesToWrite);
+			channels[0].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToWrite);
 			if(stereo) {
-				channels[1].writeToPlaybackBuffer(currentBlock, currentBlockReadPosition, samplesToWrite);
+				channels[1].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToWrite);
 			}
 
 			if(samplesToWrite == samplesLeftInBlock) {

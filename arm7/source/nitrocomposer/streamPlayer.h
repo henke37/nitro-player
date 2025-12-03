@@ -81,9 +81,9 @@ namespace NitroComposer {
 
 			void NewBlock(const StreamBlock *block);
 
-			void FastForward(const StreamBlock *block, int startPos, std::uint32_t sampleCount);
+			void FastForward(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
-			void writeToPlaybackBuffer(const StreamBlock *block, int startPos, int sampleCount);
+			void AddToPlayback(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
 			const uint8_t *GetBlockData(const NitroComposer::StreamBlock *block);
 
@@ -102,6 +102,8 @@ namespace NitroComposer {
 			std::uint8_t GetPan() const;
 
 			void setRegisters();
+
+			void writeToPlaybackBuffer(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
 			size_t bufferSizeInSamples() const;
 			size_t writeDistanceToEnd() const;
