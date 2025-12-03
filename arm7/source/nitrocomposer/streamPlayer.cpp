@@ -250,6 +250,7 @@ namespace NitroComposer {
 
 			if(!currentBlock) {
 				getNextBlock();
+				if(!currentBlock) return;
 			}
 
 			switch(playbackState) {
@@ -292,6 +293,16 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::getNextBlock() {
+		if(blocks.empty()) {
+			currentBlock = nullptr;
+			currentBlockReadPosition = 0;
+
+			playbackState = PlaybackState::BufferingUnderrun;
+
+			sendFifoStreamOutOfData();
+			return;
+		}
+
 		currentBlock = blocks.front().get();
 		currentBlockReadPosition = 0;
 
