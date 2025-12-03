@@ -58,13 +58,13 @@ namespace NitroComposer {
 		step = stepTable[stepIndex];
 	}
 
-	void AdpcmDecoder::DecodeBlock(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount) {
+	void AdpcmDecoder::DecodeBlock(__restrict const std::uint8_t *inputData, __restrict std::int16_t *outputData, size_t outputSampleCount) {
 		ReadChunkHeader(inputData);
 		inputData += chunkHeaderSize;
 		DecodeData(inputData, outputData, outputSampleCount);
 	}
 
-	void AdpcmDecoder::DecodeData(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount) {
+	void AdpcmDecoder::DecodeData(__restrict const std::uint8_t *inputData, __restrict std::int16_t *outputData, size_t outputSampleCount) {
 		for(size_t samplesOutput = 0; samplesOutput < outputSampleCount; samplesOutput += samplesPerOctet) {
 			uint8_t b = *(inputData++);
 
@@ -77,7 +77,7 @@ namespace NitroComposer {
 
 	}
 
-	void AdpcmDecoder::FastForwardData(const std::uint8_t *inputData, size_t sampleCount) {
+	void AdpcmDecoder::FastForwardData(__restrict const std::uint8_t *inputData, size_t sampleCount) {
 		for(size_t samplesSkipped = 0; samplesSkipped < sampleCount; samplesSkipped += samplesPerOctet) {
 			uint8_t b = *(inputData++);
 			parseNibble(b & 0x0F);

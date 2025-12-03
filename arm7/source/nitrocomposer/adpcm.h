@@ -16,9 +16,9 @@ namespace NitroComposer {
 
 		void ReadChunkHeader(const std::uint8_t *inputData);
 		void Init(std::int16_t predictor, int stepIndex);
-		void FastForwardData(const std::uint8_t *inputData, size_t sampleCount);
-		void DecodeData(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount);
-		void DecodeBlock(const std::uint8_t *inputData, std::int16_t *outputData, size_t outputSampleCount);
+		void FastForwardData(__restrict const std::uint8_t *inputData, size_t sampleCount);
+		void DecodeData(__restrict const std::uint8_t *inputData, __restrict std::int16_t *outputData, size_t outputSampleCount);
+		void DecodeBlock(__restrict const std::uint8_t *inputData, __restrict std::int16_t *outputData, size_t outputSampleCount);
 	private:
 		static const int indexTable[16];
 		static const int stepTable[89];
