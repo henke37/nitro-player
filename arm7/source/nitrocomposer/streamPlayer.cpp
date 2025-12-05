@@ -12,8 +12,9 @@ namespace NitroComposer {
 
 	std::unique_ptr<StreamPlayer> streamPlayer;
 
-	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannel) : 
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannel) :
 		playbackState(PlaybackState::Uninitialized),
+		timerId(timerId),
 		channels{
 			StreamChannel(playbackBuffSize, hwChannel, StreamChannel::StereoChannel::Center),
 			StreamChannel()
@@ -22,8 +23,9 @@ namespace NitroComposer {
 		assert(!streamPlayer);
 		sequencePlayer.ReserveChannel(hwChannel);
 	}
-	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) :
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) :
 		playbackState(PlaybackState::Uninitialized),
+		timerId(timerId),
 		channels{
 			StreamChannel(playbackBuffSize, hwChannelLeft, StreamChannel::StereoChannel::Left),
 			StreamChannel(playbackBuffSize, hwChannelRight, StreamChannel::StereoChannel::Right)
@@ -41,11 +43,11 @@ namespace NitroComposer {
 		}
 	}
 
-	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t timer) {
+	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t timerResetVal) {
 		assert(encoding != WaveEncoding::Generated);
 		this->streamEncoding = encoding;
 		this->stereo = stereo;
-		this->timer = timer;
+		this->timerResetVal = timerResetVal;
 
 		if(stereo) {
 			assert(channels[1].IsAllocated());
@@ -118,12 +120,33 @@ namespace NitroComposer {
 	}
 	StreamPlayer::StreamChannel::~StreamChannel() {}
 
+	std::uint8_t StreamPlayer::StreamChannel::GetVolume() const {
+		return streamPlayer->volume;
+	}
+
+	std::uint8_t StreamPlayer::StreamChannel::GetPan() const {
+		int pan = streamPlayer->pan;
+		switch(stereoChannel) {
+		case StereoChannel::Center:
+			break;
+		case StereoChannel::Left:
+			pan -= 64;
+			break;
+		case StereoChannel::Right:
+			pan += 64;
+			break;
+		default:
+			assert(false);
+		}
+		return std::clamp(pan, 0, 127);
+	}
+
 	void StreamPlayer::StreamChannel::setRegisters() {
 		assert(stereoChannel != StereoChannel::Invalid);
 		assert(hwChannel < 16);
 
 		REG_SOUNDXSAD(hwChannel) = (std::uint32_t)(playbackBuffer.get());
-		REG_SOUNDXTMR(hwChannel) = streamPlayer->timer;
+		REG_SOUNDXTMR(hwChannel) = streamPlayer->timerResetVal;
 		REG_SOUNDXLEN(hwChannel) = bufferSize / 4;
 		REG_SOUNDXPNT(hwChannel) = 0;
 
@@ -340,24 +363,13 @@ namespace NitroComposer {
 		fastForwardToStartOfCurrentBlock();
 	}
 
-	std::uint8_t StreamPlayer::StreamChannel::GetVolume() const {
-		return streamPlayer->volume;
+	void StreamPlayer::setTimer() {
+		timerStart(timerId, ClockDivider_256, timerResetVal << 1, timerCallback);
 	}
-
-	std::uint8_t StreamPlayer::StreamChannel::GetPan() const {
-		int pan = streamPlayer->pan;
-		switch(stereoChannel) {
-			case StereoChannel::Center:
-				break;
-			case StereoChannel::Left:
-				pan -= 64;
-				break;
-			case StereoChannel::Right:
-				pan += 64;
-				break;
-			default:
-				assert(false);
-		}
-		return std::clamp(pan, 0, 127);
+	void StreamPlayer::clearTimer() {
+		timerStop(timerId);
+	}
+	void StreamPlayer::timerCallback() {
+		streamPlayer->writeToChannels(256);
 	}
 }

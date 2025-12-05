@@ -104,9 +104,9 @@ namespace NitroComposer {
 			StreamPlayerAllocIPC *allocIpc = static_cast<StreamPlayerAllocIPC *>(ipc);
 			assert(allocIpc->channelCount == 1 || allocIpc->channelCount == 2);
 			if(allocIpc->channelCount == 1) {
-				streamPlayer = std::make_unique<StreamPlayer>(allocIpc->playbackBuffSize, allocIpc->hwChannels[0]);
+				streamPlayer = std::make_unique<StreamPlayer>(allocIpc->playbackBuffSize, allocIpc->timerId, allocIpc->hwChannels[0]);
 			} else {
-				streamPlayer = std::make_unique<StreamPlayer>(allocIpc->playbackBuffSize, allocIpc->hwChannels[0], allocIpc->hwChannels[1]);
+				streamPlayer = std::make_unique<StreamPlayer>(allocIpc->playbackBuffSize, allocIpc->timerId, allocIpc->hwChannels[0], allocIpc->hwChannels[1]);
 			}
 		} break;
 
@@ -120,7 +120,7 @@ namespace NitroComposer {
 		{
 			assert(streamPlayer);
 			auto initStreamIpc = static_cast<InitStreamIPC *>(ipc);
-			streamPlayer->Init(initStreamIpc->encoding, initStreamIpc->stereo, initStreamIpc->timer);
+			streamPlayer->Init(initStreamIpc->encoding, initStreamIpc->stereo, initStreamIpc->timerResetVal);
 		} break;
 
 		case BaseIPC::CommandType::StopStream:

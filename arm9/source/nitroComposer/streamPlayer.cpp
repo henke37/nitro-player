@@ -7,7 +7,7 @@
 #include <nds/arm9/cache.h>
 
 namespace NitroComposer {
-	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannel) {
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannel) {
 		assert(!musicEngine.currentStreamPlayer);
 		musicEngine.currentStreamPlayer = this;
 
@@ -15,11 +15,12 @@ namespace NitroComposer {
 		ipc.command = BaseIPC::CommandType::AllocStreamPlayer;
 		ipc.playbackBuffSize = playbackBuffSize;
 		ipc.channelCount = 1;
+		ipc.timerId = timerId;
 		ipc.hwChannels[0] = hwChannel;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerAllocIPC), (u8 *)&ipc);
 		assert(success);
 	}
-	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) {
+	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) {
 		assert(!musicEngine.currentStreamPlayer);
 		musicEngine.currentStreamPlayer = this;
 
@@ -27,6 +28,7 @@ namespace NitroComposer {
 		ipc.command = BaseIPC::CommandType::AllocStreamPlayer;
 		ipc.playbackBuffSize = playbackBuffSize;
 		ipc.channelCount = 2;
+		ipc.timerId = timerId;
 		ipc.hwChannels[0] = hwChannelLeft;
 		ipc.hwChannels[1] = hwChannelRight;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerAllocIPC), (u8 *)&ipc);
@@ -226,7 +228,7 @@ namespace NitroComposer {
 		ipc.command = BaseIPC::CommandType::InitStream;
 		ipc.encoding = blockSource->GetEncoding();
 		ipc.stereo = blockSource->GetChannels()>1;
-		ipc.timer = blockSource->GetTimer();
+		ipc.timerResetVal = blockSource->GetTimer();
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(InitStreamIPC), (u8 *)&ipc);
 		assert(success);

@@ -96,6 +96,7 @@ namespace NitroComposer {
 	struct StreamPlayerAllocIPC : StreamPlayerIPC {
 		std::uint32_t playbackBuffSize;
 		std::uint8_t channelCount;
+		std::uint8_t timerId;
 		std::uint8_t hwChannels[2];
 	};
 
@@ -110,7 +111,7 @@ namespace NitroComposer {
 	struct InitStreamIPC : StreamPlayerIPC {
 		WaveEncoding encoding;
 		bool stereo;
-		std::uint16_t timer;
+		std::uint16_t timerResetVal;
 	};
 
 	struct StreamPushBlockIPC : StreamPlayerIPC {

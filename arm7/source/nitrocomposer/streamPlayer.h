@@ -19,8 +19,8 @@ namespace NitroComposer {
 
 	class StreamPlayer {
 	public:
-		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannel);
-		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight);
+		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannel);
+		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight);
 		~StreamPlayer();
 
 		enum class PlaybackState : std::uint8_t {
@@ -34,7 +34,7 @@ namespace NitroComposer {
 		StreamPlayer(const StreamPlayer &) = delete;
 		StreamPlayer &operator=(const StreamPlayer &) = delete;
 
-		void Init(WaveEncoding encoding, bool stereo, std::uint16_t timer);
+		void Init(WaveEncoding encoding, bool stereo, std::uint16_t timerResetVal);
 		void Stop();
 
 		void SetVolume(std::uint8_t volume);
@@ -44,12 +44,14 @@ namespace NitroComposer {
 	private:
 		bool stereo;
 		PlaybackState playbackState;
-		std::uint16_t timer;
+		std::uint16_t timerResetVal;
 		WaveEncoding streamEncoding;
 		WaveEncoding playbackEncoding;
 
 		std::uint8_t volume = 127;
 		std::uint8_t pan = 64;
+
+		const std::uint8_t timerId;
 
 		void AddBlock(std::unique_ptr<StreamBlock> &&block);
 		void RetireBlock(std::uint32_t blockId);
@@ -116,6 +118,11 @@ namespace NitroComposer {
 
 		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 		void sendFifoStreamOutOfData();
+
+		void setTimer();
+		void clearTimer();
+
+		static void timerCallback();
 
 		friend class StreamChannel;
 		friend class SequencePlayer;
