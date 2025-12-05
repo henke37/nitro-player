@@ -26,16 +26,19 @@ namespace NitroComposer {
 		enum class PlaybackState : std::uint8_t {
 			Uninitialized=0,
 			Stopped,
+			Stopping_FlushBlocks,
+			Stopping_PlayoutRemainsOfBuffer,
 			Playing,
 			InitialBuffering,
-			BufferingUnderrun
+			BufferingUnderrun_LastBlock,
+			BufferingUnderrun_OutOfData
 		};
 
 		StreamPlayer(const StreamPlayer &) = delete;
 		StreamPlayer &operator=(const StreamPlayer &) = delete;
 
 		void Init(WaveEncoding encoding, bool stereo, std::uint16_t timerResetVal);
-		void Stop();
+		void Stop(bool instantly);
 
 		void SetVolume(std::uint8_t volume);
 		void SetPan(std::int8_t pan);
@@ -50,6 +53,8 @@ namespace NitroComposer {
 
 		std::uint8_t volume = 127;
 		std::uint8_t pan = 64;
+
+		std::uint32_t bufferedSampleCount;
 
 		const std::uint8_t timerId;
 
@@ -78,6 +83,7 @@ namespace NitroComposer {
 
 			std::uint8_t GetHwChannel() const { return hwChannel; }
 			bool IsAllocated() const { return hwChannel < 16; }
+			std::uint32_t GetBufferSize() const { return bufferSize; }
 
 			void SetStereoChannel(StereoChannel channel) { stereoChannel = channel; }
 
@@ -88,6 +94,8 @@ namespace NitroComposer {
 			void AddToPlayback(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
 			const uint8_t *GetBlockData(const NitroComposer::StreamBlock *block);
+
+			void UpdateRegisters();
 
 		private:
 			std::unique_ptr<std::uint8_t[]> playbackBuffer;
@@ -103,8 +111,6 @@ namespace NitroComposer {
 			std::uint8_t GetVolume() const;
 			std::uint8_t GetPan() const;
 
-			void setRegisters();
-
 			void writeToPlaybackBuffer(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
 			size_t bufferSizeInSamples() const;
@@ -113,16 +119,28 @@ namespace NitroComposer {
 
 		StreamChannel channels[2];
 
+		void blockAdded();
+		void handleOutOfBlocks();
+		void completeStop();
+		void resumePlayback();
+		bool bufferedEnoughForPlayback() const;
+		void bufferNextBlock();
+
+		void setChannelRegisters();
+
 		void writeToChannels(std::uint32_t sampleCount);
 		void fastForwardToStartOfCurrentBlock();
 
 		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 		void sendFifoStreamOutOfData();
 
+		static const std::uint32_t samplesPerTimerInterrupt = 256;
+
 		void setTimer();
 		void clearTimer();
 
 		static void timerCallback();
+		void timerCallbackInstance();
 
 		friend class StreamChannel;
 		friend class SequencePlayer;

@@ -29,6 +29,7 @@ namespace NitroComposer {
 			DeallocStreamPlayer = 201,
 			InitStream = 210,
 			StopStream = 211,
+			StopStreamInstantly = 212,
 			StreamPushBlock = 222,
 			StreamSetVolume = 213,
 			StreamSetPan = 214

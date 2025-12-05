@@ -14,6 +14,7 @@ namespace NitroComposer {
 
 	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannel) :
 		playbackState(PlaybackState::Uninitialized),
+		bufferedSampleCount(0),
 		timerId(timerId),
 		channels{
 			StreamChannel(playbackBuffSize, hwChannel, StreamChannel::StereoChannel::Center),
@@ -25,6 +26,7 @@ namespace NitroComposer {
 	}
 	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) :
 		playbackState(PlaybackState::Uninitialized),
+		bufferedSampleCount(0),
 		timerId(timerId),
 		channels{
 			StreamChannel(playbackBuffSize, hwChannelLeft, StreamChannel::StereoChannel::Left),
@@ -71,7 +73,35 @@ namespace NitroComposer {
 
 		playbackState = PlaybackState::InitialBuffering;
 	}
-	void StreamPlayer::Stop() {}
+	void StreamPlayer::Stop(bool instantly) {
+
+		if(instantly) {
+			playbackState = PlaybackState::Stopped;
+			setChannelRegisters();
+			return;
+		} else {
+			switch(playbackState) {
+			case PlaybackState::Uninitialized:
+			case PlaybackState::Stopped:
+			case PlaybackState::Stopping_FlushBlocks:
+			case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+				return;
+			case PlaybackState::InitialBuffering:
+			case PlaybackState::BufferingUnderrun_LastBlock:
+				playbackState = PlaybackState::Stopping_PlayoutRemainsOfBuffer;
+				return;
+
+			case PlaybackState::BufferingUnderrun_OutOfData:
+				playbackState = PlaybackState::Stopped;
+				return;
+
+			case PlaybackState::Playing:
+				playbackState = PlaybackState::Stopping_FlushBlocks;
+				return;
+			}
+
+		}
+	}
 
 	void StreamPlayer::SetVolume(std::uint8_t volume) {
 		assert(volume <= 127);
@@ -93,6 +123,8 @@ namespace NitroComposer {
 		assert(block->blockId != 0);
 
 		blocks.push_back(std::move(block));
+
+		blockAdded();
 	}
 
 	void StreamPlayer::RetireBlock(std::uint32_t blockId) {
@@ -141,9 +173,11 @@ namespace NitroComposer {
 		return std::clamp(pan, 0, 127);
 	}
 
-	void StreamPlayer::StreamChannel::setRegisters() {
+	void StreamPlayer::StreamChannel::UpdateRegisters() {
 		assert(stereoChannel != StereoChannel::Invalid);
 		assert(hwChannel < 16);
+
+		//TODO: setup non repeating when stopping
 
 		REG_SOUNDXSAD(hwChannel) = (std::uint32_t)(playbackBuffer.get());
 		REG_SOUNDXTMR(hwChannel) = streamPlayer->timerResetVal;
@@ -156,10 +190,13 @@ namespace NitroComposer {
 			case PlaybackState::Uninitialized:
 			case PlaybackState::Stopped:
 			case PlaybackState::InitialBuffering:
-			case PlaybackState::BufferingUnderrun:
+			case PlaybackState::BufferingUnderrun_OutOfData:
 				// Do nothing
 				break;
 			case PlaybackState::Playing:
+			case PlaybackState::Stopping_FlushBlocks:
+			case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+			case PlaybackState::BufferingUnderrun_LastBlock:
 				ctrlVal |= SOUNDXCNT_ENABLE;
 			break;
 		}
@@ -284,22 +321,42 @@ namespace NitroComposer {
 		return bufferSizeInSamples()-writePosition;
 	}
 
+	void StreamPlayer::completeStop() {
+		playbackState = PlaybackState::Stopped;
+		clearTimer();
+	}
+
+	void StreamPlayer::resumePlayback() {
+		playbackState = PlaybackState::Playing;
+
+		setChannelRegisters();
+		setTimer();
+	}
+
+	void StreamPlayer::setChannelRegisters() {
+		channels[0].UpdateRegisters();
+		if(stereo) channels[1].UpdateRegisters();
+	}
+
 	void StreamPlayer::writeToChannels(std::uint32_t samplesLeftToWrite) {
+		assert(samplesLeftToWrite > 0);
 
 		while(samplesLeftToWrite) {
 
 			if(!currentBlock) {
 				getNextBlock();
-				if(!currentBlock) return;
 			}
 
 			switch(playbackState) {
-			case NitroComposer::StreamPlayer::PlaybackState::Playing:
+			case PlaybackState::Stopping_FlushBlocks:
+			case PlaybackState::Playing:
 				break;
-			case NitroComposer::StreamPlayer::PlaybackState::Uninitialized:
-			case NitroComposer::StreamPlayer::PlaybackState::Stopped:
-			case NitroComposer::StreamPlayer::PlaybackState::InitialBuffering:
-			case NitroComposer::StreamPlayer::PlaybackState::BufferingUnderrun:
+			case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+			case PlaybackState::Uninitialized:
+			case PlaybackState::Stopped:
+			case PlaybackState::InitialBuffering:
+			case PlaybackState::BufferingUnderrun_LastBlock:
+			case PlaybackState::BufferingUnderrun_OutOfData:
 				return;
 			default:
 				assert(0);
@@ -313,6 +370,8 @@ namespace NitroComposer {
 			if(stereo) {
 				channels[1].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToWrite);
 			}
+
+			bufferedSampleCount += samplesToWrite;
 
 			if(samplesToWrite == samplesLeftInBlock) {
 				RetireBlock(currentBlock->blockId);
@@ -334,23 +393,7 @@ namespace NitroComposer {
 
 	void StreamPlayer::getNextBlock() {
 		if(blocks.empty()) {
-			currentBlock = nullptr;
-			currentBlockReadPosition = 0;
-
-			switch(playbackState) {
-			case PlaybackState::Playing:
-				playbackState = PlaybackState::BufferingUnderrun;
-				sendFifoStreamOutOfData();
-				break;
-			case PlaybackState::InitialBuffering:
-			case PlaybackState::BufferingUnderrun:
-				break;
-
-			case PlaybackState::Stopped:
-			case PlaybackState::Uninitialized:
-				assert(0);
-			}
-
+			handleOutOfBlocks();
 			return;
 		}
 
@@ -363,6 +406,69 @@ namespace NitroComposer {
 		fastForwardToStartOfCurrentBlock();
 	}
 
+	void StreamPlayer::blockAdded() {
+		switch(playbackState) {
+		case PlaybackState::InitialBuffering:
+		case PlaybackState::BufferingUnderrun_OutOfData:
+			bufferNextBlock();
+			if(bufferedEnoughForPlayback()) {
+				resumePlayback();
+			}
+			return;
+		case PlaybackState::BufferingUnderrun_LastBlock:
+			bufferNextBlock();
+			if(bufferedEnoughForPlayback()) {
+				playbackState = PlaybackState::Playing;
+			}
+			setChannelRegisters();
+		case PlaybackState::Playing:
+			return;
+		case PlaybackState::Stopped:
+		case PlaybackState::Stopping_FlushBlocks:
+		case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+		case PlaybackState::Uninitialized:
+			assert(0);
+			return;
+		}
+	}
+
+	void StreamPlayer::handleOutOfBlocks() {
+		currentBlock = nullptr;
+		currentBlockReadPosition = 0;
+
+		switch(playbackState) {
+		case PlaybackState::Playing:
+			if(this->bufferedSampleCount > 0) {
+				playbackState = PlaybackState::BufferingUnderrun_LastBlock;
+			} else {
+				playbackState = PlaybackState::BufferingUnderrun_OutOfData;
+			}
+			setChannelRegisters();
+			sendFifoStreamOutOfData();
+			break;
+
+		case PlaybackState::Stopping_FlushBlocks:
+			playbackState = PlaybackState::Stopping_PlayoutRemainsOfBuffer;
+			setChannelRegisters();
+			break;
+
+		case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+			setChannelRegisters();
+			break;
+		case PlaybackState::InitialBuffering:
+		case PlaybackState::BufferingUnderrun_LastBlock:
+		case PlaybackState::BufferingUnderrun_OutOfData:
+			break;
+		case PlaybackState::Stopped:
+		case PlaybackState::Uninitialized:
+			assert(0);
+		}
+	}
+
+	bool StreamPlayer::bufferedEnoughForPlayback() const {
+		return bufferedSampleCount >= channels[0].GetBufferSize();
+	}
+
 	void StreamPlayer::setTimer() {
 		timerStart(timerId, ClockDivider_256, timerResetVal << 1, timerCallback);
 	}
@@ -370,6 +476,10 @@ namespace NitroComposer {
 		timerStop(timerId);
 	}
 	void StreamPlayer::timerCallback() {
-		streamPlayer->writeToChannels(256);
+		streamPlayer->timerCallbackInstance();
+	}
+	void StreamPlayer::timerCallbackInstance() {
+		bufferedSampleCount -= samplesPerTimerInterrupt;
+		writeToChannels(samplesPerTimerInterrupt);
 	}
 }

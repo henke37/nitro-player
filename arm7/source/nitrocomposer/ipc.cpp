@@ -126,7 +126,13 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::StopStream:
 		{
 			assert(streamPlayer);
-			streamPlayer->Stop();
+			streamPlayer->Stop(false);
+		} break;
+
+		case BaseIPC::CommandType::StopStreamInstantly:
+		{
+			assert(streamPlayer);
+			streamPlayer->Stop(true);
 		} break;
 
 		case BaseIPC::CommandType::StreamSetVolume:

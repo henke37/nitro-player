@@ -84,7 +84,7 @@ namespace NitroComposer {
 		void SetPan(std::int8_t pan);
 		std::int8_t GetPan() const { return pan; }
 
-		void StopStream();
+		void StopStream(bool instant);
 
 		void PlayStream(unsigned int streamId);
 		void PlayStream(const std::string &streamName);

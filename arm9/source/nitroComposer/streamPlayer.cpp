@@ -109,11 +109,11 @@ namespace NitroComposer {
 	}
 
 
-	void StreamPlayer::StopStream() {
+	void StreamPlayer::StopStream(bool instant) {
 		if(playbackState == PlaybackState::Stopped) return;
 
 		std::unique_ptr<StreamPlayerIPC> buff = std::make_unique<StreamPlayerIPC>();
-		buff->command = BaseIPC::CommandType::StopStream;
+		buff->command = instant ? BaseIPC::CommandType::StopStreamInstantly : BaseIPC::CommandType::StopStream;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(StreamPlayerIPC), (u8 *)buff.get());
 		assert(success);
 	}
@@ -194,6 +194,7 @@ namespace NitroComposer {
 			auto blockOwned = blockSource->GetNextBlock();
 			if(!blockOwned) {
 				playbackState = PlaybackState::Finishing;
+				StopStream(false);
 				return;
 			}
 
