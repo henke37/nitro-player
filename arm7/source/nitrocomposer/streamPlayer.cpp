@@ -209,6 +209,10 @@ namespace NitroComposer {
 		SCHANNEL_CR(hwChannel) = ctrlVal;
 	}
 
+	bool StreamPlayer::StreamChannel::HWStillPlaying() const {
+		return (SCHANNEL_CR(hwChannel) & SOUNDXCNT_ENABLE) == SOUNDXCNT_ENABLE;
+	}
+
 	void StreamPlayer::StreamChannel::NewBlock(const StreamBlock *block) {
 		const std::uint8_t *data = GetBlockData(block);
 
@@ -479,7 +483,38 @@ namespace NitroComposer {
 		streamPlayer->timerCallbackInstance();
 	}
 	void StreamPlayer::timerCallbackInstance() {
-		bufferedSampleCount -= samplesPerTimerInterrupt;
+		if(bufferedSampleCount >= samplesPerTimerInterrupt) {
+			bufferedSampleCount -= samplesPerTimerInterrupt;
+		} else {
+			bufferedSampleCount = 0;
+		}
 		writeToChannels(samplesPerTimerInterrupt);
+
+		switch(playbackState) {
+		case PlaybackState::Uninitialized:
+		case PlaybackState::Stopped:
+			assert(0);
+			return;
+
+		case PlaybackState::Playing:
+			return;
+
+		case PlaybackState::Stopping_FlushBlocks:
+		case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+			if(!channels[0].HWStillPlaying()) {
+				completeStop();
+			}
+			return;
+		case PlaybackState::BufferingUnderrun_LastBlock:
+			if(!channels[0].HWStillPlaying()) {
+				playbackState = PlaybackState::BufferingUnderrun_OutOfData;
+				clearTimer();
+			}
+			return;
+
+		case PlaybackState::InitialBuffering:
+		case PlaybackState::BufferingUnderrun_OutOfData:
+			return;
+		}
 	}
 }

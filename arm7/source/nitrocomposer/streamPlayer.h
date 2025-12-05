@@ -84,6 +84,7 @@ namespace NitroComposer {
 			std::uint8_t GetHwChannel() const { return hwChannel; }
 			bool IsAllocated() const { return hwChannel < 16; }
 			std::uint32_t GetBufferSize() const { return bufferSize; }
+			bool HWStillPlaying() const;
 
 			void SetStereoChannel(StereoChannel channel) { stereoChannel = channel; }
 
