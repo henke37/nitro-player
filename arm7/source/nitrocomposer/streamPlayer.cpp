@@ -204,7 +204,7 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::StreamChannel::AddToPlayback(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount) {
-		assert(sampleCount < bufferSizeInSamples());
+		assert(sampleCount <= bufferSizeInSamples());
 
 		size_t samplesLeftToWrite = sampleCount;
 
