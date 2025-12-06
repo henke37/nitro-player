@@ -44,6 +44,7 @@ namespace NitroComposer {
 		while(true) {
 			cosema_wait(&asyncEvtSemaphore);
 			{
+				assert(fifoCheckDatamsgLength(FIFO_NITRO_COMPOSER) <= (int)fifoBuffSize);
 				u8 fifoBuffer[fifoBuffSize];
 				int written=fifoGetDatamsg(FIFO_NITRO_COMPOSER, fifoBuffSize, fifoBuffer);
 				sassert(written >= (int)sizeof(AsyncEventIPC), "Too short async msg %i",written);
