@@ -44,6 +44,15 @@ namespace NitroComposer {
 		assert(success);
 	}
 
+	void StreamPlayer::SetSdat(const SDatFile *sdat) {
+		assert(!this->IsPlaying());
+		this->sdat = sdat;
+	}
+
+	bool StreamPlayer::IsPlaying() const {
+		return playbackState != PlaybackState::Stopped;
+	}
+
 	void StreamPlayer::SetVolume(std::uint8_t volume) {
 		assert(volume <= 127);
 		if(this->volume == volume) return;
