@@ -1,6 +1,8 @@
 #include "testMode.h"
 #include <nds/arm9/input.h>
 
+#include "testSTRM.h"
+
 TestMode::TestMode() {}
 TestMode::~TestMode() {}
 
@@ -57,6 +59,8 @@ void TestMode::Update() {
 			printf("%d: %s\n", sequenceId, sdat->GetNameForSequence(sequenceId).c_str());
 		}
 
-
+		if(keysDown() & KEY_SELECT) {
+			setNextGameMode(std::make_unique<TestSTRM>());
+		}
 	}
 }
