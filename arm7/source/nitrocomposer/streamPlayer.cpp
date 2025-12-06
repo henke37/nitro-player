@@ -354,6 +354,8 @@ namespace NitroComposer {
 	void StreamPlayer::completeStop() {
 		playbackState = PlaybackState::Stopped;
 		clearTimer();
+		setChannelRegisters();
+		sendFifoStreamPlaybackEnded();
 	}
 
 	void StreamPlayer::resumePlayback() {

@@ -198,4 +198,13 @@ namespace NitroComposer {
 		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
 		assert(success);
 	}
+	void StreamPlayer::sendFifoStreamPlaybackEnded() {
+		bool success;
+		AsyncEventIPC ipc;
+		ipc.eventId = AsyncEventIPC::EventType::StreamEnded;
+		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(AsyncEventIPC), (u8 *)&ipc);
+		assert(success);
+		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void *)0x020C0DE0);//kludge for fifo system
+		assert(success);
+	}
 }
