@@ -43,7 +43,6 @@ namespace NitroComposer {
 
 	void STRM::Parse() {
 		BinaryReader reader(sections.getSectionData("HEAD"));
-		reader.skip(4);
 		encoding = (WaveEncoding)reader.readByte();
 		loops = reader.readByte() != 0;
 		channels = reader.readByte();
@@ -58,6 +57,10 @@ namespace NitroComposer {
 		blockSamples = reader.readLELong();
 		lastBlockLen = reader.readLELong();
 		lastBlockSamples = reader.readLELong();
+
+		sassert(channels > 0, "channels is Zero");
+		sassert(channels <= 2, "channels is %d", channels);
+		if(loops) sassert(loopOffset < samples, "Out of bounds loop index %lu, %lu max", loopOffset, samples);
 	}
 
 }
