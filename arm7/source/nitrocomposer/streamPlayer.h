@@ -94,8 +94,6 @@ namespace NitroComposer {
 
 			void AddToPlayback(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
-			const uint8_t *GetBlockData(const NitroComposer::StreamBlock *block);
-
 			void UpdateRegisters();
 
 		private:
@@ -111,6 +109,8 @@ namespace NitroComposer {
 
 			std::uint8_t GetVolume() const;
 			std::uint8_t GetPan() const;
+
+			const uint8_t *GetBlockData(const NitroComposer::StreamBlock *block);
 
 			void writeToPlaybackBuffer(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
