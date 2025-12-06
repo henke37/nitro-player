@@ -93,6 +93,7 @@ namespace NitroComposer {
 			void FastForward(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
 
 			void AddToPlayback(const StreamBlock *block, std::uint32_t startPos, std::uint32_t sampleCount);
+			void AddSilenceToPlayback(std::uint32_t sampleCount);
 
 			void UpdateRegisters();
 
@@ -134,6 +135,7 @@ namespace NitroComposer {
 
 		void sendFifoStreamRetireBlock(std::uint32_t blockId);
 		void sendFifoStreamOutOfData();
+		void sendFifoStreamPlaybackEnded();
 
 		static const std::uint32_t samplesPerTimerInterrupt = 256;
 
