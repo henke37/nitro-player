@@ -158,7 +158,7 @@ namespace NitroComposer {
 			assert(streamPlayer);
 			auto pushBlockIpc = static_cast<StreamPushBlockIPC *>(ipc);
 
-			std::unique_ptr<StreamBlock> block;
+			std::unique_ptr<StreamBlock> block=std::make_unique<StreamBlock>();
 			block->blockId = pushBlockIpc->blockId;
 			block->blockDataSize = pushBlockIpc->blockDataSize;
 			block->blockSampleCount = pushBlockIpc->blockSampleCount;
