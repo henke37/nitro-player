@@ -18,6 +18,8 @@ public:
 private:
 	std::unique_ptr<NitroComposer::SDatFile> sdat;
 
+	unsigned int streamId;
+
 	NitroComposer::StreamPlayer player;
 };
 
