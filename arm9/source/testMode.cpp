@@ -1,4 +1,8 @@
 #include "testMode.h"
+
+#include "globals.h"
+#include "buttonMan.h"
+
 #include <nds/arm9/input.h>
 
 #include "testSTRM.h"
@@ -35,22 +39,22 @@ void TestMode::Unload() {
 
 void TestMode::Update() {
 	if(sequencePlayer.IsPlaying()) {
-		if(keysDown() & KEY_B) {
+		if(buttonMan.claimButton(KEY_B)) {
 			sequencePlayer.AbortSequence();
 		}
 	} else {
-		if(keysDown() & KEY_A) {
+		if(buttonMan.claimButton(KEY_A)) {
 			PlaySequence(sequenceId);
 		}
 
-		if(keysDown() & KEY_UP) {
+		if(buttonMan.claimButton(KEY_UP)) {
 			if(sequenceId >= sdat->GetSequenceCount() - 1) {
 				sequenceId = 0;
 			} else {
 				++sequenceId;
 			}
 			printf("%d: %s\n", sequenceId, sdat->GetNameForSequence(sequenceId).c_str());
-		} else if(keysDown() & KEY_DOWN) {
+		} else if(buttonMan.claimButton(KEY_DOWN)) {
 			if(sequenceId == 0) {
 				sequenceId = sdat->GetSequenceCount() - 1;
 			} else {
@@ -59,7 +63,7 @@ void TestMode::Update() {
 			printf("%d: %s\n", sequenceId, sdat->GetNameForSequence(sequenceId).c_str());
 		}
 
-		if(keysDown() & KEY_SELECT) {
+		if(buttonMan.claimButton(KEY_SELECT)) {
 			setNextGameMode(std::make_unique<TestSTRM>());
 		}
 	}
