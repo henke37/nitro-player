@@ -238,7 +238,7 @@ namespace NitroComposer {
 		ipc.command = BaseIPC::CommandType::InitStream;
 		ipc.encoding = blockSource->GetEncoding();
 		ipc.stereo = blockSource->GetChannels()>1;
-		ipc.timerResetVal = blockSource->GetTimer();
+		ipc.sampleRate = blockSource->GetSampleRate();
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(InitStreamIPC), (u8 *)&ipc);
 		assert(success);

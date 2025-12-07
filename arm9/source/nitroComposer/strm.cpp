@@ -48,7 +48,7 @@ namespace NitroComposer {
 		channels = reader.readByte();
 		reader.skip(1);
 		sampleRate = reader.readLEShort();
-		timerResetVal = reader.readLEShort();
+		reader.skip(2);
 		loopOffset = reader.readLELong();
 		samples = reader.readLELong();
 		reader.skip(4);

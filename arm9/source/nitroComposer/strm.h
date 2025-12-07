@@ -27,7 +27,6 @@ namespace NitroComposer {
 		bool GetLoops() const { return loops; }
 		std::uint8_t GetChannels() const { return channels; }
 		std::uint16_t GetSampleRate() const { return sampleRate; }
-		std::uint16_t GetTimer() const { return timerResetVal; }
 		std::uint32_t GetLoopOffset() const { return loopOffset; }
 		std::uint32_t GetSamples() const { return samples; }
 		std::uint32_t GetBlockCount() const { return blockCount; }
@@ -44,7 +43,6 @@ namespace NitroComposer {
 		bool loops;
 		std::uint8_t channels;
 		std::uint16_t sampleRate;
-		std::uint16_t timerResetVal;
 		std::uint32_t loopOffset;
 		std::uint32_t samples;
 		std::uint32_t blockCount;

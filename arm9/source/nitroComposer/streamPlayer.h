@@ -21,7 +21,6 @@ namespace NitroComposer {
 		virtual WaveEncoding GetEncoding() const = 0;
 		virtual std::uint8_t GetChannels() const = 0;
 		virtual std::uint16_t GetSampleRate() const = 0;
-		virtual std::uint16_t GetTimer() const = 0;
 	};
 
 	class SingleStreamBlockSource : public IBlockSource {
@@ -38,7 +37,6 @@ namespace NitroComposer {
 		WaveEncoding GetEncoding() const override { return stream->GetEncoding(); }
 		std::uint8_t GetChannels() const override { return stream->GetChannels(); }
 		std::uint16_t GetSampleRate() const override { return stream->GetSampleRate(); }
-		std::uint16_t GetTimer() const override { return stream->GetTimer(); }
 	private:
 		std::unique_ptr<STRM> stream;
 		std::uint32_t currentPos = 0;
@@ -62,7 +60,6 @@ namespace NitroComposer {
 		WaveEncoding GetEncoding() const override;
 		std::uint8_t GetChannels() const override;
 		std::uint16_t GetSampleRate() const override;
-		std::uint16_t GetTimer() const override;
 
 		void AddStream(std::unique_ptr<STRM> &&stream);
 	private:

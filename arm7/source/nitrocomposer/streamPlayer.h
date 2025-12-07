@@ -37,7 +37,7 @@ namespace NitroComposer {
 		StreamPlayer(const StreamPlayer &) = delete;
 		StreamPlayer &operator=(const StreamPlayer &) = delete;
 
-		void Init(WaveEncoding encoding, bool stereo, std::uint16_t timerResetVal);
+		void Init(WaveEncoding encoding, bool stereo, std::uint16_t sampleRate);
 		void Stop(bool instantly);
 
 		void SetVolume(std::uint8_t volume);
@@ -47,7 +47,7 @@ namespace NitroComposer {
 	private:
 		bool stereo;
 		PlaybackState playbackState;
-		std::uint16_t timerResetVal;
+		std::uint16_t sampleRate;
 		WaveEncoding streamEncoding;
 		WaveEncoding playbackEncoding;
 

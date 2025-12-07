@@ -47,11 +47,11 @@ namespace NitroComposer {
 		}
 	}
 
-	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t timerResetVal) {
+	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t sampleRate) {
 		assert(encoding != WaveEncoding::Generated);
 		this->streamEncoding = encoding;
 		this->stereo = stereo;
-		this->timerResetVal = timerResetVal;
+		this->sampleRate = sampleRate;
 
 		if(stereo) {
 			assert(channels[1].IsAllocated());
@@ -189,7 +189,7 @@ namespace NitroComposer {
 		assert(hwChannel < 16);
 
 		REG_SOUNDXSAD(hwChannel) = (std::uint32_t)(playbackBuffer.get());
-		REG_SOUNDXTMR(hwChannel) = streamPlayer->timerResetVal;
+		REG_SOUNDXTMR(hwChannel) = SOUNDXTMR_FREQ(streamPlayer->sampleRate);
 		REG_SOUNDXLEN(hwChannel) = bufferSize / 4;
 		REG_SOUNDXPNT(hwChannel) = 0;
 
@@ -557,7 +557,7 @@ namespace NitroComposer {
 		consolePuts("Stream Timer Start.");
 		consoleFlush();
 #endif
-		timerStart(timerId, ClockDivider_256, timerResetVal << 1, timerCallback);
+		timerStart(timerId, ClockDivider_256, TIMER_FREQ_SHIFT(sampleRate, 1, 8), timerCallback);
 	}
 	void StreamPlayer::clearTimer() {
 #ifdef NITROCOMPOSER_LOG_STREAM

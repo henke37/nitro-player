@@ -112,7 +112,7 @@ namespace NitroComposer {
 	struct InitStreamIPC : StreamPlayerIPC {
 		WaveEncoding encoding;
 		bool stereo;
-		std::uint16_t timerResetVal;
+		std::uint16_t sampleRate;
 	};
 
 	struct StreamPushBlockIPC : StreamPlayerIPC {

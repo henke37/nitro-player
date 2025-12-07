@@ -124,7 +124,7 @@ namespace NitroComposer {
 		{
 			assert(streamPlayer);
 			auto initStreamIpc = static_cast<InitStreamIPC *>(ipc);
-			streamPlayer->Init(initStreamIpc->encoding, initStreamIpc->stereo, initStreamIpc->timerResetVal);
+			streamPlayer->Init(initStreamIpc->encoding, initStreamIpc->stereo, initStreamIpc->sampleRate);
 		} break;
 
 		case BaseIPC::CommandType::StopStream:
