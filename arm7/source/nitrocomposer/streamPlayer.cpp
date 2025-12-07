@@ -377,23 +377,38 @@ namespace NitroComposer {
 
 			if(!currentBlock) {
 				getNextBlock();
+
+				if(!currentBlock) switch(playbackState) {
+				case PlaybackState::Stopping_FlushBlocks:
+				case PlaybackState::InitialBuffering:
+					break;
+				case PlaybackState::Uninitialized:
+				case PlaybackState::Stopped:
+					return;
+				case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
+				case PlaybackState::BufferingUnderrun_OutOfData:
+				case PlaybackState::BufferingUnderrun_LastBlock:
+				{
+					channels[0].AddSilenceToPlayback(samplesLeftToWrite);
+					if(stereo) channels[1].AddSilenceToPlayback(samplesLeftToWrite);
+				} return;
+				case PlaybackState::Playing:
+				default:
+					assert(0);
+					break;
+				}
 			}
 
 			switch(playbackState) {
 			case PlaybackState::Stopping_FlushBlocks:
 			case PlaybackState::Playing:
+			case PlaybackState::InitialBuffering:
 				break;
 			case PlaybackState::Uninitialized:
 			case PlaybackState::Stopped:
-			case PlaybackState::InitialBuffering:
-				return;
-			case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
 			case PlaybackState::BufferingUnderrun_OutOfData:
 			case PlaybackState::BufferingUnderrun_LastBlock:
-			{
-				channels[0].AddSilenceToPlayback(samplesLeftToWrite);
-				if(stereo) channels[1].AddSilenceToPlayback(samplesLeftToWrite);
-			} return;
+			case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
 			default:
 				assert(0);
 				break;
@@ -499,6 +514,20 @@ namespace NitroComposer {
 		case PlaybackState::Uninitialized:
 			assert(0);
 		}
+	}
+
+	void StreamPlayer::bufferNextBlock() {
+		getNextBlock();
+		assert(currentBlock);
+		std::uint32_t samplesLeftInBlock = currentBlock->blockSampleCount - currentBlockReadPosition;
+
+		std::uint32_t samplesToBuffer = std::min(
+			samplesLeftInBlock,
+			channels[0].GetBufferSize() - bufferedSampleCount
+		);
+
+		channels[0].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToBuffer);
+		if(stereo) channels[1].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToBuffer);
 	}
 
 	bool StreamPlayer::bufferedEnoughForPlayback() const {
