@@ -545,8 +545,7 @@ namespace NitroComposer {
 			channels[0].GetBufferSize() - bufferedSampleCount
 		);
 
-		channels[0].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToBuffer);
-		if(stereo) channels[1].AddToPlayback(currentBlock, currentBlockReadPosition, samplesToBuffer);
+		writeToChannels(samplesToBuffer);
 	}
 
 	bool StreamPlayer::bufferedEnoughForPlayback() const {
