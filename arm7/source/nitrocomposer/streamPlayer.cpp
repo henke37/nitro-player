@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <cstring>
 
+#define NITROCOMPOSER_LOG_STREAM
+
 namespace NitroComposer {
 
 	std::unique_ptr<StreamPlayer> streamPlayer;
@@ -70,10 +72,19 @@ namespace NitroComposer {
 			default:
 				assert(false);
 		}
+#ifdef NITROCOMPOSER_LOG_STREAM
+		consolePuts("Stream Init.");
+		consoleFlush();
+#endif
 
 		playbackState = PlaybackState::InitialBuffering;
 	}
 	void StreamPlayer::Stop(bool instantly) {
+
+#ifdef NITROCOMPOSER_LOG_STREAM
+		consolePuts("Stream Stop.");
+		consoleFlush();
+#endif
 
 		if(instantly) {
 			playbackState = PlaybackState::Stopped;
@@ -458,6 +469,9 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::blockAdded() {
+		consolePrintf("New block. %d", (int)playbackState);
+		consoleFlush();
+
 		switch(playbackState) {
 		case PlaybackState::InitialBuffering:
 		case PlaybackState::BufferingUnderrun_OutOfData:
@@ -486,6 +500,11 @@ namespace NitroComposer {
 	void StreamPlayer::handleOutOfBlocks() {
 		currentBlock = nullptr;
 		currentBlockReadPosition = 0;
+
+#ifdef NITROCOMPOSER_LOG_STREAM
+		consolePuts("Stream OOB!");
+		consoleFlush();
+#endif
 
 		switch(playbackState) {
 		case PlaybackState::Playing:
@@ -535,9 +554,18 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::setTimer() {
+#ifdef NITROCOMPOSER_LOG_STREAM
+		consolePuts("Stream Timer Start.");
+		consoleFlush();
+#endif
 		timerStart(timerId, ClockDivider_256, timerResetVal << 1, timerCallback);
 	}
 	void StreamPlayer::clearTimer() {
+#ifdef NITROCOMPOSER_LOG_STREAM
+		consolePuts("Stream Timer Stop.");
+		consoleFlush();
+#endif
+
 		timerStop(timerId);
 	}
 	void StreamPlayer::timerCallback() {

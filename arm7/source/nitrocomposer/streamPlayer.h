@@ -25,13 +25,13 @@ namespace NitroComposer {
 
 		enum class PlaybackState : std::uint8_t {
 			Uninitialized=0,
-			Stopped,
-			Stopping_FlushBlocks,
-			Stopping_PlayoutRemainsOfBuffer,
-			Playing,
-			InitialBuffering,
-			BufferingUnderrun_LastBlock,
-			BufferingUnderrun_OutOfData
+			Stopped = 10,
+			Stopping_FlushBlocks = 11,
+			Stopping_PlayoutRemainsOfBuffer = 12,
+			Playing = 20,
+			InitialBuffering = 21,
+			BufferingUnderrun_LastBlock = 30,
+			BufferingUnderrun_OutOfData = 31
 		};
 
 		StreamPlayer(const StreamPlayer &) = delete;
