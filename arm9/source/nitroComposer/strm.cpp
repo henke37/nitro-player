@@ -61,6 +61,7 @@ namespace NitroComposer {
 		sassert(channels > 0, "channels is Zero");
 		sassert(channels <= 2, "channels is %d", channels);
 		if(loops) sassert(loopOffset < samples, "Out of bounds loop index %lu, %lu max", loopOffset, samples);
+		sassert(samples == (blockCount-1) * blockSamples + lastBlockSamples, "Sample count mismatch %ld != %ld * %ld + %ld", samples, blockCount-1, blockSamples, lastBlockSamples);
 	}
 
 }
