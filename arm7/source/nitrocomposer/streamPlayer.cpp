@@ -414,11 +414,11 @@ namespace NitroComposer {
 			case PlaybackState::Stopping_FlushBlocks:
 			case PlaybackState::Playing:
 			case PlaybackState::InitialBuffering:
+			case PlaybackState::BufferingUnderrun_LastBlock:
+			case PlaybackState::BufferingUnderrun_OutOfData:
 				break;
 			case PlaybackState::Uninitialized:
 			case PlaybackState::Stopped:
-			case PlaybackState::BufferingUnderrun_OutOfData:
-			case PlaybackState::BufferingUnderrun_LastBlock:
 			case PlaybackState::Stopping_PlayoutRemainsOfBuffer:
 			default:
 				assert(0);
@@ -482,7 +482,7 @@ namespace NitroComposer {
 			return;
 		case PlaybackState::BufferingUnderrun_LastBlock:
 			bufferNextBlock();
-			if(bufferedEnoughForPlayback()) {
+			if(currentBlock) {
 				playbackState = PlaybackState::Playing;
 			}
 			setChannelRegisters();
