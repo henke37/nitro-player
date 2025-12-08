@@ -119,7 +119,20 @@ namespace NitroComposer {
 
 
 	void StreamPlayer::StopStream(bool instant) {
-		if(playbackState == PlaybackState::Stopped) return;
+		switch(playbackState) {
+		case PlaybackState::Stopped:
+		case PlaybackState::Finishing:
+			return;
+		case PlaybackState::Starting:
+			sassert(0, "Bad stop state! %i",(int)playbackState);
+			break;
+		case PlaybackState::BufferUnderrun:
+		case PlaybackState::Playing:
+			break;
+		}
+
+
+		playbackState = instant ? PlaybackState::Stopped : PlaybackState::Finishing;
 
 		std::unique_ptr<StreamPlayerIPC> buff = std::make_unique<StreamPlayerIPC>();
 		buff->command = instant ? BaseIPC::CommandType::StopStreamInstantly : BaseIPC::CommandType::StopStream;
@@ -202,7 +215,6 @@ namespace NitroComposer {
 		while(GetOutstandingSamples() < minQueuedSamples) {
 			auto blockOwned = blockSource->GetNextBlock();
 			if(!blockOwned) {
-				playbackState = PlaybackState::Finishing;
 				StopStream(false);
 				return;
 			}
@@ -229,7 +241,20 @@ namespace NitroComposer {
 		sendInitStreamIPC();
 		ensueEnoughQueuedBlocks();
 
-		playbackState = PlaybackState::Playing;
+
+		switch(playbackState) {
+		case PlaybackState::Stopped:
+		case PlaybackState::BufferUnderrun:
+		case PlaybackState::Finishing:
+			break;
+		case PlaybackState::Playing:
+			assert(0);
+			break;
+		case PlaybackState::Starting:
+			playbackState = PlaybackState::Playing;
+			break;
+		}
+
 	}
 
 	void StreamPlayer::sendInitStreamIPC() {
