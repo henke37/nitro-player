@@ -6,6 +6,8 @@
 #include <nds/fifocommon.h>
 #include <nds/arm9/cache.h>
 
+#define NITROCOMPOSER_LOG_STREAM
+
 namespace NitroComposer {
 	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannel) {
 		assert(!musicEngine.currentStreamPlayer);
@@ -225,6 +227,11 @@ namespace NitroComposer {
 
 			StreamBlock *block = blockOwned.get();
 			addBlock(std::move(blockOwned));
+
+#ifdef NITROCOMPOSER_LOG_STREAM
+			printf("Push block %lu", block->blockId);
+#endif
+
 			sendPushBlockIPC(block);
 		}
 

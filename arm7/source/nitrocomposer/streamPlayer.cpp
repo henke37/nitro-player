@@ -469,9 +469,10 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::blockAdded() {
-		consolePrintf("New block. %d", (int)playbackState);
+#ifdef NITROCOMPOSER_LOG_STREAM
+		consolePrintf("New block. %d %d", (int)playbackState,blocks.size());
 		consoleFlush();
-
+#endif
 		switch(playbackState) {
 		case PlaybackState::InitialBuffering:
 		case PlaybackState::BufferingUnderrun_OutOfData:
