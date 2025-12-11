@@ -188,6 +188,8 @@ namespace NitroComposer {
 			void NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length);
 			void NoteOnTie(std::uint8_t note, std::uint8_t velocity);
 
+			std::uint8_t GetTransposedNote(std::uint8_t note) const;
+
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
 
 			void ReleaseAllVoices();

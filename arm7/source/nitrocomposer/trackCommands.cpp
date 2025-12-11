@@ -255,7 +255,7 @@ namespace NitroComposer {
 		case 0xC9:
 		{
 			std::uint8_t note = readByteCommand();
-			lastPlayedNote = note + transpose;
+			lastPlayedNote = GetTransposedNote(note);
 			portamento = true;
 #ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Porta Start %u\n", note);

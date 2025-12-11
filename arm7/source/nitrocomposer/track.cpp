@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <nds/arm7/console.h>
+#include <algorithm>
 
 namespace NitroComposer {
 
@@ -70,9 +71,12 @@ namespace NitroComposer {
 		sequence->stoppedPlaying(this);
 	}
 
+	std::uint8_t SequencePlayer::Track::GetTransposedNote(std::uint8_t note) const {
+		return std::clamp((int)note + transpose, 0, 127);
+	}
 
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
-		note += transpose;
+		note = GetTransposedNote(note);
 		if(tieMode) {
 			consolePrintf("#%d Tie-Note on %d,%d\n", id, note, velocity);
 			//NoteOnTie(note, velocity);
