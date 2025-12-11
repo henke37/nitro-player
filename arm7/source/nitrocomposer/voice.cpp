@@ -43,7 +43,7 @@ namespace NitroComposer {
 		assert(track);
 		assert(currentInstrument);
 
-		if(!(SCHANNEL_CR(voiceIndex) & SCHANNEL_ENABLE)) {
+		if(!(REG_SOUNDXCNT(voiceIndex) & SCHANNEL_ENABLE)) {
 			Kill();
 			return;
 		}
@@ -122,12 +122,12 @@ namespace NitroComposer {
 		this->currentInstrument = nullptr;
 		this->length = 0;
 
-		SCHANNEL_CR(voiceIndex) = SOUND_PAN(64);
+		REG_SOUNDXCNT(voiceIndex) = SOUNDXCNT_PAN(64);
 	}
 
 	void SequencePlayer::Voice::ConfigureControlRegisters() {
 		std::uint32_t ctrVal = 0;
-		ctrVal |= SOUND_PAN(ComputePan());
+		ctrVal |= SOUNDXCNT_PAN(ComputePan());
 
 		switch(currentInstrument->type) {
 		case InstrumentBank::InstrumentType::PCM:
@@ -137,12 +137,12 @@ namespace NitroComposer {
 
 			assert(wave.waveData);
 
-			SCHANNEL_SOURCE(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
+			REG_SOUNDXSAD(voiceIndex) = reinterpret_cast<std::uintptr_t>(wave.waveData);
 
 			ctrVal |= std::uint32_t(wave.encoding) << 29;
-			ctrVal |= wave.loops ? SOUND_REPEAT : SOUND_ONE_SHOT;
-			SCHANNEL_LENGTH(voiceIndex) = wave.loopLength;
-			SCHANNEL_REPEAT_POINT(voiceIndex) = wave.loopStart;
+			ctrVal |= wave.loops ? SOUNDXCNT_REPEAT : SOUNDXCNT_ONE_SHOT;
+			REG_SOUNDXLEN(voiceIndex) = wave.loopLength;
+			REG_SOUNDXPNT(voiceIndex) = wave.loopStart;
 		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		{
@@ -151,7 +151,7 @@ namespace NitroComposer {
 		}
 		[[fallthrough]];
 		case InstrumentBank::InstrumentType::Noise:
-			ctrVal |= SOUND_FORMAT_PSG;
+			ctrVal |= SOUNDXCNT_FORMAT_PSG;
 			break;
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
@@ -159,28 +159,26 @@ namespace NitroComposer {
 			assert(0);
 		}
 
-		ctrVal |= SCHANNEL_ENABLE;
-		SCHANNEL_CR(voiceIndex) = ctrVal;
+		ctrVal |= SOUNDXCNT_ENABLE;
+		REG_SOUNDXCNT(voiceIndex) = ctrVal;
 	}
-
-#define SOUND_VOLDIV(div) ((div) << 8)
 
 	void SequencePlayer::Voice::ConfigureVolumeRegister() {
 		int volume = ComputeVolume();
 
-		std::uint32_t cr = SCHANNEL_CR(voiceIndex);
-		cr &= ~(SOUND_VOL(0x7F) | SOUND_VOLDIV(3));
+		std::uint32_t cr = REG_SOUNDXCNT(voiceIndex);
+		cr &= ~(SOUNDXCNT_VOL_MUL(0x7F) | SOUNDXCNT_VOL_DIV(3));
 
-		cr |= SOUND_VOL(static_cast<int>(volumeTable[volume]));
+		cr |= SOUNDXCNT_VOL_MUL(static_cast<int>(volumeTable[volume]));
 
 		if(volume < AMPL_K - 240)
-			cr |= SOUND_VOLDIV(3);
+			cr |= SOUNDXCNT_VOL_DIV(3);
 		else if(volume < AMPL_K - 120)
-			cr |= SOUND_VOLDIV(2);
+			cr |= SOUNDXCNT_VOL_DIV(2);
 		else if(volume < AMPL_K - 60)
-			cr |= SOUND_VOLDIV(1);
+			cr |= SOUNDXCNT_VOL_DIV(1);
 
-		SCHANNEL_CR(voiceIndex) = cr;
+		REG_SOUNDXCNT(voiceIndex) = cr;
 	}
 
 	void SequencePlayer::Voice::ConfigureTimerRegister() {
@@ -197,7 +195,7 @@ namespace NitroComposer {
 		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		case InstrumentBank::InstrumentType::Noise:
-			timerResetVal = (std::uint16_t)SOUND_FREQ(440);
+			timerResetVal = (std::uint16_t)SOUNDXTMR_FREQ(440);
 			baseNote = 69;
 			break;
 		case InstrumentBank::InstrumentType::Drumkit:
@@ -220,7 +218,7 @@ namespace NitroComposer {
 
 		if(adjustment) timerResetVal = Timer_Adjust(timerResetVal, adjustment);
 
-		SCHANNEL_TIMER(voiceIndex) = -timerResetVal;
+		REG_SOUNDXTMR(voiceIndex) = -timerResetVal;
 	}
 
 	int SequencePlayer::Voice::ComputeVolume() const {
