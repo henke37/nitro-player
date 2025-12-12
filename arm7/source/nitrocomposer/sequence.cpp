@@ -32,6 +32,14 @@ namespace NitroComposer {
 		}
 	}
 
+	unsigned int SequencePlayer::PlayingSequence::IdForTrack(const Track *track) const {
+		for(std::uint8_t trackId = 0; trackId < trackCount; ++trackId) {
+			const Track *candidate = &tracks[trackId];
+			if(candidate == track) return trackId;
+		}
+		assert(0);
+	}
+
 	void SequencePlayer::PlayingSequence::PlaySequence(const std::uint8_t *sequenceData, size_t length, std::ptrdiff_t startPos) {
 		AbortSequence(true);
 

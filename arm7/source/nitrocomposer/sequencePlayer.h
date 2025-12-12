@@ -103,7 +103,7 @@ namespace NitroComposer {
 
 		class Track {
 		public:
-			Track(std::uint8_t id);
+			Track();
 
 			void Init(PlayingSequence *sequence);
 			void Reset();
@@ -131,7 +131,6 @@ namespace NitroComposer {
 			bool noteWait;
 			bool tieMode;
 
-			const std::uint8_t id;
 
 			std::uint8_t priority;
 
@@ -191,6 +190,8 @@ namespace NitroComposer {
 			std::uint8_t GetTransposedNote(std::uint8_t note) const;
 
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
+
+			std::uint8_t GetId() const;
 
 			void ReleaseAllVoices();
 			void KillAllVoices();
@@ -265,7 +266,8 @@ namespace NitroComposer {
 			std::int16_t localVariables[localVariableCount];
 
 			static constexpr unsigned int trackCount = 16;
-			Track tracks[trackCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+			Track tracks[trackCount];
+			unsigned int IdForTrack(const Track *) const;
 
 			friend class Track;
 			friend class SequencePlayer;

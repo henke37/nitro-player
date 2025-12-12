@@ -6,7 +6,7 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track(std::uint8_t id) : isPlaying(false), id(id) {}
+	SequencePlayer::Track::Track() : isPlaying(false) {}
 
 	void SequencePlayer::Track::Init(PlayingSequence *sequence) {
 		assert(sequence);
@@ -78,10 +78,10 @@ namespace NitroComposer {
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		note = GetTransposedNote(note);
 		if(tieMode) {
-			consolePrintf("#%d Tie-Note on %d,%d\n", id, note, velocity);
+			consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
 			//NoteOnTie(note, velocity);
 		} else {
-			consolePrintf("#%d Note on %d,%d,%d\n", id, note, velocity, length);
+			consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
 			NoteOnReal(note, velocity, length);
 		}
 		consoleFlush();
@@ -134,6 +134,10 @@ namespace NitroComposer {
 		}
 		assert(0);
 		return nullptr;
+	}
+
+	std::uint8_t SequencePlayer::Track::GetId() const {
+		return sequence->IdForTrack(this);
 	}
 
 	void SequencePlayer::Track::ReleaseAllVoices() {

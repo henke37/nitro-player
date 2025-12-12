@@ -36,7 +36,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			sequence->StartTrack(trackId, offset);
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Start #%d at 0x%x\n", id, trackId, (unsigned)offset);
+			consolePrintf("#%d Start #%d at 0x%x\n", GetId(), trackId, (unsigned)offset);
 			consoleFlush();
 #endif
 		} break;
@@ -46,7 +46,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Jump to 0x%x\n", id, (unsigned)offset);
+			consolePrintf("#%d Jump to 0x%x\n", GetId(), (unsigned)offset);
 			consoleFlush();
 #endif
 		} break;
@@ -57,7 +57,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Call to 0x%x\n", id, (unsigned)offset);
+			consolePrintf("#%d Call to 0x%x\n", GetId(), (unsigned)offset);
 			consoleFlush();
 #endif
 
@@ -347,7 +347,7 @@ namespace NitroComposer {
 			++stackPointer;
 
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Loop start x%d\n", id, loopCount);
+			consolePrintf("#%d Loop start x%d\n", GetId(), loopCount);
 			consoleFlush();
 #endif
 		}
@@ -392,12 +392,12 @@ namespace NitroComposer {
 				nextCommand = stackRecord.nextCommand;
 				++stackPointer;
 #ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("#%d Loop repeat, %d remaining\n", id, stackRecord.loopCounter);
+				consolePrintf("#%d Loop repeat, %d remaining\n", GetId(), stackRecord.loopCounter);
 				consoleFlush();
 #endif
 			} else {
 #ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("#%d Loop end\n", id);
+				consolePrintf("#%d Loop end\n", GetId());
 				consoleFlush();
 #endif
 			}
@@ -411,7 +411,7 @@ namespace NitroComposer {
 			assert(stackRecord.type == StackEntryType::Call);
 			nextCommand = stackRecord.nextCommand;
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Return from Call\n", id);
+			consolePrintf("#%d Return from Call\n", GetId());
 			consoleFlush();
 #endif
 		} break;
@@ -420,21 +420,21 @@ namespace NitroComposer {
 		{
 			std::uint16_t tracks = readShortCommand();
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Alloc %x\n", id, tracks);
+			consolePrintf("#%d Alloc %x\n", GetId(), tracks);
 			consoleFlush();
 #endif
 		} break;
 
 		case 0xFF: {
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Fin.\n", id);
+			consolePrintf("#%d Fin.\n", GetId());
 			consoleFlush();
 #endif
 			StopPlaying();
 		} break;
 
 		default:
-			consolePrintf("#%d Skipping unknown command %x\n", id, command);
+			consolePrintf("#%d Skipping unknown command %x\n", GetId(), command);
 			consoleFlush();
 			skipCommandArgs(command);
 			break;
@@ -446,7 +446,7 @@ namespace NitroComposer {
 		std::uint8_t command = readByteCommand();
 		switch(command) {
 		default:
-			consolePrintf("#%d Skipping unknown rnd command %x\n", id, command);
+			consolePrintf("#%d Skipping unknown rnd command %x\n", GetId(), command);
 			consoleFlush();
 			skipCommandRandomArgs(command);
 		}
@@ -456,7 +456,7 @@ namespace NitroComposer {
 		std::uint8_t command = readByteCommand();
 		switch(command) {
 		default:
-			consolePrintf("#%d Skipping unknown var command %x\n", id, command);
+			consolePrintf("#%d Skipping unknown var command %x\n", GetId(), command);
 			consoleFlush();
 			skipCommandVarArgs(command);
 		}
