@@ -102,6 +102,12 @@ namespace NitroComposer {
 			playingSequence.AbortSequence(false);
 		} break;
 
+		case BaseIPC::CommandType::MuteTrack:
+		{
+			MuteTrackIPC *muteTrackIpc = static_cast<MuteTrackIPC *>(ipc);
+			playingSequence.SetTrackMute(muteTrackIpc->trackId, muteTrackIpc->mute ? Track::MuteMode::MuteAndRelease : Track::MuteMode::Clear);
+		} break;
+
 		case BaseIPC::CommandType::AllocStreamPlayer:
 		{
 			assert(!streamPlayer);

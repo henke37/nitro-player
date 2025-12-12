@@ -25,6 +25,7 @@ namespace NitroComposer {
 			SetTempo = 122,
 			GetVar = 110,
 			SetVar = 111,
+			MuteTrack = 112,
 			AllocStreamPlayer = 200,
 			DeallocStreamPlayer = 201,
 			InitStream = 210,
@@ -89,6 +90,11 @@ namespace NitroComposer {
 	struct LoadWaveArchiveIPC : SequencePlayerIPC {
 		std::uint8_t slot;
 		const LoadedWaveArchive *archive;
+	};
+
+	struct MuteTrackIPC : SequencePlayerIPC {
+		std::uint8_t trackId;
+		bool mute;
 	};
 
 	struct StreamPlayerIPC : BaseIPC {

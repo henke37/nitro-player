@@ -124,6 +124,11 @@ namespace NitroComposer {
 		tempoTimer += tempo;
 	}
 
+	void SequencePlayer::PlayingSequence::SetTrackMute(std::uint8_t trackId, Track::MuteMode mode) {
+		assert(trackId < trackCount);
+		tracks[trackId].SetMute(mode);
+	}
+
 	void SequencePlayer::PlayingSequence::TickVoices() {
 		for(unsigned int voiceIndex = 0; voiceIndex < voiceCount; ++voiceIndex) {
 			auto &voice = voices[voiceIndex];

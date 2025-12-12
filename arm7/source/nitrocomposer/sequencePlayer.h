@@ -239,6 +239,8 @@ namespace NitroComposer {
 
 			void Update();
 
+			void SetTrackMute(std::uint8_t trackId, Track::MuteMode mode);
+
 			bool isVoiceAllowed(std::uint8_t voiceIndex) const;
 
 		private:

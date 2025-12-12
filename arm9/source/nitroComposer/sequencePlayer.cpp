@@ -261,4 +261,15 @@ namespace NitroComposer {
 
 	}
 
+	void SequencePlayer::SetTrackMute(std::uint8_t trackId, bool mute) {
+		std::unique_ptr<MuteTrackIPC> buff = std::make_unique<MuteTrackIPC>();
+		buff->command = BaseIPC::CommandType::SetVar;
+		buff->playerId = playerId;
+		buff->trackId = trackId;
+		buff->mute = mute;
+
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(MuteTrackIPC), (u8 *)buff.get());
+		assert(success);
+	}
+
 }
