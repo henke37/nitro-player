@@ -6,7 +6,7 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track() : isPlaying(false) {}
+	SequencePlayer::Track::Track() : isPlaying(false), muted(false) {}
 
 	void SequencePlayer::Track::Init(PlayingSequence *sequence) {
 		assert(sequence);
@@ -76,16 +76,18 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
-		note = GetTransposedNote(note);
-		if(tieMode) {
-			consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
-			//NoteOnTie(note, velocity);
-		} else {
-			consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
-			NoteOnReal(note, velocity, length);
+		if(!muted) {
+			note = GetTransposedNote(note);
+			if(tieMode) {
+				consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
+				//NoteOnTie(note, velocity);
+			} else {
+				consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
+				NoteOnReal(note, velocity, length);
+			}
+			consoleFlush();
+			lastPlayedNote = note;
 		}
-		consoleFlush();
-		lastPlayedNote = note;
 		if(noteWait) {
 			this->waitCounter = length;
 		}
@@ -158,5 +160,23 @@ namespace NitroComposer {
 
 	void SequencePlayer::Track::SetInstrument(unsigned int instrumentId) {
 		currentInstrument = sequence->bank->instruments.at(instrumentId).get();
+	}
+	void SequencePlayer::Track::SetMute(MuteMode mode) {
+		switch(mode) {
+		case MuteMode::Clear:
+			muted = false;
+			break;
+		case MuteMode::MuteAndRelease:
+		case MuteMode::MuteAndKill:
+			if(mode == MuteMode::MuteAndRelease) {
+				ReleaseAllVoices();
+			} else {
+				KillAllVoices();
+			}
+			[[fallthrough]];
+		case MuteMode::Mute:
+			muted = true;
+			break;
+		}
 	}
 }

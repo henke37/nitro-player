@@ -118,6 +118,14 @@ namespace NitroComposer {
 
 			void NoteOn(std::uint8_t note, std::uint16_t velocity, std::uint16_t durration);
 
+			enum class MuteMode {
+				Clear,
+				Mute,
+				MuteAndRelease,
+				MuteAndKill
+			};
+			void SetMute(MuteMode mode);
+
 		private:
 			PlayingSequence *sequence;
 			const InstrumentBank::BaseInstrument *currentInstrument;
@@ -131,6 +139,7 @@ namespace NitroComposer {
 			bool noteWait;
 			bool tieMode;
 
+			bool muted;
 
 			std::uint8_t priority;
 
@@ -221,7 +230,6 @@ namespace NitroComposer {
 
 			void SetVar(std::uint8_t var, std::int16_t val);
 			std::int16_t GetVar(std::uint8_t var) const;
-
 
 			void PlaySequence(const std::uint8_t *sequenceData, size_t length, std::ptrdiff_t startPos=0);
 			void AbortSequence(bool killVoices);
