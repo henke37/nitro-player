@@ -73,8 +73,16 @@ namespace NitroComposer {
 		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
 		buff->command = BaseIPC::CommandType::StopSequence;
 		buff->playerId = playerId;
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
-		assert(success);
+		
+		{
+			FifoMutexLock lock;
+
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
+			assert(success);
+
+			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
+			fifoGetValue32(FIFO_NITRO_COMPOSER);
+		}
 
 		isPlaying = false;
 	}
@@ -83,8 +91,16 @@ namespace NitroComposer {
 		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
 		buff->command = BaseIPC::CommandType::KillSequence;
 		buff->playerId = playerId;
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
-		assert(success);
+
+		{
+			FifoMutexLock lock;
+
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
+			assert(success);
+
+			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
+			fifoGetValue32(FIFO_NITRO_COMPOSER);
+		}
 
 		isPlaying = false;
 	}

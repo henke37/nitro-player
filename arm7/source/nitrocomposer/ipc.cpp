@@ -100,11 +100,13 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::StopSequence:
 		{
 			playingSequence.AbortSequence(false);
+			fifoSendValue32(FIFO_NITRO_COMPOSER, 41);
 		} break;
 
 		case BaseIPC::CommandType::KillSequence:
 		{
 			playingSequence.AbortSequence(true);
+			fifoSendValue32(FIFO_NITRO_COMPOSER, 43);
 		} break;
 
 		case BaseIPC::CommandType::MuteTrack:
