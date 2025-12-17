@@ -12,6 +12,7 @@ namespace NitroComposer {
 		playerId = musicEngine.registerPlayer(this);
 	}
 	SequencePlayer::~SequencePlayer() {
+		KillSequence();
 		musicEngine.unregisterPlayer(this);
 	}
 
@@ -71,6 +72,16 @@ namespace NitroComposer {
 	void SequencePlayer::AbortSequence() {
 		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
 		buff->command = BaseIPC::CommandType::StopSequence;
+		buff->playerId = playerId;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
+		assert(success);
+
+		isPlaying = false;
+	}
+
+	void SequencePlayer::KillSequence() {
+		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
+		buff->command = BaseIPC::CommandType::KillSequence;
 		buff->playerId = playerId;
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
 		assert(success);

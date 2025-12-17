@@ -36,6 +36,7 @@ namespace NitroComposer {
 		void PlaySequence(const std::string &sequenceName);
 		void PlaySequence(const std::unique_ptr<SequenceInfoRecord> &);
 		void AbortSequence();
+		void KillSequence();
 
 		void LoadBank(unsigned int bankId);
 		void LoadWaveFormsForCurrentBank();

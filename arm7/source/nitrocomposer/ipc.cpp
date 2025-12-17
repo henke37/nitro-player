@@ -102,6 +102,11 @@ namespace NitroComposer {
 			playingSequence.AbortSequence(false);
 		} break;
 
+		case BaseIPC::CommandType::KillSequence:
+		{
+			playingSequence.AbortSequence(true);
+		} break;
+
 		case BaseIPC::CommandType::MuteTrack:
 		{
 			MuteTrackIPC *muteTrackIpc = static_cast<MuteTrackIPC *>(ipc);
