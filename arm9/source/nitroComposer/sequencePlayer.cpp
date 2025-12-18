@@ -54,30 +54,30 @@ namespace NitroComposer {
 
 		sassert(readLen == dataLen, "failed reading sequence data");
 
-		std::unique_ptr<PlayTrackIPC> buff = std::make_unique<PlayTrackIPC>();
-		buff->command = BaseIPC::CommandType::PlaySequence;
-		buff->playerId = playerId;
-		buff->sequenceData = sequenceData.get();
-		buff->startPos = 0;
-		buff->length = dataLen;
-		buff->channelMask = player->channelMask;
-		buff->sequenceVolume = sequenceInfo->vol;
+		PlayTrackIPC buff;
+		buff.command = BaseIPC::CommandType::PlaySequence;
+		buff.playerId = playerId;
+		buff.sequenceData = sequenceData.get();
+		buff.startPos = 0;
+		buff.length = dataLen;
+		buff.channelMask = player->channelMask;
+		buff.sequenceVolume = sequenceInfo->vol;
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)buff.get());
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)&buff);
 		assert(success);
 
 		isPlaying = true;
 	}
 
 	void SequencePlayer::AbortSequence() {
-		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
-		buff->command = BaseIPC::CommandType::StopSequence;
-		buff->playerId = playerId;
+		SequencePlayerIPC buff;
+		buff.command = BaseIPC::CommandType::StopSequence;
+		buff.playerId = playerId;
 		
 		{
 			FifoMutexLock lock;
 
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
 			assert(success);
 
 			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
@@ -88,14 +88,14 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::KillSequence() {
-		std::unique_ptr<SequencePlayerIPC> buff = std::make_unique<SequencePlayerIPC>();
-		buff->command = BaseIPC::CommandType::KillSequence;
-		buff->playerId = playerId;
+		SequencePlayerIPC buff;
+		buff.command = BaseIPC::CommandType::KillSequence;
+		buff.playerId = playerId;
 
 		{
 			FifoMutexLock lock;
 
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)buff.get());
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
 			assert(success);
 
 			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
@@ -124,12 +124,12 @@ namespace NitroComposer {
 
 		LoadWaveFormsForCurrentBank();
 
-		std::unique_ptr<LoadBankIPC> buff = std::make_unique<LoadBankIPC>();
-		buff->command = BaseIPC::CommandType::LoadBank;
-		buff->playerId = playerId;
-		buff->bank = sbnk.get();
+		LoadBankIPC buff;
+		buff.command = BaseIPC::CommandType::LoadBank;
+		buff.playerId = playerId;
+		buff.bank = sbnk.get();
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadBankIPC), (u8 *)buff.get());
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadBankIPC), (u8 *)&buff);
 		assert(success);
 	}
 
@@ -141,12 +141,12 @@ namespace NitroComposer {
 		loadedArchive.Reset();
 
 		if(archiveId >= 0xFFFF) {
-			std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
-			buff->command = BaseIPC::CommandType::LoadWaveArchive;
-			buff->playerId = playerId;
-			buff->slot = archiveSlot;
-			buff->archive = nullptr;
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
+			LoadWaveArchiveIPC buff;
+			buff.command = BaseIPC::CommandType::LoadWaveArchive;
+			buff.playerId = playerId;
+			buff.slot = archiveSlot;
+			buff.archive = nullptr;
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)&buff);
 			assert(success);
 			return;
 		}
@@ -156,12 +156,12 @@ namespace NitroComposer {
 		loadedArchive.archiveId = archiveId;
 
 		{
-			std::unique_ptr<LoadWaveArchiveIPC> buff = std::make_unique<LoadWaveArchiveIPC>();
-			buff->command = BaseIPC::CommandType::LoadWaveArchive;
-			buff->playerId = playerId;
-			buff->slot = archiveSlot;
-			buff->archive = &loadedArchive;
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)buff.get());
+			LoadWaveArchiveIPC buff;
+			buff.command = BaseIPC::CommandType::LoadWaveArchive;
+			buff.playerId = playerId;
+			buff.slot = archiveSlot;
+			buff.archive = &loadedArchive;
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)&buff);
 			assert(success);
 		}
 
@@ -261,25 +261,25 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::SetVar(std::uint8_t var, std::int16_t val) {
-		std::unique_ptr<SetVarIPC> buff = std::make_unique<SetVarIPC>();
-		buff->command = BaseIPC::CommandType::SetVar;
-		buff->playerId = playerId;
-		buff->var = var;
-		buff->val = val;
+		SetVarIPC buff;
+		buff.command = BaseIPC::CommandType::SetVar;
+		buff.playerId = playerId;
+		buff.var = var;
+		buff.val = val;
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)buff.get());
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetVarIPC), (u8 *)&buff);
 		assert(success);
 	}
 	std::int16_t SequencePlayer::GetVar(std::uint8_t var) const {
-		std::unique_ptr<GetVarIPC> buff = std::make_unique<GetVarIPC>();
-		buff->command = BaseIPC::CommandType::GetVar;
-		buff->playerId = playerId;
-		buff->var = var;
+		GetVarIPC buff;
+		buff.command = BaseIPC::CommandType::GetVar;
+		buff.playerId = playerId;
+		buff.var = var;
 
 		{
 			FifoMutexLock lock;
 
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(GetVarIPC), (u8 *)buff.get());
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(GetVarIPC), (u8 *)&buff);
 			assert(success);
 
 			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
@@ -289,13 +289,13 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::SetTrackMute(std::uint8_t trackId, bool mute) {
-		std::unique_ptr<MuteTrackIPC> buff = std::make_unique<MuteTrackIPC>();
-		buff->command = BaseIPC::CommandType::SetVar;
-		buff->playerId = playerId;
-		buff->trackId = trackId;
-		buff->mute = mute;
+		MuteTrackIPC buff;
+		buff.command = BaseIPC::CommandType::SetVar;
+		buff.playerId = playerId;
+		buff.trackId = trackId;
+		buff.mute = mute;
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(MuteTrackIPC), (u8 *)buff.get());
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(MuteTrackIPC), (u8 *)&buff);
 		assert(success);
 	}
 
