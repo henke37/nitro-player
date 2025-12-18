@@ -97,7 +97,6 @@
     <ClCompile Include="arm9\source\cardBackupStream.cpp" />
     <ClCompile Include="arm9\source\cellDisplay.cpp" />
     <ClCompile Include="arm9\source\charSet.cpp" />
-    <ClCompile Include="arm9\source\darkMagic.cpp" />
     <ClCompile Include="arm9\source\fifoMutex.cpp" />
     <ClCompile Include="arm9\source\fileStream.cpp" />
     <ClCompile Include="arm9\source\fixedMath.cpp" />
