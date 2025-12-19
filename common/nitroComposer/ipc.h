@@ -18,6 +18,8 @@ namespace NitroComposer {
 			Invalid = 0,
 			PowerOn = 1,
 			SetMainVolume = 2,
+			AllocSequencePlayer = 190,
+			DeallocSequencePlayer = 191,
 			LoadBank = 101,
 			LoadWaveArchive = 102,
 			PlaySequence = 120,

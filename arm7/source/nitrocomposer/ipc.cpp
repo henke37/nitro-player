@@ -40,6 +40,10 @@ namespace NitroComposer {
 			setupTimer();
 		} break;
 
+		case BaseIPC::CommandType::AllocSequencePlayer:
+		case BaseIPC::CommandType::DeallocSequencePlayer:
+			break;
+
 		case BaseIPC::CommandType::SetVar:
 		{
 			SetVarIPC *setVarIpc = static_cast<SetVarIPC *>(ipc);

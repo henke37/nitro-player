@@ -10,9 +10,24 @@ namespace NitroComposer {
 
 	SequencePlayer::SequencePlayer() : sdat(nullptr) {
 		playerId = musicEngine.registerPlayer(this);
+
+		SequencePlayerIPC buff;
+		buff.command = BaseIPC::CommandType::AllocSequencePlayer;
+		buff.playerId = playerId;
+
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
+		assert(success);
 	}
 	SequencePlayer::~SequencePlayer() {
 		KillSequence();
+
+		SequencePlayerIPC buff;
+		buff.command = BaseIPC::CommandType::DeallocSequencePlayer;
+		buff.playerId = playerId;
+
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
+		assert(success);
+
 		musicEngine.unregisterPlayer(this);
 	}
 
