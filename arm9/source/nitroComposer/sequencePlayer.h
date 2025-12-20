@@ -72,6 +72,8 @@ namespace NitroComposer {
 
 		bool isPlaying = false;
 
+		void sendLoadWaveArchiveIPC(unsigned int archiveSlot, const NitroComposer::LoadedWaveArchive *loadedArchive);
+
 		void sequenceEnded();
 		friend class MusicEngine;
 	};

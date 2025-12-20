@@ -156,13 +156,7 @@ namespace NitroComposer {
 		loadedArchive.Reset();
 
 		if(archiveId >= 0xFFFF) {
-			LoadWaveArchiveIPC buff;
-			buff.command = BaseIPC::CommandType::LoadWaveArchive;
-			buff.playerId = playerId;
-			buff.slot = archiveSlot;
-			buff.archive = nullptr;
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)&buff);
-			assert(success);
+			sendLoadWaveArchiveIPC(archiveSlot, nullptr);
 			return;
 		}
 
@@ -170,17 +164,19 @@ namespace NitroComposer {
 		LoadWaveArchiveData(archiveSlot, info);
 		loadedArchive.archiveId = archiveId;
 
-		{
-			LoadWaveArchiveIPC buff;
-			buff.command = BaseIPC::CommandType::LoadWaveArchive;
-			buff.playerId = playerId;
-			buff.slot = archiveSlot;
-			buff.archive = &loadedArchive;
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)&buff);
-			assert(success);
-		}
+		sendLoadWaveArchiveIPC(archiveSlot, &loadedArchive);
 
 		printf("Loaded archive %d \"%s\"\n", archiveId, sdat->GetNameForWaveArchive(archiveId).c_str());
+	}
+
+	void SequencePlayer::sendLoadWaveArchiveIPC(unsigned int archiveSlot, const NitroComposer::LoadedWaveArchive *loadedArchive) {
+		LoadWaveArchiveIPC buff;
+		buff.command = BaseIPC::CommandType::LoadWaveArchive;
+		buff.playerId = playerId;
+		buff.slot = archiveSlot;
+		buff.archive = loadedArchive;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(LoadWaveArchiveIPC), (u8 *)&buff);
+		assert(success);
 	}
 
 	void SequencePlayer::LoadWaveArchiveData(unsigned int archiveSlot, const std::unique_ptr<WaveArchiveInfoRecord> &info) {
