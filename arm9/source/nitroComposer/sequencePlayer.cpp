@@ -129,6 +129,8 @@ namespace NitroComposer {
 		if(bankId == loadedBankIndex) return;
 		loadedBankIndex = bankId;
 
+		KillSequence();
+
 		auto &bankInfo = sdat->GetBankInfo(bankId);
 		sassert(bankInfo, "No bank info");
 		for(unsigned int swarIndex = 0; swarIndex < 4; ++swarIndex) {
