@@ -60,13 +60,14 @@ namespace NitroComposer {
 
 			VoiceState GetState() const { return state; }
 
+			int ComputeVolume() const;
+			std::uint8_t ComputePan() const;
+
 		private:
 			void ConfigureControlRegisters();
 			void ConfigureVolumeRegister();
 			void ConfigureTimerRegister();
 
-			int ComputeVolume() const;
-			std::uint8_t ComputePan() const;
 
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
@@ -125,6 +126,11 @@ namespace NitroComposer {
 				MuteAndKill
 			};
 			void SetMute(MuteMode mode);
+
+			std::uint8_t GetPriority() const;
+
+			const PlayingSequence *GetSequence() const { return sequence; }
+			PlayingSequence *GetSequence() { return sequence; }
 
 		private:
 			PlayingSequence *sequence;
@@ -248,7 +254,7 @@ namespace NitroComposer {
 
 			const LoadedWave &GetWave(unsigned int archiveSlot, unsigned int waveIndex);
 
-			Voice *allocateVoice(InstrumentBank::InstrumentType type);
+			Voice *allocateVoice(InstrumentBank::InstrumentType type, const Track *track);
 
 			void stoppedPlaying(Track *track);
 
@@ -261,6 +267,7 @@ namespace NitroComposer {
 			std::uint16_t tempo;
 			std::uint16_t tempoTimer;
 			std::uint8_t sequenceVolume;
+			std::uint8_t priority;
 
 			std::uint16_t allowedChannels;
 
@@ -300,7 +307,7 @@ namespace NitroComposer {
 
 		PlayingSequence playingSequence;
 
-		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence);
+		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track);
 
 		bool isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const;
 	};

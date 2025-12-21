@@ -42,7 +42,7 @@ namespace NitroComposer {
 		externalChannelReservations &= ~BIT(hwChannel);
 	}
 
-	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const PlayingSequence *sequence) {
+	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track) {
 		size_t channelCount;
 		const uint8_t *channelList;
 		switch(type) {
@@ -65,6 +65,8 @@ namespace NitroComposer {
 			assert(0);
 		}
 
+		const PlayingSequence *sequence = track->GetSequence();
+
 		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
 			auto voiceIndex = channelList[slotIndex];
 			auto &voice = voices[voiceIndex];
@@ -81,9 +83,41 @@ namespace NitroComposer {
 			return voiceIndex;
 		}
 
-		//TODO: voice stealing
+		int bestChannel = -1;
+		for(unsigned int slotIndex = 0; slotIndex < channelCount; ++slotIndex) {
+			auto voiceIndex = channelList[slotIndex];
+			auto &voice = voices[voiceIndex];
+			if(!isVoiceAllowed(voiceIndex, sequence)) continue;
 
-		return -1;
+			std::uint8_t voicePriority = voice.GetTrack()->GetPriority();
+
+			if(bestChannel == -1) {
+				if(voicePriority < track->GetPriority()) bestChannel = voiceIndex;
+				continue;
+			}
+
+			auto &bestVoice = voices[bestChannel];
+
+			std::uint8_t bestPriority = bestVoice.GetTrack()->GetPriority();
+
+			if(voicePriority > bestPriority) continue;
+			if(voicePriority < bestPriority) {
+				bestChannel = voiceIndex;
+				continue;
+			}
+
+			//equal priority, lowest volume loses
+			int bestVolume = bestVoice.ComputeVolume();
+			int voiceVolume = voice.ComputeVolume();
+
+			//these values are pre transformed, so lower value means higher volume
+			if(voiceVolume > bestVolume) {
+				bestChannel = voiceIndex;
+				continue;
+			}
+		}
+
+		return bestChannel;
 	}
 
 	bool SequencePlayer::isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const {

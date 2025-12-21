@@ -75,6 +75,10 @@ namespace NitroComposer {
 		return std::clamp((int)note + transpose, 0, 127);
 	}
 
+	std::uint8_t SequencePlayer::Track::GetPriority() const {
+		return std::clamp((int)priority + sequence->priority, 0, 256);
+	}
+
 	void SequencePlayer::Track::NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		if(!muted) {
 			note = GetTransposedNote(note);
@@ -98,7 +102,7 @@ namespace NitroComposer {
 
 		if(!noteInstrument) return;
 
-		Voice *voice=sequence->allocateVoice(noteInstrument->type);
+		Voice *voice=sequence->allocateVoice(noteInstrument->type, this);
 
 		voice->StartNote(this, noteInstrument, note, velocity, length);
 	}

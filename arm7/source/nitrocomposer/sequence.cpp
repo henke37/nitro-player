@@ -11,6 +11,8 @@ namespace NitroComposer {
 
 		allowedChannels = 0xFFFF;
 
+		priority = 64;
+
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
 			tracks[trackIndex].Init(this);
 		}
@@ -95,8 +97,8 @@ namespace NitroComposer {
 		return this->waveArchs[archiveSlot]->waves.at(waveIndex);
 	}
 
-	SequencePlayer::Voice *SequencePlayer::PlayingSequence::allocateVoice(InstrumentBank::InstrumentType type) {
-		auto voiceIndex = sequencePlayer.FindFreeVoice(type, this);
+	SequencePlayer::Voice *SequencePlayer::PlayingSequence::allocateVoice(InstrumentBank::InstrumentType type, const Track *track) {
+		auto voiceIndex = sequencePlayer.FindFreeVoice(type, track);
 		if(voiceIndex < 0) return nullptr;
 
 		Voice *voice = &sequencePlayer.voices[voiceIndex];
