@@ -39,7 +39,7 @@ namespace NitroComposer {
 
 		class PulseInstrument : public LeafInstrument {
 		public:
-			uint16_t duty;
+			uint8_t duty;
 		};
 
 		class NoiseInstrument : public LeafInstrument {};

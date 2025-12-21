@@ -64,8 +64,8 @@ namespace NitroComposer {
 		case 2:	{
 			std::unique_ptr<PulseInstrument> pulse = std::make_unique<PulseInstrument>();
 			pulse->type = InstrumentType::Pulse;
-			pulse->duty = reader.readLEShort();
-
+			pulse->duty = reader.readByte();
+			reader.skip(3);
 			pulse->baseNote = reader.readByte();
 			pulse->attack = reader.readByte();
 			pulse->decay = reader.readByte();
@@ -77,7 +77,7 @@ namespace NitroComposer {
 		case 3:	{
 			std::unique_ptr<NoiseInstrument> noise = std::make_unique<NoiseInstrument>();
 			noise->type = InstrumentType::Noise;
-
+			reader.skip(4);
 			noise->baseNote = reader.readByte();
 			noise->attack = reader.readByte();
 			noise->decay = reader.readByte();

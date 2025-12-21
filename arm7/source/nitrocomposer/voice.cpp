@@ -181,7 +181,6 @@ namespace NitroComposer {
 
 	void SequencePlayer::Voice::ConfigureTimerRegister() {
 		std::uint16_t timerResetVal;
-		std::uint8_t baseNote;
 
 		switch(currentInstrument->type) {
 		case InstrumentBank::InstrumentType::PCM:
@@ -189,12 +188,10 @@ namespace NitroComposer {
 			auto pcmInstrument = static_cast<const InstrumentBank::PCMInstrument *>(currentInstrument);
 			auto &wave = track->sequence->GetWave(pcmInstrument->archive, pcmInstrument->wave);
 			timerResetVal = wave.timerLen;
-			baseNote = pcmInstrument->baseNote;
 		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		case InstrumentBank::InstrumentType::Noise:
 			timerResetVal = 8006;
-			baseNote = 60;
 			break;
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
@@ -203,7 +200,7 @@ namespace NitroComposer {
 			assert(0);
 		}
 
-		int adjustment = (this->note - baseNote) * 64;
+		int adjustment = (this->note - currentInstrument->baseNote) * 64;
 
 		adjustment += track->pitchBend * track->pitchBendRange >> 1;
 
