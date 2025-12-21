@@ -20,8 +20,14 @@ namespace NitroComposer {
 		void UnreserveChannel(std::uint8_t hwChannel);
 	private:
 		void Update();
-
 		void UpdateVoices();
+
+		class PlayingSequence;
+		class Track;
+		class Voice;
+
+		PlayingSequence *GetPlayingSequence(std::int32_t playerId) { return &playingSequence; }
+		const PlayingSequence *GetPlayingSequence(std::int32_t playerId) const { return &playingSequence; }
 
 		enum class VoiceState : std::uint8_t {
 			Free,
@@ -31,9 +37,6 @@ namespace NitroComposer {
 			Releasing
 		};
 
-		class PlayingSequence;
-
-		class Track;
 
 		enum class ModulationMode : std::uint8_t {
 			Vibrato = 0,//pitch

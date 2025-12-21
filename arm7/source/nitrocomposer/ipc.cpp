@@ -47,13 +47,15 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::SetVar:
 		{
 			SetVarIPC *setVarIpc = static_cast<SetVarIPC *>(ipc);
-			playingSequence.SetVar(setVarIpc->var, setVarIpc->val);
+			PlayingSequence *sequence = GetPlayingSequence(setVarIpc->playerId);
+			sequence->SetVar(setVarIpc->var, setVarIpc->val);
 		} break;
 
 		case BaseIPC::CommandType::GetVar:
 		{
 			GetVarIPC *getVarIpc = static_cast<GetVarIPC *>(ipc);
-			std::int16_t val = playingSequence.GetVar(getVarIpc->var);
+			PlayingSequence *sequence = GetPlayingSequence(getVarIpc->playerId);
+			std::int16_t val = sequence->GetVar(getVarIpc->var);
 			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, val);
 			assert(success);
 		} break;
@@ -61,7 +63,8 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::SetTempo:
 		{
 			SetTempoIPC *setTempoIpc = static_cast<SetTempoIPC *>(ipc);
-			this->playingSequence.tempo = setTempoIpc->tempo;
+			PlayingSequence *sequence = GetPlayingSequence(setTempoIpc->playerId);
+			sequence->tempo = setTempoIpc->tempo;
 		} break;
 		case BaseIPC::CommandType::SetMainVolume:
 		{
@@ -73,19 +76,21 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::LoadBank:
 		{
 			LoadBankIPC *loadBankIpc = static_cast<LoadBankIPC *>(ipc);
-			playingSequence.AbortSequence(true);
-			this->playingSequence.bank = loadBankIpc->bank;
+			PlayingSequence *sequence = GetPlayingSequence(loadBankIpc->playerId);
+			sequence->AbortSequence(true);
+			sequence->bank = loadBankIpc->bank;
 
-			consolePrintf("Loaded %d instruments\n", this->playingSequence.bank->instruments.size());
+			consolePrintf("Loaded %d instruments\n", sequence->bank->instruments.size());
 			consoleFlush();
 		} break;
 
 		case BaseIPC::CommandType::LoadWaveArchive:
 		{
 			LoadWaveArchiveIPC *loadWaveArchiveIpc = static_cast<LoadWaveArchiveIPC *>(ipc);
+			PlayingSequence *sequence = GetPlayingSequence(loadWaveArchiveIpc->playerId);
 			assert(loadWaveArchiveIpc->slot < PlayingSequence::numWaveArchs);
-			playingSequence.AbortSequence(true);
-			this->playingSequence.waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
+			sequence->AbortSequence(true);
+			sequence->waveArchs[loadWaveArchiveIpc->slot] = loadWaveArchiveIpc->archive;
 
 			if(!loadWaveArchiveIpc->archive) break;
 
@@ -96,28 +101,34 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::PlaySequence:
 		{
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
-			playingSequence.allowedChannels = playTrackIpc->channelMask;
-			playingSequence.sequenceVolume = playTrackIpc->sequenceVolume;
-			playingSequence.priority = playTrackIpc->sequencePriority;
-			playingSequence.PlaySequence(playTrackIpc->sequenceData, playTrackIpc->length, playTrackIpc->startPos);
+			PlayingSequence *sequence = GetPlayingSequence(playTrackIpc->playerId);
+			sequence->allowedChannels = playTrackIpc->channelMask;
+			sequence->sequenceVolume = playTrackIpc->sequenceVolume;
+			sequence->priority = playTrackIpc->sequencePriority;
+			sequence->PlaySequence(playTrackIpc->sequenceData, playTrackIpc->length, playTrackIpc->startPos);
 		} break;
 
 		case BaseIPC::CommandType::StopSequence:
 		{
-			playingSequence.AbortSequence(false);
+			SequencePlayerIPC *sequenceIpc = static_cast<SequencePlayerIPC *>(ipc);
+			PlayingSequence *sequence = GetPlayingSequence(sequenceIpc->playerId);
+			sequence->AbortSequence(false);
 			fifoSendValue32(FIFO_NITRO_COMPOSER, 41);
 		} break;
 
 		case BaseIPC::CommandType::KillSequence:
 		{
-			playingSequence.AbortSequence(true);
+			SequencePlayerIPC *sequenceIpc = static_cast<SequencePlayerIPC *>(ipc);
+			PlayingSequence *sequence = GetPlayingSequence(sequenceIpc->playerId);
+			sequence->AbortSequence(true);
 			fifoSendValue32(FIFO_NITRO_COMPOSER, 43);
 		} break;
 
 		case BaseIPC::CommandType::MuteTrack:
 		{
 			MuteTrackIPC *muteTrackIpc = static_cast<MuteTrackIPC *>(ipc);
-			playingSequence.SetTrackMute(muteTrackIpc->trackId, muteTrackIpc->mute ? Track::MuteMode::MuteAndRelease : Track::MuteMode::Clear);
+			PlayingSequence *sequence = GetPlayingSequence(muteTrackIpc->playerId);
+			sequence->SetTrackMute(muteTrackIpc->trackId, muteTrackIpc->mute ? Track::MuteMode::MuteAndRelease : Track::MuteMode::Clear);
 		} break;
 
 		case BaseIPC::CommandType::AllocStreamPlayer:
