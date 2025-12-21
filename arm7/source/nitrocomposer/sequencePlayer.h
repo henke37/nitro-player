@@ -143,12 +143,14 @@ namespace NitroComposer {
 
 			int waitCounter;
 
-			bool isPlaying;
-
-			bool noteWait;
-			bool tieMode;
-
-			bool muted;
+			struct {
+				bool isPlaying : 1;
+				bool noteWait : 1;
+				bool tieMode : 1;
+				bool muted : 1;
+				bool lastComparisonResult : 1;
+				bool portamento : 1;
+			};
 
 			std::uint8_t priority;
 
@@ -171,13 +173,10 @@ namespace NitroComposer {
 			std::uint8_t modRange;
 
 			std::int16_t sweepPitch;
-			bool portamento;
 			std::uint8_t lastPlayedNote;
 			std::uint8_t portaTime;
 
 			std::int8_t transpose;
-
-			bool lastComparisonResult;
 
 			enum class StackEntryType : std::uint8_t {
 				Call,
