@@ -99,10 +99,8 @@ namespace NitroComposer {
 		if(state == SequencePlayer::VoiceState::Free) return;
 
 		if(state != VoiceState::Releasing) {
-			if(!this->length) {
+			if(!--this->length) {
 				Release();
-			} else {
-				--this->length;
 			}
 		}
 	}

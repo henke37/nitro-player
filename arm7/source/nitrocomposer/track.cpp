@@ -52,7 +52,7 @@ namespace NitroComposer {
 
 		if(waitCounter) {
 			--waitCounter;
-			return;
+			if(waitCounter) return;
 		}
 
 		while((waitCounter==0) && isPlaying) {
