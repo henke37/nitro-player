@@ -3,6 +3,7 @@
 #include <cassert>
 #include <algorithm>
 
+#include <nds/bios.h>
 #include <nds/arm7/audio.h>
 #include <nds/arm7/console.h>
 
@@ -185,7 +186,7 @@ namespace NitroComposer {
 		std::uint32_t cr = REG_SOUNDXCNT(voiceIndex);
 		cr &= ~(SOUNDXCNT_VOL_MUL(0x7F) | SOUNDXCNT_VOL_DIV(3));
 
-		cr |= SOUNDXCNT_VOL_MUL(static_cast<int>(volumeTable[volume]));
+		cr |= SOUNDXCNT_VOL_MUL(static_cast<int>(swiGetVolumeTable(volume)));
 
 		if(volume < AMPL_K - 240)
 			cr |= SOUNDXCNT_VOL_DIV(3);

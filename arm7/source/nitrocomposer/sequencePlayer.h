@@ -335,8 +335,6 @@ namespace NitroComposer {
 	const int AMPL_MIN = -AMPL_K;
 	const int AMPLITUDE_THRESHOLD = AMPL_MIN << 7;
 
-	extern const uint8_t volumeTable[];
-
 	extern SequencePlayer sequencePlayer;
 
 }
