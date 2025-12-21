@@ -71,6 +71,7 @@ namespace NitroComposer {
 		std::ptrdiff_t startPos;
 		std::uint16_t channelMask;
 		std::uint8_t sequenceVolume;
+		std::uint8_t sequencePriority;
 	};
 
 	struct SetTempoIPC : SequencePlayerIPC {

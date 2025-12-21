@@ -98,6 +98,7 @@ namespace NitroComposer {
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
 			playingSequence.allowedChannels = playTrackIpc->channelMask;
 			playingSequence.sequenceVolume = playTrackIpc->sequenceVolume;
+			playingSequence.priority = playTrackIpc->sequencePriority;
 			playingSequence.PlaySequence(playTrackIpc->sequenceData, playTrackIpc->length, playTrackIpc->startPos);
 		} break;
 

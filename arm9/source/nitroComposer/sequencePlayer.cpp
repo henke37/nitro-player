@@ -77,6 +77,8 @@ namespace NitroComposer {
 		buff.length = dataLen;
 		buff.channelMask = player->channelMask;
 		buff.sequenceVolume = sequenceInfo->vol;
+		//player priority is used to select which sequence gets to play at all.
+		buff.sequencePriority = sequenceInfo->channelPriority;
 
 		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(PlayTrackIPC), (u8 *)&buff);
 		assert(success);
