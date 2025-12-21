@@ -195,9 +195,14 @@ namespace NitroComposer {
 			break;
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
+			assert(0);
+			return;
 		case InstrumentBank::InstrumentType::Null:
+			assert(0);
+			return;
 		default:
 			assert(0);
+			return;
 		}
 
 		int adjustment = (this->note - currentInstrument->baseNote) * 64;
