@@ -193,8 +193,8 @@ namespace NitroComposer {
 		} break;
 		case InstrumentBank::InstrumentType::Pulse:
 		case InstrumentBank::InstrumentType::Noise:
-			timerResetVal = (std::uint16_t)SOUNDXTMR_FREQ(440);
-			baseNote = 69;
+			timerResetVal = 8006;
+			baseNote = 60;
 			break;
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
@@ -215,6 +215,10 @@ namespace NitroComposer {
 		}
 
 		if(adjustment) timerResetVal = Timer_Adjust(timerResetVal, adjustment);
+
+		if(currentInstrument->type == InstrumentBank::InstrumentType::Pulse) {
+			timerResetVal &= 0xFFFC;
+		}
 
 		REG_SOUNDXTMR(voiceIndex) = -timerResetVal;
 	}
