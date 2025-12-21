@@ -47,6 +47,10 @@ void TestMode::Update() {
 			PlaySequence(sequenceId);
 		}
 
+		if(buttonMan.claimButton(KEY_B)) {
+			sequencePlayer.KillSequence();
+		}
+
 		if(buttonMan.claimButton(KEY_UP)) {
 			if(sequenceId >= sdat->GetSequenceCount() - 1) {
 				sequenceId = 0;
