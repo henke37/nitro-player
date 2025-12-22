@@ -97,10 +97,12 @@ namespace NitroComposer {
 			consoleFlush();
 			lastPlayedNote = note;
 		}
-		if(length == 0) {
-			waitVoiceComplete = true;
-		} else if(noteWait) {
-			this->waitCounter = length;
+		if(noteWait) {
+			if(length == 0) {
+				waitVoiceComplete = true;
+			} else {
+				this->waitCounter = length;
+			}
 		}
 	}
 
