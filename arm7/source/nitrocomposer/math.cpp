@@ -1,8 +1,11 @@
 #include "sequencePlayer.h"
 
 #include <nds/bios.h>
+#include <nds/system.h>
 
 namespace NitroComposer {
+
+	std::uint16_t getTWLPitchTable(int);
 /*
  * The remaining functions in this file come from the FeOS Sound System source code.
  */
@@ -118,7 +121,9 @@ namespace NitroComposer {
 			pitch -= 0x300;
 		}
 
-		uint64_t tmr = static_cast<uint64_t>(basetmr) * (static_cast<uint32_t>(swiGetPitchTable(pitch)) + 0x10000);
+		uint32_t tableVal = isDSiMode() ? getTWLPitchTable(pitch) : swiGetPitchTable(pitch);
+		uint64_t tmr = static_cast<uint64_t>(basetmr) * (tableVal + 0x10000);
+
 		shift -= 16;
 		if (shift <= 0)
 			tmr >>= -shift;
