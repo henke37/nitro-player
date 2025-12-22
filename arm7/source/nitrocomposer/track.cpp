@@ -4,6 +4,9 @@
 #include <nds/arm7/console.h>
 #include <algorithm>
 
+#define NITROCOMPOSER_LOG_TRACKS
+#define NITROCOMPOSER_LOG_NOTES
+
 namespace NitroComposer {
 
 	SequencePlayer::Track::Track() : isPlaying(false), muted(false) {}
@@ -48,7 +51,7 @@ namespace NitroComposer {
 		nextCommand = nullptr;
 
 		tieVoice = nullptr;
-		currentInstrument = nullptr;
+		instrumentId = 0;
 	}
 
 	void SequencePlayer::Track::Tick() {
@@ -89,17 +92,23 @@ namespace NitroComposer {
 		if(!muted) {
 			note = GetTransposedNote(note);
 			if(tieMode) {
+#ifdef NITROCOMPOSER_LOG_NOTES
 				consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
+#endif
 				if(tieVoice) {
 					tieVoice->NextTieNote(note, velocity);
 				} else {
 					tieVoice = NoteOnReal(note, velocity, 0);
 				}
 			} else {
+#ifdef NITROCOMPOSER_LOG_NOTES
 				consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
+#endif
 				NoteOnReal(note, velocity, length);
 			}
+#ifdef NITROCOMPOSER_LOG_NOTES
 			consoleFlush();
+#endif
 			lastPlayedNote = note;
 		}
 		if(noteWait) {
@@ -130,8 +139,19 @@ namespace NitroComposer {
 	}
 
 	const InstrumentBank::LeafInstrument *SequencePlayer::Track::ResolveInstrumentForNote(std::uint8_t note) const {
-		switch(this->currentInstrument->type) {
+		auto currentInstrument = sequence->bank->instruments.at(instrumentId).get();
+
+		if(!currentInstrument) {
+#ifdef NITROCOMPOSER_LOG_TRACKS
+			consolePuts("Null instrument played!");
+			consoleFlush();
+#endif
+			return nullptr;
+		}
+		
+		switch(currentInstrument->type) {
 			case InstrumentBank::InstrumentType::Null:
+				assert(0);
 				return nullptr;
 			case InstrumentBank::InstrumentType::PCM:
 			case InstrumentBank::InstrumentType::Pulse:
@@ -185,9 +205,6 @@ namespace NitroComposer {
 		waitVoiceComplete = false;
 	}
 
-	void SequencePlayer::Track::SetInstrument(unsigned int instrumentId) {
-		currentInstrument = sequence->bank->instruments.at(instrumentId).get();
-	}
 	void SequencePlayer::Track::SetMute(MuteMode mode) {
 		switch(mode) {
 		case MuteMode::Clear:

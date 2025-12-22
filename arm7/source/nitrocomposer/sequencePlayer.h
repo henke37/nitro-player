@@ -122,8 +122,6 @@ namespace NitroComposer {
 			void StopPlaying();
 			bool GetIsPlaying() const { return isPlaying; }
 
-			void SetInstrument(unsigned int instrumentId);
-
 			void NoteOn(std::uint8_t note, std::uint16_t velocity, std::uint16_t durration);
 
 			enum class MuteMode {
@@ -141,7 +139,7 @@ namespace NitroComposer {
 
 		private:
 			PlayingSequence *sequence;
-			const InstrumentBank::BaseInstrument *currentInstrument;
+			std::uint32_t instrumentId;
 			Voice *tieVoice;
 
 			const std::uint8_t *nextCommand;

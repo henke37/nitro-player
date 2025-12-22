@@ -27,7 +27,7 @@ namespace NitroComposer {
 		case 0x81:
 		{
 			unsigned int programId = readMidiVarLen();
-			SetInstrument(programId);
+			instrumentId=programId;
 		} break;
 
 		case 0x93:
