@@ -1,8 +1,10 @@
 #include <cstdint>
 
+#include "segments.h"
+
 namespace NitroComposer {
 
-static const std::uint16_t pitchTable[] =
+TWL_DATA static const std::uint16_t pitchTable[] =
 {
 	0x0000, 0x003B, 0x0076, 0x00B2, 0x00ED, 0x0128, 0x0164, 0x019F,
 	0x01DB, 0x0217, 0x0252, 0x028E, 0x02CA, 0x0305, 0x0341, 0x037D,
@@ -102,7 +104,7 @@ static const std::uint16_t pitchTable[] =
 	0xFC51, 0xFCC7, 0xFD3C, 0xFDB2, 0xFE28, 0xFE9E, 0xFF14, 0xFF8A
 };
 
-	std::uint16_t getTWLPitchTable(int i) {
+	TWL_CODE std::uint16_t getTWLPitchTable(int i) {
 		return pitchTable[i];
 	}
 }

@@ -3,9 +3,11 @@
 #include <nds/bios.h>
 #include <nds/system.h>
 
+#include "segments.h"
+
 namespace NitroComposer {
 
-	std::uint16_t getTWLPitchTable(int);
+	TWL_CODE std::uint16_t getTWLPitchTable(int);
 /*
  * The remaining functions in this file come from the FeOS Sound System source code.
  */
