@@ -79,7 +79,7 @@ namespace NitroComposer {
 			wave.dataOffset = reader.getPos();
 
 			sassert((int)wave.encoding < 5, "Bogus wave encoding %i", (int)wave.encoding);
-			sassert(wave.sampleRate > 200 && wave.sampleRate < 50000, "Implaucible samplerate %i", wave.sampleRate);
+			sassert(wave.sampleRate > 200 && wave.sampleRate < 70000, "Implaucible samplerate %i", wave.sampleRate);
 
 			waves.push_back(wave);
 
