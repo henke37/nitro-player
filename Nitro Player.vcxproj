@@ -198,7 +198,6 @@
     <ClInclude Include="arm9\source\sectionedFile.h" />
     <ClInclude Include="arm9\source\strutils.h" />
     <ClInclude Include="arm9\source\substream.h" />
-    <ClInclude Include="arm9\source\tcm.h" />
     <ClInclude Include="arm9\source\testMode.h" />
     <ClInclude Include="arm9\source\testNDS.h" />
     <ClInclude Include="arm9\source\testSTRM.h" />
@@ -210,6 +209,7 @@
     <ClInclude Include="common\nitrocomposer\infoRecords.h" />
     <ClInclude Include="common\nitrocomposer\ipc.h" />
     <ClInclude Include="common\nitrocomposer\wave.h" />
+    <ClInclude Include="common\segments.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
