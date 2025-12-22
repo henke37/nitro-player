@@ -52,18 +52,10 @@ void TestMode::Update() {
 		}
 
 		if(buttonMan.claimButton(KEY_UP)) {
-			if(sequenceId >= sdat->GetSequenceCount() - 1) {
-				sequenceId = 0;
-			} else {
-				++sequenceId;
-			}
+			nextSequence();
 			printf("%d: %s\n", sequenceId, sdat->GetNameForSequence(sequenceId).c_str());
 		} else if(buttonMan.claimButton(KEY_DOWN)) {
-			if(sequenceId == 0) {
-				sequenceId = sdat->GetSequenceCount() - 1;
-			} else {
-				--sequenceId;
-			}
+			prevSequence();
 			printf("%d: %s\n", sequenceId, sdat->GetNameForSequence(sequenceId).c_str());
 		}
 
@@ -71,4 +63,24 @@ void TestMode::Update() {
 			setNextGameMode(std::make_unique<TestSTRM>());
 		}
 	}
+}
+
+void TestMode::prevSequence() {
+	do {
+		if(sequenceId == 0) {
+			sequenceId = sdat->GetSequenceCount() - 1;
+		} else {
+			--sequenceId;
+		}
+	} while(!sdat->GetSequenceInfo(sequenceId));
+}
+
+void TestMode::nextSequence() {
+	do {
+		if(sequenceId >= sdat->GetSequenceCount() - 1) {
+			sequenceId = 0;
+		} else {
+			++sequenceId;
+		}
+	} while(!sdat->GetSequenceInfo(sequenceId));
 }

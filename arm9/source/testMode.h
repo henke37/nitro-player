@@ -22,6 +22,8 @@ private:
 	std::unique_ptr<NitroComposer::SDatFile> sdat;
 
 	unsigned int sequenceId = 0;
+	void prevSequence();
+	void nextSequence();
 
 	NitroComposer::SequencePlayer sequencePlayer;
 };
