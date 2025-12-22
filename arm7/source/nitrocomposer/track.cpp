@@ -104,6 +104,7 @@ namespace NitroComposer {
 		}
 		if(noteWait) {
 			if(length == 0) {
+				assert(!muted);
 				waitVoiceComplete = true;
 			} else {
 				this->waitCounter = length;
