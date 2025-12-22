@@ -47,6 +47,7 @@ namespace NitroComposer {
 		stackPointer = 0;
 		nextCommand = nullptr;
 
+		tieVoice = nullptr;
 		currentInstrument = nullptr;
 	}
 
@@ -89,7 +90,11 @@ namespace NitroComposer {
 			note = GetTransposedNote(note);
 			if(tieMode) {
 				consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
-				//NoteOnTie(note, velocity);
+				if(tieVoice) {
+					tieVoice->NextTieNote(note, velocity);
+				} else {
+					tieVoice = NoteOnReal(note, velocity, 0);
+				}
 			} else {
 				consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
 				NoteOnReal(note, velocity, length);
@@ -106,14 +111,16 @@ namespace NitroComposer {
 		}
 	}
 
-	void SequencePlayer::Track::NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
+	SequencePlayer::Voice *SequencePlayer::Track::NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		const InstrumentBank::LeafInstrument *noteInstrument = ResolveInstrumentForNote(note);
 
-		if(!noteInstrument) return;
+		if(!noteInstrument) return nullptr;
 
 		Voice *voice=sequence->allocateVoice(noteInstrument->type, this);
 
 		voice->StartNote(this, noteInstrument, note, velocity, length);
+
+		return voice;
 	}
 
 	void SequencePlayer::Track::SetNextCommand(std::ptrdiff_t offset) {
@@ -172,6 +179,7 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Track::voiceCompleted(const Voice *voice) {
+		tieVoice = nullptr;
 		sequence->voices[voice->GetVoiceIndex()] = nullptr;
 		waitVoiceComplete = false;
 	}

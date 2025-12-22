@@ -49,6 +49,7 @@ namespace NitroComposer {
 			Voice(std::uint8_t voiceIndex);
 
 			void StartNote(Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
+			void NextTieNote(std::uint8_t note, std::uint8_t velocity);
 
 			void Tick();
 			void Update();
@@ -141,6 +142,7 @@ namespace NitroComposer {
 		private:
 			PlayingSequence *sequence;
 			const InstrumentBank::BaseInstrument *currentInstrument;
+			Voice *tieVoice;
 
 			const std::uint8_t *nextCommand;
 
@@ -205,8 +207,7 @@ namespace NitroComposer {
 			void skipCommandVarArgs(std::uint8_t command);
 
 			void NoteOn(std::uint8_t note, std::uint8_t velocity, unsigned int length);
-			void NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length);
-			void NoteOnTie(std::uint8_t note, std::uint8_t velocity);
+			Voice *NoteOnReal(std::uint8_t note, std::uint8_t velocity, unsigned int length);
 
 			std::uint8_t GetTransposedNote(std::uint8_t note) const;
 

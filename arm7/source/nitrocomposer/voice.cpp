@@ -39,6 +39,16 @@ namespace NitroComposer {
 		ConfigureControlRegisters();
 	}
 
+	void SequencePlayer::Voice::NextTieNote(std::uint8_t note, std::uint8_t velocity) {
+		this->note = note;
+		this->velocity = velocity;
+
+		SetupPortamento();
+
+		ConfigureTimerRegister();
+		ConfigureControlRegisters();
+	}
+
 	void SequencePlayer::Voice::Update() {
 		if(state == SequencePlayer::VoiceState::Free) return;
 
