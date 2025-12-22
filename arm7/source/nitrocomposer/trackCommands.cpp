@@ -246,6 +246,7 @@ namespace NitroComposer {
 		case 0xC8:
 		{
 			tieMode = readByteCommand() != 0;
+			ReleaseAllVoices();
 #ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Tie Mode %s\n", tieMode ? "Y" : "N");
 			consoleFlush();
