@@ -19,6 +19,7 @@ namespace NitroComposer {
 		isPlaying = false;
 		noteWait = true;
 		tieMode = false;
+		waitVoiceComplete = false;
 		waitCounter = 0;
 		priority = 64;
 		lastComparisonResult = true;
@@ -50,12 +51,14 @@ namespace NitroComposer {
 	void SequencePlayer::Track::Tick() {
 		if(!isPlaying) return;
 
+		if(waitVoiceComplete) return;
+
 		if(waitCounter) {
 			--waitCounter;
 			if(waitCounter) return;
 		}
 
-		while((waitCounter==0) && isPlaying) {
+		while((waitCounter==0) && isPlaying && !waitVoiceComplete) {
 			ExecuteNextCommand();
 		}
 	}
@@ -92,7 +95,9 @@ namespace NitroComposer {
 			consoleFlush();
 			lastPlayedNote = note;
 		}
-		if(noteWait) {
+		if(length == 0) {
+			waitVoiceComplete = true;
+		} else if(noteWait) {
 			this->waitCounter = length;
 		}
 	}
@@ -160,6 +165,11 @@ namespace NitroComposer {
 			if(voice.GetTrack() != this) continue;
 			voice.Kill();
 		}
+	}
+
+	void SequencePlayer::Track::voiceCompleted(const Voice *voice) {
+		sequence->voices[voice->GetVoiceIndex()] = nullptr;
+		waitVoiceComplete = false;
 	}
 
 	void SequencePlayer::Track::SetInstrument(unsigned int instrumentId) {

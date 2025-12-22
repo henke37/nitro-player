@@ -48,7 +48,7 @@ namespace NitroComposer {
 		public:
 			Voice(std::uint8_t voiceIndex);
 
-			void StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
+			void StartNote(Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
 
 			void Tick();
 			void Update();
@@ -57,6 +57,8 @@ namespace NitroComposer {
 			bool IsNoiseVoice() const { return voiceIndex >= 14; }
 
 			const Track *GetTrack() const { return track; }
+			Track *GetTrack() { return track; }
+			const std::uint8_t GetVoiceIndex() const { return voiceIndex; }
 
 			void Release();
 			void Kill();
@@ -71,10 +73,11 @@ namespace NitroComposer {
 			void ConfigureVolumeRegister();
 			void ConfigureTimerRegister();
 
+			bool IsHWChannelActive() const;
 
 			const InstrumentBank::LeafInstrument *currentInstrument;
 			SequencePlayer *player;
-			const Track *track;
+			Track *track;
 
 			int amplitude;
 
@@ -150,6 +153,7 @@ namespace NitroComposer {
 				bool muted : 1;
 				bool lastComparisonResult : 1;
 				bool portamento : 1;
+				bool waitVoiceComplete : 1;
 			};
 
 			std::uint8_t priority;
@@ -212,6 +216,8 @@ namespace NitroComposer {
 
 			void ReleaseAllVoices();
 			void KillAllVoices();
+
+			void voiceCompleted(const Voice *voice);
 
 			void SetNextCommand(std::ptrdiff_t offset);
 

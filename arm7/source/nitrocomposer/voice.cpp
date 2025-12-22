@@ -6,12 +6,14 @@
 #include <nds/arm7/audio.h>
 #include <nds/arm7/console.h>
 
+//#define NITROCOMPOSER_LOG_VOICES
+
 namespace NitroComposer {
 
 	SequencePlayer::Voice::Voice(std::uint8_t voiceIndex) : voiceIndex(voiceIndex) {
 	}
 
-	void SequencePlayer::Voice::StartNote(const Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length) {
+	void SequencePlayer::Voice::StartNote(Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length) {
 		assert(track);
 		assert(instrument);
 		assert(instrument->type != InstrumentBank::InstrumentType::Null);
@@ -43,7 +45,11 @@ namespace NitroComposer {
 		assert(track);
 		assert(currentInstrument);
 
-		if(!(REG_SOUNDXCNT(voiceIndex) & SCHANNEL_ENABLE)) {
+		if(!IsHWChannelActive()) {
+#ifdef NITROCOMPOSER_LOG_VOICES
+			consolePuts("Voice fin");
+			consoleFlush();
+#endif
 			Kill();
 			return;
 		}
@@ -99,8 +105,9 @@ namespace NitroComposer {
 		if(state == SequencePlayer::VoiceState::Free) return;
 
 		if(state != VoiceState::Releasing) {
-			if(!--this->length) {
-				Release();
+			if(this->length > 0) {
+				--this->length;
+				if(this->length == 0) Release();
 			}
 		}
 	}
@@ -113,7 +120,8 @@ namespace NitroComposer {
 
 	void SequencePlayer::Voice::Kill() {
 		if(this->state == VoiceState::Free) return;
-		this->track->sequence->voices[this->voiceIndex] = nullptr;
+
+		track->voiceCompleted(this);
 
 		this->state = VoiceState::Free;
 		this->track = nullptr;
@@ -223,6 +231,10 @@ namespace NitroComposer {
 		}
 
 		REG_SOUNDXTMR(voiceIndex) = -timerResetVal;
+	}
+
+	bool SequencePlayer::Voice::IsHWChannelActive() const {
+		return (REG_SOUNDXCNT(voiceIndex) & SOUNDXCNT_ENABLE) == SOUNDXCNT_ENABLE;
 	}
 
 	int SequencePlayer::Voice::ComputeVolume() const {
