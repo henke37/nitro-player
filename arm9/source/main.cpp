@@ -12,7 +12,7 @@
 #include "buttonMan.h"
 #include "vblankBatcher.h"
 #include "hblankBatcher.h"
-#include "tcm.h"
+#include "segments.h"
 
 #include "globals.h"
 #include "consts.h"

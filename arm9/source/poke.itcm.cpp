@@ -11,7 +11,7 @@
 #define VRAM_H_SIZE (32*1024)
 #define VRAM_I_SIZE (16*1024)
 
-#include "tcm.h"
+#include "segments.h"
 
 ITCM_CODE static constexpr bool pointerInRange(volatile void *needle, volatile void *base, size_t size);
 

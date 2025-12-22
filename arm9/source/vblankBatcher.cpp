@@ -2,7 +2,7 @@
 
 #include <nds/ndstypes.h>
 
-#include "tcm.h"
+#include "segments.h"
 
 DTCM_BSS VBlankBatcher vblankBatcher;
 

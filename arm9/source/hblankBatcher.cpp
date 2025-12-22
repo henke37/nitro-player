@@ -2,7 +2,7 @@
 
 #include <nds.h>
 
-#include "tcm.h"
+#include "segments.h"
 
 #include <cassert>
 
