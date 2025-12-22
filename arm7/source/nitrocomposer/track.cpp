@@ -46,6 +46,8 @@ namespace NitroComposer {
 
 		stackPointer = 0;
 		nextCommand = nullptr;
+
+		currentInstrument = nullptr;
 	}
 
 	void SequencePlayer::Track::Tick() {
