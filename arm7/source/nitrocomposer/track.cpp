@@ -202,6 +202,7 @@ namespace NitroComposer {
 			}
 			[[fallthrough]];
 		case MuteMode::Mute:
+			assert(!waitVoiceComplete);
 			muted = true;
 			break;
 		}
