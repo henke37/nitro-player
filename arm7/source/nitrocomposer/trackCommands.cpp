@@ -450,7 +450,22 @@ namespace NitroComposer {
 
 	void SequencePlayer::Track::ExecuteNextRandomCommand() {
 		std::uint8_t command = readByteCommand();
+		if(command < 0x80) {
+			std::uint8_t velocity = readByteCommand();
+			NoteOn(command, velocity, readAndGetRandomCommandParam());
+			return;
+		}
+
 		switch(command) {
+
+		case 0x80:
+		{
+			waitCounter = readAndGetRandomCommandParam();
+		} break;
+		case 0x81:
+		{
+			instrumentId = readAndGetRandomCommandParam();
+		} break;
 
 		case 0xA0:
 			assert(0);
@@ -458,6 +473,184 @@ namespace NitroComposer {
 		case 0xA1:
 			assert(0);
 			break;
+
+
+		case 0xB0:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			sequence->SetVar(varId, val);
+		} break;
+
+		case 0xB1:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			sequence->SetVar(varId, sequence->GetVar(varId) + val);
+		} break;
+
+		case 0xB2:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			sequence->SetVar(varId, sequence->GetVar(varId) - val);
+		} break;
+
+		case 0xB3:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			sequence->SetVar(varId, sequence->GetVar(varId) * val);
+		} break;
+
+		case 0xB4:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			if(!val) break;
+			sequence->SetVar(varId, sequence->GetVar(varId) / val);
+		} break;
+
+		case 0xB5:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			if(val < 0) {
+				sequence->SetVar(varId, sequence->GetVar(varId) >> -val);
+			} else {
+				sequence->SetVar(varId, sequence->GetVar(varId) << val);
+			}
+		} break;
+
+		case 0xB6:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			if(val < 0) {
+				sequence->SetVar(varId, -(std::rand() % (-val + 1)));
+			} else {
+				sequence->SetVar(varId, std::rand() % (val + 1));
+			}
+		} break;
+
+		case 0xB8:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			lastComparisonResult = sequence->GetVar(varId) == val;
+		} break;
+
+		case 0xB9:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			lastComparisonResult = sequence->GetVar(varId) >= val;
+		} break;
+
+		case 0xBA:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			lastComparisonResult = sequence->GetVar(varId) > val;
+		} break;
+
+		case 0xBB:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			lastComparisonResult = sequence->GetVar(varId) <= val;
+		} break;
+
+		case 0xBC:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			lastComparisonResult = sequence->GetVar(varId) < val;
+		} break;
+
+		case 0xBD:
+		{
+			std::uint8_t varId = readByteCommand();
+			std::int16_t val = readAndGetRandomCommandParam();
+			assert(varId < numVariables);
+			lastComparisonResult = sequence->GetVar(varId) != val;
+		} break;
+
+		case 0xC0:
+		{
+			pan = readAndGetRandomCommandParam() - 64;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Pan %d\n", pan);
+			consoleFlush();
+#endif
+		} break;
+
+		case 0xC1:
+		{
+			volume = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xC2:
+		{
+			sequence->sequenceVolume = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xC3:
+		{
+			transpose = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xC4:
+		{
+			pitchBend = readAndGetRandomCommandParam();
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Pitch Bend %d\n", pitchBend);
+			consoleFlush();
+#endif
+		} break;
+
+		case 0xC5:
+		{
+			pitchBendRange = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xC6:
+		{
+			priority = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xC9:
+		{
+			std::uint8_t note = readAndGetRandomCommandParam();
+			lastPlayedNote = GetTransposedNote(note);
+			portamento = true;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Porta Start %u\n", note);
+			consoleFlush();
+#endif
+		} break;
+
+		case 0xD6:
+		{
+			std::uint8_t varId = readByteCommand();
+			assert(varId < numVariables);
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
+			consoleFlush();
+#endif
+		} break;
 
 		default:
 			consolePrintf("#%d Skipping unknown rnd command %x\n", GetId(), command);
@@ -919,5 +1112,10 @@ namespace NitroComposer {
 		}
 
 		return value;
+	}
+	std::int16_t SequencePlayer::Track::readAndGetRandomCommandParam() {
+		std::int16_t minVal = readShortCommand();
+		std::int16_t maxVal = readShortCommand();
+		return (std::rand() % (maxVal - minVal + 1)) + minVal;
 	}
 }

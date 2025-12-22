@@ -225,6 +225,8 @@ namespace NitroComposer {
 			std::uint32_t readTriByteCommand();
 			unsigned int readMidiVarLen();
 
+			std::int16_t readAndGetRandomCommandParam();
+
 			size_t getCommandBytesLeft() const;
 
 			friend class Voice;
