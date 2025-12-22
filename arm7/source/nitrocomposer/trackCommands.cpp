@@ -214,6 +214,11 @@ namespace NitroComposer {
 			volume = readByteCommand();
 		} break;
 
+		case 0xC2:
+		{
+			sequence->sequenceVolume = readByteCommand();
+		} break;
+
 		case 0xC3:
 		{
 			transpose = readByteCommand();
@@ -446,6 +451,14 @@ namespace NitroComposer {
 	void SequencePlayer::Track::ExecuteNextRandomCommand() {
 		std::uint8_t command = readByteCommand();
 		switch(command) {
+
+		case 0xA0:
+			assert(0);
+			break;
+		case 0xA1:
+			assert(0);
+			break;
+
 		default:
 			consolePrintf("#%d Skipping unknown rnd command %x\n", GetId(), command);
 			consoleFlush();
@@ -455,7 +468,212 @@ namespace NitroComposer {
 
 	void SequencePlayer::Track::ExecuteNextVarCommand() {
 		std::uint8_t command = readByteCommand();
+
+		if(command < 0x80) {
+			std::uint8_t velocity = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			NoteOn(command, velocity, sequence->GetVar(srcVarId));
+			return;
+		}
+
 		switch(command) {
+
+		case 0x80:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			waitCounter = sequence->GetVar(srcVarId);
+		} break;
+		case 0x81:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			instrumentId = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xA0:
+			assert(0);
+			break;
+		case 0xA1:
+			assert(0);
+			break;
+
+		case 0xB0:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			sequence->SetVar(dstVarId, val);
+		} break;
+
+		case 0xB1:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) + val);
+		} break;
+
+		case 0xB2:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) - val);
+		} break;
+
+		case 0xB3:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) * val);
+		} break;
+
+		case 0xB4:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			if(!val) break;
+			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) / val);
+		} break;
+
+		case 0xB5:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			if(val < 0) {
+				sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) >> -val);
+			} else {
+				sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) << val);
+			}
+		} break;
+
+		case 0xB6:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			if(val < 0) {
+				sequence->SetVar(dstVarId, -(std::rand() % (-val + 1)));
+			} else {
+				sequence->SetVar(dstVarId, std::rand() % (val + 1));
+			}
+		} break;
+
+		case 0xB8:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			lastComparisonResult = sequence->GetVar(dstVarId) == val;
+		} break;
+
+		case 0xB9:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			lastComparisonResult = sequence->GetVar(dstVarId) >= val;
+		} break;
+
+		case 0xBA:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			lastComparisonResult = sequence->GetVar(dstVarId) > val;
+		} break;
+
+		case 0xBB:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			lastComparisonResult = sequence->GetVar(dstVarId) <= val;
+		} break;
+
+		case 0xBC:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			lastComparisonResult = sequence->GetVar(dstVarId) < val;
+		} break;
+
+		case 0xBD:
+		{
+			std::uint8_t dstVarId = readByteCommand();
+			std::uint8_t srcVarId = readByteCommand();
+			assert(dstVarId < numVariables);
+			assert(srcVarId < numVariables);
+			std::int16_t val = sequence->GetVar(srcVarId);
+			lastComparisonResult = sequence->GetVar(dstVarId) != val;
+		} break;
+
+		case 0xC0:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			std::int16_t val = sequence->GetVar(srcVarId);
+			pan = val - 64;
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Pan %d\n", pan);
+			consoleFlush();
+#endif
+		} break;
+
+		case 0xC1:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			volume = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xC2:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			sequence->sequenceVolume = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xC3:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			transpose = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xC4:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			pitchBend = sequence->GetVar(srcVarId);
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Pitch Bend %d\n", pitchBend);
+			consoleFlush();
+#endif
+		} break;
+
 		default:
 			consolePrintf("#%d Skipping unknown var command %x\n", GetId(), command);
 			consoleFlush();
