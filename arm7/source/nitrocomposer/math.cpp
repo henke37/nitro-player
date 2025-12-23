@@ -7,7 +7,7 @@
 
 namespace NitroComposer {
 
-	TWL_CODE std::uint16_t getTWLPitchTable(int);
+	TWL_CODE __attribute__((long_call)) std::uint16_t getTWLPitchTable(int);
 /*
  * The remaining functions in this file come from the FeOS Sound System source code.
  */
