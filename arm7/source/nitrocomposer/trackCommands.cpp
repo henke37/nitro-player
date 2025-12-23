@@ -424,11 +424,22 @@ namespace NitroComposer {
 
 		case 0xFE:
 		{
-			std::uint16_t tracks = readShortCommand();
+			std::uint16_t tracksField = readShortCommand();
+
 #ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Alloc %x\n", GetId(), tracks);
+			consolePrintf("#%d Alloc %x\n", GetId(), tracksField);
 			consoleFlush();
 #endif
+
+			for(unsigned int trackId = 1; trackId < SequencePlayer::PlayingSequence::trackCount; ++trackId) {
+				if(tracksField & (1u << trackId)) {
+					if(!sequence->tracks[trackId]) {
+						sequence->tracks[trackId] = std::make_unique<SequencePlayer::Track>(sequence);
+					}
+				} else {
+					sequence->tracks[trackId].reset();
+				}
+			}
 		} break;
 
 		case 0xFF: {

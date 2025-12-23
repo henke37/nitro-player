@@ -5,6 +5,9 @@
 #include <cassert>
 
 namespace NitroComposer {
+	SequencePlayer::PlayingSequence::PlayingSequence() {
+		tracks[0] = std::make_unique<Track>(this);
+	}
 
 	void SequencePlayer::PlayingSequence::Init() {
 		ResetLocalVars();
@@ -13,9 +16,7 @@ namespace NitroComposer {
 
 		priority = 64;
 
-		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
-			tracks[trackIndex].Init(this);
-		}
+		ResetTracks();
 
 		for(unsigned int waveArchiveIndex = 0; waveArchiveIndex < numWaveArchs; ++waveArchiveIndex) {
 			waveArchs[waveArchiveIndex] = nullptr;
@@ -30,14 +31,17 @@ namespace NitroComposer {
 
 	void SequencePlayer::PlayingSequence::ResetTracks() {
 		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
-			tracks[trackIndex].Reset();
+			auto &track = tracks[trackIndex];
+			if(!track) continue;
+			track->Reset();
 		}
 	}
 
 	unsigned int SequencePlayer::PlayingSequence::IdForTrack(const Track *track) const {
 		for(std::uint8_t trackId = 0; trackId < trackCount; ++trackId) {
-			const Track *candidate = &tracks[trackId];
-			if(candidate == track) return trackId;
+			auto &candidate = tracks[trackId];
+			if(!candidate) continue;
+			if(candidate.get() == track) return trackId;
 		}
 		assert(0);
 	}
@@ -57,7 +61,9 @@ namespace NitroComposer {
 
 	void SequencePlayer::PlayingSequence::AbortSequence(bool killVoices) {
 		for(unsigned int trackIndex = 0; trackIndex < voiceCount; ++trackIndex) {
-			tracks[trackIndex].StopPlaying();
+			auto &track = tracks[trackIndex];
+			if(!track) continue;
+			track->StopPlaying();
 		}
 		if(killVoices) {
 			KillAllVoices();
@@ -67,7 +73,8 @@ namespace NitroComposer {
 	void SequencePlayer::PlayingSequence::StartTrack(std::uint8_t trackId, std::ptrdiff_t offset) {
 		assert(trackId < trackCount);
 		auto &track = tracks[trackId];
-		track.StartPlaying(offset);
+		assert(track);
+		track->StartPlaying(offset);
 	}
 
 	void SequencePlayer::PlayingSequence::SetVar(std::uint8_t var, std::int16_t val) {
@@ -111,7 +118,8 @@ namespace NitroComposer {
 	void SequencePlayer::PlayingSequence::stoppedPlaying(Track *track) {
 		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
 			auto &track = tracks[trackIndex];
-			if(track.GetIsPlaying()) return;
+			if(!track) continue;
+			if(track->GetIsPlaying()) return;
 		}
 		ReleaseAllVoices();
 		sequencePlayer.sendFifoSequenceStatus(*this);
@@ -128,7 +136,8 @@ namespace NitroComposer {
 
 	void SequencePlayer::PlayingSequence::SetTrackMute(std::uint8_t trackId, Track::MuteMode mode) {
 		assert(trackId < trackCount);
-		tracks[trackId].SetMute(mode);
+		auto &track = tracks[trackId];
+		track->SetMute(mode);
 	}
 
 	void SequencePlayer::PlayingSequence::TickVoices() {
@@ -142,7 +151,8 @@ namespace NitroComposer {
 	void SequencePlayer::PlayingSequence::TickTracks() {
 		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
 			auto &track = tracks[trackIndex];
-			track.Tick();
+			if(!track) continue;
+			track->Tick();
 		}
 	}
 

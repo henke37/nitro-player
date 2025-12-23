@@ -9,13 +9,15 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track() : isPlaying(false), muted(false) {}
-
-	void SequencePlayer::Track::Init(PlayingSequence *sequence) {
+	SequencePlayer::Track::Track(PlayingSequence *sequence) : isPlaying(false), muted(false) {
 		assert(sequence);
 		this->sequence = sequence;
 
 		Reset();
+	}
+
+	SequencePlayer::Track::~Track() {
+		KillAllVoices();
 	}
 
 	void SequencePlayer::Track::Reset() {

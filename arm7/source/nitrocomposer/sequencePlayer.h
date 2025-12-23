@@ -111,9 +111,9 @@ namespace NitroComposer {
 
 		class Track {
 		public:
-			Track();
+			Track(PlayingSequence *sequence);
+			~Track();
 
-			void Init(PlayingSequence *sequence);
 			void Reset();
 
 			void Tick();
@@ -241,6 +241,8 @@ namespace NitroComposer {
 
 		class PlayingSequence {
 		public:
+			PlayingSequence();
+
 			void Init();
 
 			void SetVar(std::uint8_t var, std::int16_t val);
@@ -292,7 +294,7 @@ namespace NitroComposer {
 			std::int16_t localVariables[localVariableCount];
 
 			static constexpr unsigned int trackCount = 16;
-			Track tracks[trackCount];
+			std::unique_ptr<Track> tracks[trackCount];
 			unsigned int IdForTrack(const Track *) const;
 
 			friend class Track;
