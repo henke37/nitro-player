@@ -64,19 +64,30 @@ namespace NitroComposer {
 			Kill();
 			return;
 		}
+		
+		UpdateEnvelope();
+		if(state == SequencePlayer::VoiceState::Free) return;
 
+		UpdateModulation();
+		UpdatePitchSweep();
+
+		ConfigureTimerRegister();
+		ConfigureVolumeRegister();
+	}
+
+	void SequencePlayer::Voice::UpdateEnvelope() {
 		switch(state) {
 		case SequencePlayer::VoiceState::Attacking:
 		{
 			int newAmpl = this->amplitude;
 			int oldAmpl = this->amplitude >> 7;
-			do
+			do {
 				newAmpl = (newAmpl * static_cast<int>(this->GetAttack())) / 256;
-			while((newAmpl >> 7) == oldAmpl);
+			} while((newAmpl >> 7) == oldAmpl);
 			this->amplitude = newAmpl;
-			if(!this->amplitude)
-				this->state = SequencePlayer::VoiceState::Decaying;
-			break;
+
+			if(!this->amplitude) this->state = SequencePlayer::VoiceState::Decaying;
+			return;
 		}
 		case SequencePlayer::VoiceState::Decaying:
 		{
@@ -86,30 +97,23 @@ namespace NitroComposer {
 				this->amplitude = sustLvl;
 				this->state = SequencePlayer::VoiceState::Sustaining;
 			}
-			break;
+			return;
 		}
 		case SequencePlayer::VoiceState::Sustaining:
 			//Nothing to do in this state
-			break;
+			return;
 		case SequencePlayer::VoiceState::Releasing:
 		{
 			this->amplitude -= static_cast<int>(this->GetRelease());
 			if(this->amplitude <= AMPLITUDE_THRESHOLD) {
 				this->Kill();
-				return;
 			}
-			break;
+			return;
 		}
 		default:
 			assert(0);
-			break;
+			return;
 		}
-
-		UpdateModulation();
-		UpdatePitchSweep();
-
-		ConfigureTimerRegister();
-		ConfigureVolumeRegister();
 	}
 
 	void SequencePlayer::Voice::Tick() {

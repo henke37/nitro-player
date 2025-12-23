@@ -54,6 +54,7 @@ namespace NitroComposer {
 			void Tick();
 			void Update();
 
+
 			bool IsPulseVoice() const { return voiceIndex >= 8 && voiceIndex <= 13; }
 			bool IsNoiseVoice() const { return voiceIndex >= 14; }
 
@@ -102,6 +103,8 @@ namespace NitroComposer {
 			int GetModulationValue() const;
 			std::uint16_t modCounter;
 			std::uint16_t modDelayCounter;
+
+			void UpdateEnvelope();
 
 			std::uint8_t GetAttack() const;
 			std::uint8_t GetDecay() const;
