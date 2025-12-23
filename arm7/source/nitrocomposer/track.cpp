@@ -130,6 +130,8 @@ namespace NitroComposer {
 
 		Voice *voice=sequence->allocateVoice(noteInstrument->type, this);
 
+		if(!voice) return nullptr;
+
 		voice->StartNote(this, noteInstrument, note, velocity, length);
 
 		return voice;
