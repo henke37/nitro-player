@@ -18,19 +18,16 @@ namespace NitroComposer {
 			0x5C, 0x64, 0x6D, 0x74, 0x7B, 0x7F, 0x84, 0x89, 0x8F
 		};
 
-		if (attk & 0x80) // Supposedly invalid value...
-			attk = 0; // Use apparently correct default
+		if(attk >= 0x80) attk = 0;
 		return attk >= 0x6D ? lut[0x7F - attk] : 0xFF - attk;
 	}
 
 	int Cnv_Fall(int fall) {
-		if (fall & 0x80) // Supposedly invalid value...
-			fall = 0; // Use apparently correct default
-		if (fall == 0x7F)
-			return 0xFFFF;
-		else if (fall == 0x7E)
-			return 0x3C00;
-		else if (fall < 0x32)
+		if(fall & 0x80) fall = 0;
+		if(fall == 0x7F) return 0xFFFF;
+		if(fall == 0x7E) return 0x3C00;
+		
+		if(fall < 0x32)
 			return ((fall << 1) + 1) & 0xFFFF;
 		else
 			return (0x1E00 / (0x7E - fall)) & 0xFFFF;
@@ -57,8 +54,7 @@ namespace NitroComposer {
 			-5, -4, -3, -3, -2, -1, -1, 0
 		};
 
-		if (scale & 0x80) // Supposedly invalid value...
-			scale = 0x7F; // Use apparently correct default
+		if(scale >= 0x80) scale = 0x7F;
 		return lut[scale];
 	}
 
@@ -83,8 +79,7 @@ namespace NitroComposer {
 			-10, -8, -7, -6, -4, -3, -1, 0
 		};
 
-		if (sust & 0x80) // Supposedly invalid value...
-			sust = 0x7F; // Use apparently correct default
+		if(sust >= 0x80) sust = 0x7F;
 		return lut[sust];
 	}
 
@@ -111,14 +106,12 @@ namespace NitroComposer {
 		int shift = 0;
 		pitch = -pitch;
 
-		while (pitch < 0)
-		{
+		while (pitch < 0) {
 			--shift;
 			pitch += 0x300;
 		}
 
-		while (pitch >= 0x300)
-		{
+		while (pitch >= 0x300) {
 			++shift;
 			pitch -= 0x300;
 		}
@@ -127,21 +120,19 @@ namespace NitroComposer {
 		uint64_t tmr = static_cast<uint64_t>(basetmr) * (tableVal + 0x10000);
 
 		shift -= 16;
-		if (shift <= 0)
+		if(shift <= 0) {
 			tmr >>= -shift;
-		else if (shift < 32)
-		{
+		} else if(shift < 32) {
 			if (tmr & ((~0ULL) << (32 - shift)))
 				return 0xFFFF;
 			tmr <<= shift;
+		} else {
+			return 0xFFFF;
 		}
-		else
-			return 0xFFFF;
 
-		if (tmr < 0x10)
-			return 0x10;
-		if (tmr > 0xFFFF)
-			return 0xFFFF;
+		if (tmr < 0x10) return 0x10;
+		if (tmr > 0xFFFF) return 0xFFFF;
+
 		return static_cast<uint16_t>(tmr);
 	}
 
@@ -150,8 +141,7 @@ namespace NitroComposer {
 		// VOLDIV(1) /2  >>1
 		// VOLDIV(2) /4  >>2
 		// VOLDIV(3) /16 >>4
-		if (x < 3)
-			return x;
+		if (x < 3) return x;
 		return 4;
 	}
 	
