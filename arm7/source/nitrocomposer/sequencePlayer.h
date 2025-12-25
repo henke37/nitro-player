@@ -107,9 +107,9 @@ namespace NitroComposer {
 			void UpdateEnvelope();
 
 			std::uint8_t GetAttack() const;
-			std::uint8_t GetDecay() const;
+			std::uint16_t GetDecay() const;
 			std::uint8_t GetSustain() const;
-			std::uint8_t GetRelease() const;
+			std::uint16_t GetRelease() const;
 		};
 
 		class Track {
@@ -331,6 +331,7 @@ namespace NitroComposer {
 	int Cnv_Scale(int scale);
 	int Cnv_Sust(int sust);
 	int Cnv_Sine(int arg);
+	std::uint16_t CalcDecayCoeff(std::uint8_t decay);
 	uint16_t Timer_Adjust(uint16_t basetmr, int pitch);
 
 	int calcVolDivShift(int x);

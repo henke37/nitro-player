@@ -79,20 +79,15 @@ namespace NitroComposer {
 		switch(state) {
 		case SequencePlayer::VoiceState::Attacking:
 		{
-			int newAmpl = this->amplitude;
-			int oldAmpl = this->amplitude >> 7;
-			do {
-				newAmpl = (newAmpl * static_cast<int>(this->GetAttack())) / 256;
-			} while((newAmpl >> 7) == oldAmpl);
-			this->amplitude = newAmpl;
-
-			if(!this->amplitude) this->state = SequencePlayer::VoiceState::Decaying;
+			this->amplitude = -((-this->amplitude * static_cast<int>(this->GetAttack())) >> 8);
+			
+			if(this->amplitude == 0) this->state = SequencePlayer::VoiceState::Decaying;
 			return;
 		}
 		case SequencePlayer::VoiceState::Decaying:
 		{
-			this->amplitude -= static_cast<int>(this->GetDecay());
 			int sustLvl = Cnv_Sust(this->GetSustain()) << 7;
+			this->amplitude -= this->GetDecay();
 			if(this->amplitude <= sustLvl) {
 				this->amplitude = sustLvl;
 				this->state = SequencePlayer::VoiceState::Sustaining;
@@ -104,7 +99,7 @@ namespace NitroComposer {
 			return;
 		case SequencePlayer::VoiceState::Releasing:
 		{
-			this->amplitude -= static_cast<int>(this->GetRelease());
+			this->amplitude -= this->GetRelease();
 			if(this->amplitude <= AMPLITUDE_THRESHOLD) {
 				this->Kill();
 			}
@@ -335,19 +330,29 @@ namespace NitroComposer {
 	}
 
 	std::uint8_t SequencePlayer::Voice::GetAttack() const {
-		return track->attack != 0xFF ? track->attack : currentInstrument->attack;
+		std::uint8_t attk = track->attack != 0xFF ? track->attack : currentInstrument->attack;
+		if(attk < 109) return 255 - attk;
+
+		static const std::uint8_t coeffs[19] = {
+			0, 1, 5, 14, 26, 38, 51, 63, 73, 84, 92,
+			100, 109, 116, 123, 127, 132, 137, 143
+		};
+
+		return coeffs[127 - attk];
 	}
 
-	std::uint8_t SequencePlayer::Voice::GetDecay() const {
-		return track->decay != 0xFF ? track->decay : currentInstrument->decay;
+	std::uint16_t SequencePlayer::Voice::GetDecay() const {
+		std::uint8_t decay = track->decay != 0xFF ? track->decay : currentInstrument->decay;
+		return CalcDecayCoeff(decay);
 	}
 
 	std::uint8_t SequencePlayer::Voice::GetSustain() const {
 		return track->sustain != 0xFF ? track->sustain : currentInstrument->sustain;
 	}
 
-	std::uint8_t SequencePlayer::Voice::GetRelease() const {
-		return track->release != 0xFF ? track->release : currentInstrument->release;
+	std::uint16_t SequencePlayer::Voice::GetRelease() const {
+		std::uint8_t decay = track->release != 0xFF ? track->release : currentInstrument->release;
+		return CalcDecayCoeff(decay);
 	}
 
 }

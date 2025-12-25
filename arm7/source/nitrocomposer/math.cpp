@@ -100,6 +100,17 @@ namespace NitroComposer {
 		/*else*/
 		return -lut[4 * lut_size - arg];
 	}
+
+	 std::uint16_t CalcDecayCoeff(std::uint8_t vol) {
+		 if(vol == 127)
+			 return 0xFFFF;
+		 else if(vol == 126)
+			 return 0x3C00;
+		 else if(vol < 50)
+			 return static_cast<std::uint16_t>(vol * 2 + 1);
+		 else
+			 return static_cast<std::uint16_t>(0x1E00 / (126 - vol));
+	 }
 	
 	// This function was obtained through disassembly of Ninty's sound driver
 	uint16_t Timer_Adjust(uint16_t basetmr, int pitch) {
