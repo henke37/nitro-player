@@ -29,6 +29,7 @@ namespace NitroComposer {
 			GetVar = 110,
 			SetVar = 111,
 			MuteTrack = 112,
+			SetAllowedChannels = 113,
 			AllocStreamPlayer = 200,
 			DeallocStreamPlayer = 201,
 			InitStream = 210,
@@ -99,6 +100,11 @@ namespace NitroComposer {
 	struct MuteTrackIPC : SequencePlayerIPC {
 		std::uint8_t trackId;
 		bool mute;
+	};
+
+	struct SetAllowedChannelsIPC : SequencePlayerIPC {
+		std::uint8_t trackId;
+		std::uint16_t channels;
 	};
 
 	struct StreamPlayerIPC : BaseIPC {

@@ -314,4 +314,14 @@ namespace NitroComposer {
 		assert(success);
 	}
 
+	void SequencePlayer::SetAllowedChannelsOverride(std::uint16_t channels) {
+
+		SetAllowedChannelsIPC buff;
+		buff.command = BaseIPC::CommandType::SetAllowedChannels;
+		buff.playerId = playerId;
+		buff.channels = channels;
+
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetAllowedChannelsIPC), (u8 *)&buff);
+		assert(success);
+	}
 }

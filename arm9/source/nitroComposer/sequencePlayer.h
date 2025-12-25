@@ -53,6 +53,8 @@ namespace NitroComposer {
 		std::int16_t GetVar(std::uint8_t var) const;
 		void SetTrackMute(std::uint8_t trackId, bool mute);
 
+		void SetAllowedChannelsOverride(std::uint16_t channels);
+
 		bool IsPlaying() const { return isPlaying; }
 
 	private:

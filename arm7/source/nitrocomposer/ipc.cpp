@@ -131,6 +131,13 @@ namespace NitroComposer {
 			sequence->SetTrackMute(muteTrackIpc->trackId, muteTrackIpc->mute ? Track::MuteMode::MuteAndRelease : Track::MuteMode::Clear);
 		} break;
 
+		case BaseIPC::CommandType::SetAllowedChannels:
+		{
+			SetAllowedChannelsIPC *allowedChannelsIpc = static_cast<SetAllowedChannelsIPC *>(ipc);
+			PlayingSequence *sequence = GetPlayingSequence(allowedChannelsIpc->playerId);
+			sequence->allowedChannels = allowedChannelsIpc->channels;
+		} break;
+
 		case BaseIPC::CommandType::AllocStreamPlayer:
 		{
 			assert(!streamPlayer);
