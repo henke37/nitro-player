@@ -364,6 +364,7 @@ namespace NitroComposer {
 
 				std::unique_ptr<PlayerInfoRecord> record = std::make_unique<PlayerInfoRecord>();
 				record->maxSequences = reader.readByte();
+				reader.skip(1);
 				record->channelMask = reader.readLEShort();
 				record->heapSize = reader.readLELong();
 				playerInfos.emplace_back(std::move(record));
