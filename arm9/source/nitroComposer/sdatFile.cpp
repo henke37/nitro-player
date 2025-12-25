@@ -431,7 +431,8 @@ namespace NitroComposer {
 				record->elements.reserve(elementCount);
 				for(std::uint32_t elementIndex = 0; elementIndex < elementCount; ++elementIndex) {
 					std::uint16_t type = reader.readLEShort();
-					std::uint16_t id = reader.readLEShort();
+					reader.skip(2);
+					std::uint32_t id = reader.readLEShort();
 					record->elements.emplace_back(static_cast<GroupInfoRecord::ElementType>(type), id);
 				}
 				groupInfos.emplace_back(std::move(record));
