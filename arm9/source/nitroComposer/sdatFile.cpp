@@ -396,7 +396,7 @@ namespace NitroComposer {
 		}
 
 		{
-			std::vector<std::uint32_t> recordPositions = readChunkPositions(3);
+			std::vector<std::uint32_t> recordPositions = readChunkPositions(1);
 			sequenceArchInfos.reserve(recordPositions.size());
 
 			for(auto itr = recordPositions.begin(); itr != recordPositions.end(); ++itr) {
