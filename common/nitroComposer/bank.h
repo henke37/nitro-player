@@ -15,6 +15,8 @@ namespace NitroComposer {
 			PCM = 1,
 			Pulse = 2,
 			Noise = 3,
+			DirectPCM = 4,
+			Dummy = 5,
 			Drumkit = 16,
 			Split = 17
 		};

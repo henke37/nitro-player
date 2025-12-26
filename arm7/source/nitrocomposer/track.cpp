@@ -156,6 +156,8 @@ namespace NitroComposer {
 		
 		switch(currentInstrument->type) {
 			case InstrumentBank::InstrumentType::Null:
+			case InstrumentBank::InstrumentType::Dummy:
+			case InstrumentBank::InstrumentType::DirectPCM:
 				assert(0);
 				return nullptr;
 			case InstrumentBank::InstrumentType::PCM:

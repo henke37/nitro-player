@@ -172,6 +172,8 @@ namespace NitroComposer {
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
 		case InstrumentBank::InstrumentType::Null:
+		case InstrumentBank::InstrumentType::Dummy:
+		case InstrumentBank::InstrumentType::DirectPCM:
 			assert(0);
 		}
 
@@ -216,8 +218,10 @@ namespace NitroComposer {
 			assert(0);
 			return;
 		case InstrumentBank::InstrumentType::Null:
+		case InstrumentBank::InstrumentType::Dummy:
 			assert(0);
 			return;
+		case InstrumentBank::InstrumentType::DirectPCM:
 		default:
 			assert(0);
 			return;
