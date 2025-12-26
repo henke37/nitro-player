@@ -376,8 +376,10 @@ namespace NitroComposer {
 		case 0xD7:
 		{
 			std::uint8_t val = readByteCommand();
-#ifdef NITROCOMPOSER_LOG_EFFECTS
 			this->SetMute(static_cast<MuteMode>(val));
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Mute Mode %d\n", val);
+			consoleFlush();
 #endif
 		} break;
 
@@ -674,8 +676,10 @@ namespace NitroComposer {
 		case 0xD7:
 		{
 			std::uint8_t val = readAndGetRandomCommandParam();
-#ifdef NITROCOMPOSER_LOG_EFFECTS
 			this->SetMute(static_cast<MuteMode>(val));
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Mute Mode %d\n", val);
+			consoleFlush();
 #endif
 		} break;
 
@@ -898,8 +902,10 @@ namespace NitroComposer {
 		{
 			std::uint8_t srcVarId = readByteCommand();
 			std::int16_t val = sequence->GetVar(srcVarId);
-#ifdef NITROCOMPOSER_LOG_EFFECTS
 			this->SetMute(static_cast<MuteMode>(val));
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			consolePrintf("Mute Mode %d\n", val);
+			consoleFlush();
 #endif
 		} break;
 
