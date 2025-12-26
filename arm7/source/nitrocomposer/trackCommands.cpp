@@ -373,6 +373,14 @@ namespace NitroComposer {
 #endif
 		} break;
 
+		case 0xD7:
+		{
+			std::uint8_t val = readByteCommand();
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			this->SetMute(static_cast<MuteMode>(val));
+#endif
+		} break;
+
 		case 0xE1:
 		{
 			sequence->tempo = readShortCommand();
@@ -655,11 +663,19 @@ namespace NitroComposer {
 
 		case 0xD6:
 		{
-			std::uint8_t varId = readByteCommand();
+			std::uint8_t varId = readAndGetRandomCommandParam();
 			assert(varId < numVariables);
 #ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
 			consoleFlush();
+#endif
+		} break;
+
+		case 0xD7:
+		{
+			std::uint8_t val = readAndGetRandomCommandParam();
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			this->SetMute(static_cast<MuteMode>(val));
 #endif
 		} break;
 
@@ -875,6 +891,15 @@ namespace NitroComposer {
 #ifdef NITROCOMPOSER_LOG_EFFECTS
 			consolePrintf("Pitch Bend %d\n", pitchBend);
 			consoleFlush();
+#endif
+		} break;
+
+		case 0xD7:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			std::int16_t val = sequence->GetVar(srcVarId);
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			this->SetMute(static_cast<MuteMode>(val));
 #endif
 		} break;
 

@@ -128,10 +128,10 @@ namespace NitroComposer {
 			void NoteOn(std::uint8_t note, std::uint16_t velocity, std::uint16_t durration);
 
 			enum class MuteMode {
-				Clear,
-				Mute,
-				MuteAndRelease,
-				MuteAndKill
+				Clear = 0,
+				Mute = 1,
+				MuteAndRelease = 2,
+				MuteAndKill = 3
 			};
 			void SetMute(MuteMode mode);
 
