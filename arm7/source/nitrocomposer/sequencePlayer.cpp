@@ -47,6 +47,7 @@ namespace NitroComposer {
 		const uint8_t *channelList;
 		switch(type) {
 		case InstrumentBank::InstrumentType::PCM:
+		case InstrumentBank::InstrumentType::DirectPCM:
 			channelCount = 16;
 			channelList = pcmChannels;
 			break;
@@ -61,6 +62,7 @@ namespace NitroComposer {
 		case InstrumentBank::InstrumentType::Drumkit:
 		case InstrumentBank::InstrumentType::Split:
 		case InstrumentBank::InstrumentType::Null:
+		case InstrumentBank::InstrumentType::Dummy:
 		default:
 			assert(0);
 		}
