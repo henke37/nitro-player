@@ -45,6 +45,9 @@ namespace NitroComposer {
 
 	std::unique_ptr<SBNK::BaseInstrument> SBNK::ParseInstrument(BinaryReader &reader, std::uint8_t type) {
 		switch(type) {
+		case 5:
+			reader.skip(10);
+			[[fallthrough]];
 		case 0:
 			return std::unique_ptr<SBNK::BaseInstrument>();
 		case 1:	{
