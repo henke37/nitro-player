@@ -349,7 +349,7 @@ namespace NitroComposer {
 			auto &stackRecord = stack[stackPointer];
 			stackRecord.nextCommand = nextCommand;
 			stackRecord.loopCounter = loopCount;
-			stackRecord.type = StackEntryType::Loop;
+			stackRecord.type = (loopCount>0) ? StackEntryType::Loop : StackEntryType::InfiniteLoop;
 			++stackPointer;
 
 #ifdef NITROCOMPOSER_LOG_FLOW
@@ -402,20 +402,39 @@ namespace NitroComposer {
 			assert(stackPointer > 0);
 			--stackPointer;
 			auto &stackRecord = stack[stackPointer];
-			assert(stackRecord.type == StackEntryType::Loop);
-			--stackRecord.loopCounter;
-			if(stackRecord.loopCounter) {
+
+			switch(stackRecord.type) {
+
+			case StackEntryType::Loop:
+			{
+				--stackRecord.loopCounter;
+				if(stackRecord.loopCounter) {
+					nextCommand = stackRecord.nextCommand;
+					++stackPointer;
+#ifdef NITROCOMPOSER_LOG_FLOW
+					consolePrintf("#%d Loop repeat, %d remaining\n", GetId(), stackRecord.loopCounter);
+					consoleFlush();
+#endif
+				} else {
+#ifdef NITROCOMPOSER_LOG_FLOW
+					consolePrintf("#%d Loop end\n", GetId());
+					consoleFlush();
+#endif
+				}
+			} break;
+			case StackEntryType::InfiniteLoop:
+			{
 				nextCommand = stackRecord.nextCommand;
 				++stackPointer;
 #ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("#%d Loop repeat, %d remaining\n", GetId(), stackRecord.loopCounter);
+				consolePrintf("#%d Loop repeat, infinite\n", GetId());
 				consoleFlush();
 #endif
-			} else {
-#ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("#%d Loop end\n", GetId());
-				consoleFlush();
-#endif
+			} break;
+
+			default:
+				assert(0);
+				break;
 			}
 		} break;
 

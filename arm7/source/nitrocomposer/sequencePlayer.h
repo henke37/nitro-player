@@ -187,7 +187,8 @@ namespace NitroComposer {
 
 			enum class StackEntryType : std::uint8_t {
 				Call,
-				Loop
+				Loop,
+				InfiniteLoop
 			};
 
 			struct StackEntry {
