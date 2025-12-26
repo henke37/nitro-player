@@ -663,6 +663,45 @@ namespace NitroComposer {
 #endif
 		} break;
 
+		case 0xCA:
+		{
+			modDepth = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xCB:
+		{
+			modSpeed = readAndGetRandomCommandParam();
+		} break;
+
+		case 0xCC:
+		{
+			modMode = ModulationMode(readAndGetRandomCommandParam());
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			switch(modMode) {
+			case ModulationMode::Vibrato:
+				consolePuts("Mod: Vibrato\n");
+				break;
+			case ModulationMode::Tremolo:
+				consolePuts("Mod: Tremolo\n");
+				break;
+			case ModulationMode::Pan:
+				consolePuts("Mod: Pan\n");
+				break;
+			}
+			consoleFlush();
+#endif
+		} break;
+
+		case 0xCD:
+		{
+			modRange = readAndGetRandomCommandParam();
+		} break;
+		
+		case 0xD5:
+		{
+			expression = readAndGetRandomCommandParam();
+		} break;
+
 		case 0xD6:
 		{
 			std::uint8_t varId = readAndGetRandomCommandParam();
@@ -908,6 +947,52 @@ namespace NitroComposer {
 			consoleFlush();
 #endif
 		} break;
+
+
+		case 0xCA:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			modDepth = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xCB:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			modSpeed = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xCC:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			modMode = ModulationMode(sequence->GetVar(srcVarId));
+#ifdef NITROCOMPOSER_LOG_EFFECTS
+			switch(modMode) {
+			case ModulationMode::Vibrato:
+				consolePuts("Mod: Vibrato\n");
+				break;
+			case ModulationMode::Tremolo:
+				consolePuts("Mod: Tremolo\n");
+				break;
+			case ModulationMode::Pan:
+				consolePuts("Mod: Pan\n");
+				break;
+			}
+			consoleFlush();
+#endif
+		} break;
+
+		case 0xCD:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			modRange = sequence->GetVar(srcVarId);
+		} break;
+
+		case 0xD5:
+		{
+			std::uint8_t srcVarId = readByteCommand();
+			expression = sequence->GetVar(srcVarId);
+		} break;
+
 
 		default:
 			consolePrintf("#%d Skipping unknown var command %x\n", GetId(), command);
