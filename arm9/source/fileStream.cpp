@@ -33,7 +33,9 @@ size_t BaseFileStream::getPos() const {
 }
 
 size_t FileReadStream::read(uint8_t *buf, size_t readSize) {
-	return ::read(fileHandle, buf, readSize);
+	auto readCnt = ::read(fileHandle, buf, readSize);
+	sassert(readCnt >= 0, "Read returned %zi!", readCnt);
+	return readCnt;
 }
 
 size_t BaseFileStream::getLength() const {

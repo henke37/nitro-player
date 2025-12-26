@@ -37,8 +37,6 @@ size_t SubStream::read(uint8_t *buf, size_t size) {
 	
 	size_t readSize=realStream->read(buf, size);
 	
-	if(readSize<0) return readSize;
-	
 	virtualPos+=readSize;
 	
 	return readSize;

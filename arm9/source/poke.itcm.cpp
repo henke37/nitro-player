@@ -119,6 +119,7 @@ ITCM_CODE void Poke::PerformBlob() const {
 		case PokeWriteMode::DMA_32:
 			DC_FlushRange(valuePtr, size);
 			dmaCopyHalfWords(0, valuePtr, (void *)addr, size);
+			break;
 		case PokeWriteMode::MEMCPY_8:
 		{
 			volatile const uint8_t *src = (volatile const uint8_t *)valuePtr;

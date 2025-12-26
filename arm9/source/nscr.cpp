@@ -243,6 +243,6 @@ void NSCR::copyLineTxt(TileMapEntry16 *mapData, unsigned int xSrcBase, unsigned 
 	}
 }
 
-void NSCR::copyRectAffine(void *screenBase, unsigned int xDstBase, unsigned int yDstBase, unsigned int xSrcBase, unsigned int ySrcBase, unsigned int drawWidth, unsigned int drawHeight, int palOffset) const {
+void NSCR::copyRectAffine([[maybe_unused]] void *screenBase, [[maybe_unused]] unsigned int xDstBase, [[maybe_unused]] unsigned int yDstBase, [[maybe_unused]] unsigned int xSrcBase, [[maybe_unused]] unsigned int ySrcBase, [[maybe_unused]] unsigned int drawWidth, [[maybe_unused]] unsigned int drawHeight, [[maybe_unused]] int palOffset) const {
 	assert(0);
 }

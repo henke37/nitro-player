@@ -59,7 +59,7 @@ namespace NitroComposer {
 			pcm->sustain = reader.readByte();
 			pcm->release = reader.readByte();
 			pcm->pan = reader.readByte();
-			return std::move(pcm);
+			return pcm;
 		} break;
 		case 2:	{
 			std::unique_ptr<PulseInstrument> pulse = std::make_unique<PulseInstrument>();
@@ -72,7 +72,7 @@ namespace NitroComposer {
 			pulse->sustain = reader.readByte();
 			pulse->release = reader.readByte();
 			pulse->pan = reader.readByte();
-			return std::move(pulse);
+			return pulse;
 		} break;
 		case 3:	{
 			std::unique_ptr<NoiseInstrument> noise = std::make_unique<NoiseInstrument>();
@@ -84,7 +84,7 @@ namespace NitroComposer {
 			noise->sustain = reader.readByte();
 			noise->release = reader.readByte();
 			noise->pan = reader.readByte();
-			return std::move(noise);
+			return noise;
 		} break;
 
 		case 16: {
@@ -101,7 +101,7 @@ namespace NitroComposer {
 				drums->subInstruments.emplace_back(std::move(subInstrument));
 			}
 
-			return std::move(drums);
+			return drums;
 		} break;
 		case 17: {
 			std::unique_ptr<SBNK::SplitInstrument> split = std::make_unique<SplitInstrument>();
