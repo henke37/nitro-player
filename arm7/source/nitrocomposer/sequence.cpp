@@ -115,7 +115,7 @@ namespace NitroComposer {
 		return voice;
 	}
 
-	void SequencePlayer::PlayingSequence::stoppedPlaying(Track *track) {
+	void SequencePlayer::PlayingSequence::stoppedPlaying([[maybe_unused]] Track *track) {
 		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
 			auto &track = tracks[trackIndex];
 			if(!track) continue;

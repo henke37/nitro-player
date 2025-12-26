@@ -147,4 +147,14 @@ namespace NitroComposer {
 		}
 	}
 
+	SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(std::int32_t playerId) { 
+		assert(playerId == 1); 
+		return &playingSequence;
+	}
+
+	const SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(std::int32_t playerId) const {
+		assert(playerId == 1);
+		return &playingSequence;
+	}
+
 }

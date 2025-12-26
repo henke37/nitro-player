@@ -356,7 +356,7 @@ namespace NitroComposer {
 			consolePrintf("#%d Loop start x%d\n", GetId(), loopCount);
 			consoleFlush();
 #endif
-		}
+		} break;
 
 		case 0xD5:
 		{

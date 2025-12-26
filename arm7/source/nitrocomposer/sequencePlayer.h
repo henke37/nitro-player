@@ -26,8 +26,8 @@ namespace NitroComposer {
 		class Track;
 		class Voice;
 
-		PlayingSequence *GetPlayingSequence(std::int32_t playerId) { return &playingSequence; }
-		const PlayingSequence *GetPlayingSequence(std::int32_t playerId) const { return &playingSequence; }
+		PlayingSequence *GetPlayingSequence(std::int32_t playerId);
+		const PlayingSequence *GetPlayingSequence(std::int32_t playerId) const;
 
 		enum class VoiceState : std::uint8_t {
 			Free,
@@ -60,7 +60,7 @@ namespace NitroComposer {
 
 			const Track *GetTrack() const { return track; }
 			Track *GetTrack() { return track; }
-			const std::uint8_t GetVoiceIndex() const { return voiceIndex; }
+			std::uint8_t GetVoiceIndex() const { return voiceIndex; }
 
 			void Release();
 			void Kill();
@@ -338,8 +338,8 @@ namespace NitroComposer {
 	int32_t muldiv7(int32_t val, uint8_t mul);
 
 	const int AMPL_K = 723;
-	const int AMPL_MIN = -AMPL_K;
-	const int AMPLITUDE_THRESHOLD = AMPL_MIN << 7;
+	const int AMPL_MIN = AMPL_K;
+	const int AMPLITUDE_THRESHOLD = -(AMPL_MIN << 7);
 
 	extern SequencePlayer sequencePlayer;
 

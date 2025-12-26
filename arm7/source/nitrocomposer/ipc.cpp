@@ -17,16 +17,16 @@ namespace NitroComposer {
 		fifoSetDatamsgHandler(FIFO_NITRO_COMPOSER, fifoDatagramHandler, nullptr);
 	}
 
-	void SequencePlayer::fifoDatagramHandler(int num_bytes, void *userdata) {
+	void SequencePlayer::fifoDatagramHandler(int num_bytes, [[maybe_unused]] void *userdata) {
 		sequencePlayer.fifoDatagramHandler(num_bytes);
 	}
 
 	void SequencePlayer::fifoDatagramHandler(int num_bytes) {
 		u8 fifoBuffer[fifoBuffSize];
 
-		assert(fifoCheckDatamsgLength(FIFO_NITRO_COMPOSER) <= (int)fifoBuffSize);
+		assert(num_bytes <= (int)fifoBuffSize);
 
-		int written = fifoGetDatamsg(FIFO_NITRO_COMPOSER, fifoBuffSize, fifoBuffer);
+		int written = fifoGetDatamsg(FIFO_NITRO_COMPOSER, num_bytes, fifoBuffer);
 		assert(written > 0);
 
 		auto ipc = reinterpret_cast<BaseIPC *>(fifoBuffer);
@@ -209,7 +209,7 @@ namespace NitroComposer {
 			assert(0);
 		}
 	}
-	void SequencePlayer::sendFifoSequenceStatus(const PlayingSequence &sequence) {
+	void SequencePlayer::sendFifoSequenceStatus([[maybe_unused]] const PlayingSequence &sequence) {
 		bool success;
 		SequenceStatusEventIPC statusIpc;
 		statusIpc.eventId = AsyncEventIPC::EventType::SequenceEnded;
