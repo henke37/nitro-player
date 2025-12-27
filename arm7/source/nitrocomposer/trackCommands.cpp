@@ -6,6 +6,7 @@
 #include <nds/arm7/console.h>
 
 #define NITROCOMPOSER_LOG_EFFECTS
+//#define NITROCOMPOSER_LOG_COMMON_EFFECTS
 #define NITROCOMPOSER_LOG_FLOW
 
 namespace NitroComposer {
@@ -203,7 +204,7 @@ namespace NitroComposer {
 		case 0xC0:
 		{
 			pan = readByteCommand() - 64;
-#ifdef NITROCOMPOSER_LOG_EFFECTS
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
 			consolePrintf("Pan %d\n", pan);
 			consoleFlush();
 #endif
@@ -227,7 +228,7 @@ namespace NitroComposer {
 		case 0xC4:
 		{
 			pitchBend = readByteCommand();
-#ifdef NITROCOMPOSER_LOG_EFFECTS
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
 			consolePrintf("Pitch Bend %d\n", pitchBend);
 			consoleFlush();
 #endif
@@ -361,6 +362,10 @@ namespace NitroComposer {
 		case 0xD5:
 		{
 			expression = readByteCommand();
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
+			consolePrintf("#%d Expression %d\n", GetId(), expression);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xD6:
@@ -631,7 +636,7 @@ namespace NitroComposer {
 		case 0xC0:
 		{
 			pan = readAndGetRandomCommandParam() - 64;
-#ifdef NITROCOMPOSER_LOG_EFFECTS
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
 			consolePrintf("Pan %d\n", pan);
 			consoleFlush();
 #endif
@@ -655,7 +660,7 @@ namespace NitroComposer {
 		case 0xC4:
 		{
 			pitchBend = readAndGetRandomCommandParam();
-#ifdef NITROCOMPOSER_LOG_EFFECTS
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
 			consolePrintf("Pitch Bend %d\n", pitchBend);
 			consoleFlush();
 #endif
@@ -922,7 +927,7 @@ namespace NitroComposer {
 			std::uint8_t srcVarId = readByteCommand();
 			std::int16_t val = sequence->GetVar(srcVarId);
 			pan = val - 64;
-#ifdef NITROCOMPOSER_LOG_EFFECTS
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
 			consolePrintf("Pan %d\n", pan);
 			consoleFlush();
 #endif
@@ -950,7 +955,7 @@ namespace NitroComposer {
 		{
 			std::uint8_t srcVarId = readByteCommand();
 			pitchBend = sequence->GetVar(srcVarId);
-#ifdef NITROCOMPOSER_LOG_EFFECTS
+#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
 			consolePrintf("Pitch Bend %d\n", pitchBend);
 			consoleFlush();
 #endif
