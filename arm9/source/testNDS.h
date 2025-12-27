@@ -5,6 +5,7 @@
 #include "ndsfile.h"
 
 #include <memory>
+#include <string>
 
 class TestNDS : public GameMode {
 public:
@@ -16,6 +17,12 @@ public:
 	void Update() override;
 private:
 	std::unique_ptr<NDSFile> ndsFile;
+
+	void scanFileSystems();
+	void scanFolder(const std::string &path);
+
+	void scanNDSFile(const std::string &path);
+	void scanSDatFile(std::unique_ptr<BinaryReadStream> &&sdatStream);
 };
 
 #endif
