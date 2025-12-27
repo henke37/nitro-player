@@ -193,7 +193,7 @@ namespace NitroComposer {
 
 			struct StackEntry {
 				const std::uint8_t *nextCommand;
-				unsigned int loopCounter;
+				std::uint8_t loopCounter;
 				StackEntryType type;
 			};
 
