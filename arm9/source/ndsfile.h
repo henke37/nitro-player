@@ -16,6 +16,11 @@ public:
 	std::unique_ptr<BinaryReadStream> OpenFile(std::uint16_t id) const;
 	std::unique_ptr<BinaryReadStream> OpenFile(const std::string &path) const;
 
+	const std::string &getGameCode() const { return gameCode; }
+	std::uint16_t getMakerCode() const { return makerCode; }
+	std::uint8_t getUnitCode() const { return unitCode; }
+	std::uint8_t getRegion() const { return region; }
+
 	class FileSystem {
 	public:
 		FileSystem(
