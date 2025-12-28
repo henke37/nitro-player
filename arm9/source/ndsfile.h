@@ -102,6 +102,9 @@ public:
 			bool operator!=(const Iterator &other) const;
 			bool atEnd() const;
 
+			const std::string &getFileName() const { return dirItr->name; }
+			std::string getFullPath() const;
+
 		private:
 			Iterator(const FileSystem *fileSystem);
 

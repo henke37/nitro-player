@@ -68,7 +68,8 @@ void TestNDS::scanNDSFile(const std::string &path) {
 
 	for(auto itr = ndsFile->getFileSystemIterator(); !itr.atEnd(); ++itr) {
 		if(!itr->name.ends_with(".sdat")) continue;
-		printf("%s\n", itr->name.c_str());
+		printf("%s\n", itr.getFullPath().c_str());
+
 		auto sdatStream = ndsFile->OpenFile(itr->fileId);
 		scanSDatFile(std::move(sdatStream));
 	}

@@ -238,6 +238,21 @@ bool NDSFile::FileSystem::Iterator::atEnd() const {
 	return dirItr == dir->entries.cend();
 }
 
+std::string NDSFile::FileSystem::Iterator::getFullPath() const {
+	std::string path = getFileName();
+
+	auto curDir = dir;
+
+	while(!curDir->isRoot()) {
+		auto entryInParent = entryInParentDir();
+		sassert(entryInParent, "Failed to get entry in parent dir!");
+		path = entryInParent->name + "/" + path;
+		curDir = fileSystem->getDir(curDir->parentId);
+	}
+
+	return path;
+}
+
 void NDSFile::FileSystem::Iterator::operator++() {
 	assert(fileSystem);
 	assert(dir);
