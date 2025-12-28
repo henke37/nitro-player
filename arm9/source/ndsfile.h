@@ -96,6 +96,7 @@ public:
 			bool operator==(const Iterator &other) const;
 			bool operator!=(const Iterator &other) const;
 			bool atEnd() const;
+
 		private:
 			Iterator(const FileSystem *fileSystem);
 
@@ -103,6 +104,8 @@ public:
 			const Directory *dir;
 			std::vector<Directory::DirEntry>::const_iterator dirItr;
 
+
+			const Directory::DirEntry *entryInParentDir() const;
 			void goUp();
 
 			friend class ::NDSFile::FileSystem;

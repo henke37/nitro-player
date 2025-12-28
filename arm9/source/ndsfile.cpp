@@ -266,9 +266,9 @@ void NDSFile::FileSystem::Iterator::goUp() {
 
 	auto parentDir = fileSystem->getDir(dir->parentId);
 	for(auto parentItr = parentDir->entries.cbegin(); parentItr != parentDir->entries.cend(); ++parentItr) {
-		auto parentEntry = *parentItr;
-		if(!parentEntry.isDirectory()) continue;
-		auto candidateDir = fileSystem->getDir(parentEntry.fileId);
+		auto &entryInParentDir = *parentItr;
+		if(!entryInParentDir.isDirectory()) continue;
+		auto candidateDir = fileSystem->getDir(entryInParentDir.fileId);
 		if(candidateDir != dir) continue;
 
 		dir = parentDir;
@@ -277,4 +277,20 @@ void NDSFile::FileSystem::Iterator::goUp() {
 		return;
 	}
 	sassert(0, "Failed to find dirEntry in parent!");
+}
+
+const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Iterator::entryInParentDir() const {
+	assert(fileSystem);
+	assert(dir);
+	sassert(!dir->isRoot(), "Root directory has no parent!");
+	auto parentDir = fileSystem->getDir(dir->parentId);
+	for(auto parentItr = parentDir->entries.cbegin(); parentItr != parentDir->entries.cend(); ++parentItr) {
+		auto &entryInParentDir = *parentItr;
+		if(!entryInParentDir.isDirectory()) continue;
+		auto candidateDir = fileSystem->getDir(entryInParentDir.fileId);
+		if(candidateDir != dir) continue;
+		return &*parentItr;
+	}
+	sassert(0, "Failed to find dirEntry in parent!");
+	return nullptr;
 }
