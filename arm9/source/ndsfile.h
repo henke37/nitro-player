@@ -124,6 +124,39 @@ public:
 
 	FileSystem::Iterator getFileSystemIterator() const;
 
+	class Banner {
+	public:
+		Banner(std::unique_ptr<BinaryReadStream> &&stream);
+
+		static constexpr size_t titleCount = 8;
+
+		std::u16string titles[titleCount];
+
+		enum class TitleLanguage {
+			Japanese = 0,
+			English = 1,
+			French = 2,
+			German = 3,
+			Italian = 4,
+			Spanish = 5,
+			Chinese = 6,
+			Korean = 7
+		};
+
+		enum class Version {
+			Original = 1,
+			Chinese = 2,
+			ChineseAndKorean = 3,
+			Dsi = 0x0103
+		};
+		Version version;
+		
+	private:
+		
+	};
+
+	Banner GetBanner() const;
+
 private:	
 	std::unique_ptr<BinaryReadStream> stream;
 
@@ -141,6 +174,7 @@ private:
 		std::uint32_t Size;
 	};
 	ExecutableData arm9, arm7;
+	std::uint32_t bannerOffset;
 
 	std::unique_ptr<FileSystem> fileSystem;
 

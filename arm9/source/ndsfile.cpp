@@ -31,6 +31,10 @@ NDSFile::FileSystem::Iterator NDSFile::getFileSystemIterator() const {
 	return fileSystem->getIterator();
 }
 
+NDSFile::Banner NDSFile::GetBanner() const {
+	return Banner(std::make_unique<SubStream>(stream.get(), bannerOffset, 0x23C0, false));
+}
+
 void NDSFile::Parse() {
 	BinaryReader reader(stream.get(), false);
 
@@ -57,6 +61,10 @@ void NDSFile::Parse() {
 	std::uint32_t FNTSize = reader.readLELong();
 	std::uint32_t FATOffset = reader.readLELong();
 	std::uint32_t FATSize = reader.readLELong();
+
+	reader.skip(4 * 4 + 4 * 2); //overlays and slot1 settings
+
+	bannerOffset = reader.readLELong();
 
 	std::unique_ptr<BinaryReadStream> FNTData = std::make_unique<SubStream>
 		(stream.get(), FNTOffset, FNTSize, false);
@@ -308,4 +316,21 @@ const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Iterator::e
 	}
 	sassert(0, "Failed to find dirEntry in parent!");
 	return nullptr;
+}
+
+NDSFile::Banner::Banner(std::unique_ptr<BinaryReadStream> &&stream) {
+	BinaryReader reader(std::move(stream));
+	version = static_cast<Version>(reader.readLEShort());
+	reader.skip(0x0240 - 2); //skip to titles
+	unsigned int existingTitleCount = version == Version::Original ? 6 : 8;
+
+	for(unsigned int i = 0; i < existingTitleCount; ++i) {
+		titles[i] = reader.readLEUTF16String(128);
+
+		//trim trailing nulls
+		size_t nullPos = titles[i].find(u'\0');
+		if(nullPos != std::u16string::npos) {
+			titles[i] = titles[i].substr(0, nullPos);
+		}
+	}
 }
