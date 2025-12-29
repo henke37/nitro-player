@@ -195,6 +195,7 @@
     <ClInclude Include="arm9\source\quickFullscreen.h" />
     <ClInclude Include="arm9\source\rect.h" />
     <ClInclude Include="arm9\source\registerOverride.h" />
+    <ClInclude Include="arm9\source\sdatentry.h" />
     <ClInclude Include="arm9\source\sectionedFile.h" />
     <ClInclude Include="arm9\source\strutils.h" />
     <ClInclude Include="arm9\source\substream.h" />

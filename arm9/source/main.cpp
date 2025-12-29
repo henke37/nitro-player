@@ -61,7 +61,7 @@ int main(void) {
 	irqSet(IRQ_HBLANK, HBlankBatcher::ISR);
 	
 	//TODO: custom init
-	g_mode = std::make_unique<TestMode>();
+	g_mode = std::make_unique<TestNDS>();
 	g_mode->Load();
 
 	for(;;) {

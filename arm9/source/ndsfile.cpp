@@ -112,8 +112,6 @@ std::uint16_t NDSFile::FileSystem::ResolvePath(const std::string &path) const {
 		if(curSlashPos == std::string::npos) {
 			std::string file = path.substr(partStartPos);
 
-			printf("File \"%s\"\n", file.c_str());
-
 			auto entry = currDir->findEntry(file);
 			if(!entry) return Directory::DirEntry::invalidFileId;
 			assert(entry->fileId < Directory::DirEntry::folderThreshold);

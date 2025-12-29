@@ -6,6 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
+#include "sdatentry.h"
 
 class TestNDS : public GameMode {
 public:
@@ -23,6 +26,11 @@ private:
 
 	void scanNDSFile(const std::string &path);
 	void scanSDatFile(std::unique_ptr<BinaryReadStream> &&sdatStream);
+
+	static std::vector<SDatEntry> sdatEntries;
+
+	size_t selectedEntry = 0;
+	void redrawUI();
 };
 
 #endif

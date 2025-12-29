@@ -7,17 +7,26 @@
 
 #include "testSTRM.h"
 
-TestMode::TestMode() {}
+TestMode::TestMode(const SDatEntry &sdatEntry) {
+	LoadSDat(sdatEntry);
+}
 TestMode::~TestMode() {}
 
 void TestMode::Load() {
-	LoadSDat("sound_data.sdat");
+}
 
-	printf("Getvar: %hi\n", sequencePlayer.GetVar(1));
+void TestMode::LoadSDat(const SDatEntry &sdatEntry) {
+	nds = std::make_unique<NDSFile>(sdatEntry.ndsFile);
+	sdat = std::make_unique<NitroComposer::SDatFile>(nds->OpenFile(sdatEntry.sdatFile));
+	InitSDat();
 }
 
 void TestMode::LoadSDat(const std::string &fileName) {
 	sdat = std::make_unique<NitroComposer::SDatFile>(fileName);
+	InitSDat();
+}
+
+void TestMode::InitSDat() {
 	sequencePlayer.SetSdat(sdat.get());
 	sequenceId = 0;
 	printf("Sdat loaded ok.\n");
