@@ -11,7 +11,7 @@ TestMode::TestMode() {}
 TestMode::~TestMode() {}
 
 void TestMode::Load() {
-	LoadSDat("MPDS_sound.sdat");
+	LoadSDat("sound_data.sdat");
 
 	printf("Getvar: %hi\n", sequencePlayer.GetVar(1));
 }
