@@ -249,7 +249,7 @@ std::string NDSFile::FileSystem::Iterator::getFullPath() const {
 
 	while(!curDir->isRoot()) {
 		auto parentDir = fileSystem->getDir(curDir->parentId);
-		auto entryInParent = entryInParentDir(curDir);
+		auto entryInParent = fileSystem->entryInParentDir(curDir);
 
 		path = entryInParent->name + "/" + path;
 		curDir = parentDir;
@@ -299,15 +299,14 @@ void NDSFile::FileSystem::Iterator::goUp() {
 	sassert(0, "Failed to find dirEntry in parent!");
 }
 
-const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Iterator::entryInParentDir(const Directory *dir) const {
-	assert(fileSystem);
+const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::entryInParentDir(const Directory *dir) const {
 	assert(dir);
 	sassert(!dir->isRoot(), "Root directory has no parent!");
-	auto parentDir = fileSystem->getDir(dir->parentId);
+	auto parentDir = getDir(dir->parentId);
 	for(auto parentItr = parentDir->entries.cbegin(); parentItr != parentDir->entries.cend(); ++parentItr) {
 		auto &entryInParentDir = *parentItr;
 		if(!entryInParentDir.isDirectory()) continue;
-		auto candidateDir = fileSystem->getDir(entryInParentDir.fileId);
+		auto candidateDir = getDir(entryInParentDir.fileId);
 		if(candidateDir != dir) continue;
 		return &*parentItr;
 	}

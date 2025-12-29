@@ -82,6 +82,7 @@ public:
 		std::vector<Directory> directories;
 
 		const Directory *getDir(std::uint16_t dirId) const;
+		const Directory::DirEntry *entryInParentDir(const Directory *dir) const;
 		const Directory *getRootDir() const;
 
 		BinaryReadStream *fileData;
@@ -112,8 +113,6 @@ public:
 			const Directory *dir;
 			std::vector<Directory::DirEntry>::const_iterator dirItr;
 
-
-			const Directory::DirEntry *entryInParentDir(const Directory *dir) const;
 			void goUp();
 
 			friend class ::NDSFile::FileSystem;
