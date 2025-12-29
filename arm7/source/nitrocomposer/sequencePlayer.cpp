@@ -21,8 +21,6 @@ namespace NitroComposer {
 			globalVariables[var] = -1;
 		}
 
-		playingSequence.Init();
-
 		externalChannelReservations = 0;
 
 		setupFifo();
@@ -138,7 +136,11 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Update() {
-		playingSequence.Update();
+		for(auto itr = playingSequences.begin(); itr != playingSequences.end(); ++itr) {
+			auto &val = *itr;
+			val->Update();
+		}
+
 		UpdateVoices();
 	}
 
@@ -149,14 +151,26 @@ namespace NitroComposer {
 		}
 	}
 
-	SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(std::int32_t playerId) { 
-		assert(playerId == 1); 
-		return &playingSequence;
+	SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(std::int32_t playerId) {
+		for(auto itr = playingSequences.begin(); itr != playingSequences.end(); ++itr) {
+			auto &val = *itr;
+			if(val->id == playerId) {
+				return val.get();
+			}
+		}
+		assert(0);
+		return nullptr;
 	}
 
 	const SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(std::int32_t playerId) const {
-		assert(playerId == 1);
-		return &playingSequence;
+		for(auto itr = playingSequences.begin(); itr != playingSequences.end(); ++itr) {
+			auto &val = *itr;
+			if(val->id == playerId) {
+				return val.get();
+			}
+		}
+		assert(0);
+		return nullptr;
 	}
 
 }

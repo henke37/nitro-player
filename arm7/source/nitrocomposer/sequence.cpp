@@ -7,11 +7,11 @@
 #define NITROCOMPOSER_LOG_VAR_WRITES
 
 namespace NitroComposer {
-	SequencePlayer::PlayingSequence::PlayingSequence() {
+	SequencePlayer::PlayingSequence::PlayingSequence(std::int32_t id) : id(id), sequenceData(nullptr), sequenceDataLength(0), bank(nullptr), waveArchs{ nullptr } {
 		tracks[0] = std::make_unique<Track>(this);
 	}
 
-	void SequencePlayer::PlayingSequence::Init() {
+	void SequencePlayer::PlayingSequence::Reset() {
 		ResetLocalVars();
 
 		allowedChannels = 0xFFFF;
@@ -19,10 +19,6 @@ namespace NitroComposer {
 		priority = 64;
 
 		ResetTracks();
-
-		for(unsigned int waveArchiveIndex = 0; waveArchiveIndex < numWaveArchs; ++waveArchiveIndex) {
-			waveArchs[waveArchiveIndex] = nullptr;
-		}
 	}
 
 	void SequencePlayer::PlayingSequence::ResetLocalVars() {

@@ -15,8 +15,16 @@ namespace NitroComposer {
 		buff.command = BaseIPC::CommandType::AllocSequencePlayer;
 		buff.playerId = playerId;
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
-		assert(success);
+		{
+			FifoMutexLock lock;
+
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
+			assert(success);
+
+			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
+			std::uint32_t allocatedId = (fifoGetValue32(FIFO_NITRO_COMPOSER));
+			assert(allocatedId == (std::uint32_t)playerId);
+		}
 	}
 	SequencePlayer::~SequencePlayer() {
 		KillSequence();
@@ -25,8 +33,16 @@ namespace NitroComposer {
 		buff.command = BaseIPC::CommandType::DeallocSequencePlayer;
 		buff.playerId = playerId;
 
-		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
-		assert(success);
+		{
+			FifoMutexLock lock;
+
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
+			assert(success);
+
+			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
+			std::uint32_t allocatedId = (fifoGetValue32(FIFO_NITRO_COMPOSER));
+			assert(allocatedId == (std::uint32_t)playerId);
+		}
 
 		musicEngine.unregisterPlayer(this);
 	}

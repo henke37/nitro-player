@@ -47,6 +47,7 @@ namespace NitroComposer {
 		class Voice {
 		public:
 			Voice(std::uint8_t voiceIndex);
+			Voice(const Voice &) = delete;
 
 			void StartNote(Track *track, const InstrumentBank::LeafInstrument *instrument, std::uint8_t note, std::uint8_t velocity, unsigned int length);
 			void NextTieNote(std::uint8_t note, std::uint8_t velocity);
@@ -115,6 +116,7 @@ namespace NitroComposer {
 		class Track {
 		public:
 			Track(PlayingSequence *sequence);
+			Track(const Track &) = delete;
 			~Track();
 
 			void Reset();
@@ -245,9 +247,10 @@ namespace NitroComposer {
 
 		class PlayingSequence {
 		public:
-			PlayingSequence();
+			PlayingSequence(std::int32_t id);
+			PlayingSequence(const PlayingSequence &) = delete;
 
-			void Init();
+			void Reset();
 
 			void SetVar(std::uint8_t var, std::int16_t val);
 			std::int16_t GetVar(std::uint8_t var) const;
@@ -278,6 +281,8 @@ namespace NitroComposer {
 
 			void ResetLocalVars();
 			void ResetTracks();
+
+			std::int32_t id;
 
 			std::uint16_t tempo;
 			std::uint16_t tempoTimer;
@@ -320,7 +325,7 @@ namespace NitroComposer {
 
 		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
-		PlayingSequence playingSequence;
+		std::vector<std::unique_ptr<PlayingSequence>> playingSequences;
 
 		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track);
 

@@ -10,6 +10,7 @@
 #include "nitroComposer/ipc.h"
 
 #include <cassert>
+#include <algorithm>
 
 namespace NitroComposer {
 
@@ -41,8 +42,25 @@ namespace NitroComposer {
 		} break;
 
 		case BaseIPC::CommandType::AllocSequencePlayer:
+		{
+			SequencePlayerIPC *allocIpc = static_cast<SequencePlayerIPC *>(ipc);
+			playingSequences.emplace_back(std::make_unique<PlayingSequence>(allocIpc->playerId));
+			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, allocIpc->playerId);
+			assert(success);
+		} break;
 		case BaseIPC::CommandType::DeallocSequencePlayer:
-			break;
+		{
+			SequencePlayerIPC *allocIpc = static_cast<SequencePlayerIPC *>(ipc);
+
+			auto it = std::find_if(playingSequences.begin(), playingSequences.end(),
+				[allocIpc](const std::unique_ptr<PlayingSequence> &seq) {
+					return seq->id == allocIpc->playerId;
+				});
+			playingSequences.erase(it);
+			
+			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, allocIpc->playerId);
+			assert(success);
+		} break;
 
 		case BaseIPC::CommandType::SetVar:
 		{
@@ -102,6 +120,7 @@ namespace NitroComposer {
 		{
 			PlayTrackIPC *playTrackIpc = static_cast<PlayTrackIPC *>(ipc);
 			PlayingSequence *sequence = GetPlayingSequence(playTrackIpc->playerId);
+			sequence->Reset();
 			sequence->allowedChannels = playTrackIpc->channelMask;
 			sequence->sequenceVolume = playTrackIpc->sequenceVolume;
 			sequence->priority = playTrackIpc->sequencePriority;

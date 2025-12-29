@@ -9,9 +9,8 @@
 
 namespace NitroComposer {
 
-	SequencePlayer::Track::Track(PlayingSequence *sequence) : isPlaying(false), muted(false) {
+	SequencePlayer::Track::Track(PlayingSequence *sequence) : sequence(sequence), isPlaying(false), muted(false) {
 		assert(sequence);
-		this->sequence = sequence;
 
 		Reset();
 	}
