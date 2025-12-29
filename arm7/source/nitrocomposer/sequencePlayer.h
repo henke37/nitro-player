@@ -81,7 +81,7 @@ namespace NitroComposer {
 			SequencePlayer *player;
 			Track *track;
 
-			int amplitude;
+			int envelopeLevel;
 
 			unsigned int length;
 			std::uint8_t note;
@@ -340,7 +340,7 @@ namespace NitroComposer {
 
 	const int AMPL_K = 723;
 	const int AMPL_MIN = AMPL_K;
-	const int AMPLITUDE_THRESHOLD = -(AMPL_MIN << 7);
+	const int ENVELOPE_KILL_THRESHOLD = -(AMPL_MIN << 7);
 
 	extern SequencePlayer sequencePlayer;
 

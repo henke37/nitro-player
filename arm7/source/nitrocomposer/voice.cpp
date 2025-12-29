@@ -29,7 +29,7 @@ namespace NitroComposer {
 		this->length = length;
 
 		this->state = VoiceState::Attacking;
-		this->amplitude = AMPLITUDE_THRESHOLD;
+		this->envelopeLevel = ENVELOPE_KILL_THRESHOLD;
 
 		this->modCounter = 0;
 		this->modDelayCounter = 0;
@@ -79,17 +79,17 @@ namespace NitroComposer {
 		switch(state) {
 		case SequencePlayer::VoiceState::Attacking:
 		{
-			this->amplitude = -((-this->amplitude * static_cast<int>(this->GetAttack())) >> 8);
+			this->envelopeLevel = -((-this->envelopeLevel * static_cast<int>(this->GetAttack())) >> 8);
 			
-			if(this->amplitude == 0) this->state = SequencePlayer::VoiceState::Decaying;
+			if(this->envelopeLevel == 0) this->state = SequencePlayer::VoiceState::Decaying;
 			return;
 		}
 		case SequencePlayer::VoiceState::Decaying:
 		{
 			int sustLvl = Cnv_Sust(this->GetSustain()) << 7;
-			this->amplitude -= this->GetDecay();
-			if(this->amplitude <= sustLvl) {
-				this->amplitude = sustLvl;
+			this->envelopeLevel -= this->GetDecay();
+			if(this->envelopeLevel <= sustLvl) {
+				this->envelopeLevel = sustLvl;
 				this->state = SequencePlayer::VoiceState::Sustaining;
 			}
 			return;
@@ -99,8 +99,8 @@ namespace NitroComposer {
 			return;
 		case SequencePlayer::VoiceState::Releasing:
 		{
-			this->amplitude -= this->GetRelease();
-			if(this->amplitude <= AMPLITUDE_THRESHOLD) {
+			this->envelopeLevel -= this->GetRelease();
+			if(this->envelopeLevel <= ENVELOPE_KILL_THRESHOLD) {
 				this->Kill();
 			}
 			return;
@@ -261,7 +261,7 @@ namespace NitroComposer {
 			volume += GetModulationValue() >> 8;
 		}
 
-		volume += this->amplitude >> 7;
+		volume += this->envelopeLevel >> 7;
 		volume += Cnv_Sust(this->velocity);
 
 		if(volume < -AMPL_K)
