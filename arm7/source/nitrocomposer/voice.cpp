@@ -256,8 +256,6 @@ namespace NitroComposer {
 		volume += track->sequence->sequenceVolume;
 		volume += Cnv_Sust(track->volume);
 		volume += Cnv_Sust(track->expression);
-		if(volume < -AMPL_K)
-			volume = -AMPL_K;
 
 		if(IsModulationActive(ModulationMode::Tremolo)) {
 			volume += GetModulationValue() >> 8;
@@ -265,6 +263,9 @@ namespace NitroComposer {
 
 		volume += this->amplitude >> 7;
 		volume += Cnv_Sust(this->velocity);
+
+		if(volume < -AMPL_K)
+			volume = -AMPL_K;
 		volume += AMPL_K;
 
 		return std::clamp(volume, 0, AMPL_K);
