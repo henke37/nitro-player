@@ -30,6 +30,10 @@ private:
 	static std::vector<SDatEntry> sdatEntries;
 
 	size_t selectedEntry = 0;
+	void selectNextSdat();
+	void selectPrevSdat();
+	void selectPrevGame();
+	void selectNextGame();
 	void redrawUI();
 };
 

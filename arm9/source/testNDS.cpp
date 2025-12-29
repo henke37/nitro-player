@@ -25,24 +25,57 @@ void TestNDS::Unload() {
 
 void TestNDS::Update() {
 	if(buttonMan.claimButton(KEY_UP)) {
-		if(selectedEntry >= sdatEntries.size() - 1) {
-			selectedEntry = 0;
-		} else {
-			selectedEntry++;
-		}
+		selectNextSdat();
 		redrawUI();
 	} else if(buttonMan.claimButton(KEY_DOWN)) {
-		if(selectedEntry == 0) {
-			selectedEntry = sdatEntries.size() - 1;
-		} else {
-			selectedEntry--;
-		}
+		selectPrevSdat();
+		redrawUI();
+	} else if(buttonMan.claimButton(KEY_LEFT)) {
+		selectPrevGame();
+		redrawUI();
+	} else if(buttonMan.claimButton(KEY_RIGHT)) {
+		selectNextGame();
 		redrawUI();
 	}
 
 	if(buttonMan.claimButton(KEY_A)) {
 		setNextGameMode(std::make_unique<TestMode>(sdatEntries[selectedEntry]));
 	}
+}
+
+void TestNDS::selectPrevSdat() {
+	if(selectedEntry == 0) {
+		selectedEntry = sdatEntries.size() - 1;
+	} else {
+		selectedEntry--;
+	}
+}
+
+void TestNDS::selectNextSdat() {
+	if(selectedEntry >= sdatEntries.size() - 1) {
+		selectedEntry = 0;
+	} else {
+		selectedEntry++;
+	}
+}
+
+void TestNDS::selectPrevGame() {
+	std::string currentGameCode = sdatEntries[selectedEntry].gameCode;
+	size_t originalEntry = selectedEntry;
+
+	do {
+		selectPrevSdat();
+	} while(sdatEntries[selectedEntry].gameCode == currentGameCode && selectedEntry != originalEntry);
+}
+
+void TestNDS::selectNextGame() {
+
+	std::string currentGameCode = sdatEntries[selectedEntry].gameCode;
+	size_t originalEntry = selectedEntry;
+
+	do {
+		selectNextSdat();
+	} while(sdatEntries[selectedEntry].gameCode == currentGameCode && selectedEntry != originalEntry);
 }
 
 void TestNDS::Load() {
@@ -106,7 +139,7 @@ void TestNDS::scanNDSFile(const std::string &ndsPath) {
 	for(auto itr = ndsFile->getFileSystemIterator(); !itr.atEnd(); ++itr) {
 		if(!itr->name.ends_with(".sdat")) continue;
 
-		sdatEntries.push_back({ ndsPath, itr.getFullPath(), enTitle });
+		sdatEntries.push_back({ ndsPath, itr.getFullPath(), ndsFile->getGameCode(), enTitle });
 
 		//auto sdatStream = ndsFile->OpenFile(itr->fileId);
 		//scanSDatFile(std::move(sdatStream));
