@@ -120,8 +120,6 @@ std::uint16_t NDSFile::FileSystem::ResolvePath(const std::string &path) const {
 
 		std::string folder = path.substr(partStartPos, curSlashPos - partStartPos);
 
-		printf("Path \"%s\"\n",folder.c_str());
-
 		auto entry = currDir->findEntry(folder);
 		if(!entry) return Directory::DirEntry::invalidFileId;
 		assert(entry->fileId >= Directory::DirEntry::folderThreshold);
@@ -250,10 +248,11 @@ std::string NDSFile::FileSystem::Iterator::getFullPath() const {
 	auto curDir = dir;
 
 	while(!curDir->isRoot()) {
-		auto entryInParent = entryInParentDir();
-		sassert(entryInParent, "Failed to get entry in parent dir!");
+		auto parentDir = fileSystem->getDir(curDir->parentId);
+		auto entryInParent = entryInParentDir(curDir);
+
 		path = entryInParent->name + "/" + path;
-		curDir = fileSystem->getDir(curDir->parentId);
+		curDir = parentDir;
 	}
 
 	return path;
@@ -300,7 +299,7 @@ void NDSFile::FileSystem::Iterator::goUp() {
 	sassert(0, "Failed to find dirEntry in parent!");
 }
 
-const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Iterator::entryInParentDir() const {
+const NDSFile::FileSystem::Directory::DirEntry *NDSFile::FileSystem::Iterator::entryInParentDir(const Directory *dir) const {
 	assert(fileSystem);
 	assert(dir);
 	sassert(!dir->isRoot(), "Root directory has no parent!");

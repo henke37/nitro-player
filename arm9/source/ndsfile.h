@@ -113,7 +113,7 @@ public:
 			std::vector<Directory::DirEntry>::const_iterator dirItr;
 
 
-			const Directory::DirEntry *entryInParentDir() const;
+			const Directory::DirEntry *entryInParentDir(const Directory *dir) const;
 			void goUp();
 
 			friend class ::NDSFile::FileSystem;
