@@ -95,7 +95,7 @@ void TestMode::prevSequence() {
 		} else {
 			--sequenceId;
 		}
-	} while(!sdat->GetSequenceInfo(sequenceId));
+	} while(!sdat->IsValidSequence(sequenceId));
 }
 
 void TestMode::nextSequence() {
@@ -105,5 +105,5 @@ void TestMode::nextSequence() {
 		} else {
 			++sequenceId;
 		}
-	} while(!sdat->GetSequenceInfo(sequenceId));
+	} while(!sdat->IsValidSequence(sequenceId));
 }

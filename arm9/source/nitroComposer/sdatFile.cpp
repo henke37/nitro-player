@@ -59,6 +59,45 @@ namespace NitroComposer {
 		return std::make_unique<SWAR>(this->OpenFile(info->fatId));
 	}
 
+
+	bool SDatFile::IsValidSequence(unsigned int sequenceId) const {
+		auto &info = sequenceInfos[sequenceId];
+		if(!info) return false;
+		if(!IsValidFileId(info->fatId)) return false;
+		if(!IsValidPlayer(info->player)) return false;
+		return IsValidBank(info->bankId);
+	}
+
+	bool SDatFile::IsValidBank(unsigned int bankId) const {
+		auto &info = bankInfos[bankId];
+		if(!info) return false;
+		if(!IsValidFileId(info->fatId)) return false;
+		for(unsigned int i = 0; i < 4; ++i) {
+			std::uint16_t waveArchiveId = info->swars[i];
+			if(waveArchiveId == 0xFFFF) continue;
+			if(!IsValidWaveArchive(info->swars[i])) return false;
+		}
+		return true;
+	}
+
+	bool SDatFile::IsValidWaveArchive(unsigned int archiveId) const {
+		auto &info = waveArchInfos[archiveId];
+		if(!info) return false;
+		if(!IsValidFileId(info->fatId)) return false;
+		return true;
+	}
+
+	bool SDatFile::IsValidPlayer(unsigned int playerId) const {
+		return playerId < playerInfos.size();
+	}
+
+	bool SDatFile::IsValidStream(unsigned int streamId) const {
+		auto &info = streamInfos[streamId];
+		if(!info) return false;
+		if(!IsValidFileId(info->fatId)) return false;
+		return true;
+	}
+
 	const std::unique_ptr<SequenceInfoRecord> &SDatFile::GetSequenceInfo(unsigned int sequenceId) const {
 		return sequenceInfos[sequenceId];
 	}
