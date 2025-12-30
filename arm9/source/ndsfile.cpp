@@ -42,6 +42,9 @@ void NDSFile::Parse() {
 	gameCode = reader.readString(4);
 	makerCode = reader.readLEShort();
 	unitCode = reader.readByte();
+
+	if(unitCode > 3) return;
+
 	reader.skip(1 + 1 + 7 + 1);
 	region = reader.readByte();
 	version = reader.readByte();
@@ -66,12 +69,18 @@ void NDSFile::Parse() {
 
 	bannerOffset = reader.readLELong();
 
-	std::unique_ptr<BinaryReadStream> FNTData = std::make_unique<SubStream>
-		(stream.get(), FNTOffset, FNTSize, false);
-	std::unique_ptr<BinaryReadStream> FATData = std::make_unique<SubStream>
-		(stream.get(), FATOffset, FATSize, false);
+	if(arm9.EntryPoint == 0 || arm7.EntryPoint == 0) {
+		return;
+	}
 
-	fileSystem = std::make_unique<FileSystem>(std::move(FNTData), std::move(FATData), stream.get());
+	if(FNTOffset && FATOffset) {
+		std::unique_ptr<BinaryReadStream> FNTData = std::make_unique<SubStream>
+			(stream.get(), FNTOffset, FNTSize, false);
+		std::unique_ptr<BinaryReadStream> FATData = std::make_unique<SubStream>
+			(stream.get(), FATOffset, FATSize, false);
+
+		fileSystem = std::make_unique<FileSystem>(std::move(FNTData), std::move(FATData), stream.get());
+	}
 }
 
 NDSFile::FileSystem::FileSystem(std::unique_ptr<BinaryReadStream> &&FNTData,

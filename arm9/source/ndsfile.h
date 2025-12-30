@@ -122,6 +122,7 @@ public:
 	};
 
 	FileSystem::Iterator getFileSystemIterator() const;
+	bool HasFileSystem() const { return fileSystem != nullptr; }
 
 	class Banner {
 	public:
@@ -155,6 +156,7 @@ public:
 	};
 
 	Banner GetBanner() const;
+	bool HasBanner() const { return bannerOffset != 0; }
 
 private:	
 	std::unique_ptr<BinaryReadStream> stream;

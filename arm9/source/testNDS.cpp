@@ -126,6 +126,9 @@ void TestNDS::scanFolder(const std::string &path) {
 void TestNDS::scanNDSFile(const std::string &ndsPath) {
 	ndsFile = std::make_unique<NDSFile>(ndsPath);
 
+	if(!ndsFile->HasFileSystem()) return;
+	if(!ndsFile->HasBanner()) return;
+
 	auto banner = ndsFile->GetBanner();
 
 	auto enTitle = banner.titles[(int)NDSFile::Banner::TitleLanguage::English];
