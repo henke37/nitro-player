@@ -109,12 +109,16 @@ namespace NitroComposer {
 		case 17: {
 			std::unique_ptr<SBNK::SplitInstrument> split = std::make_unique<SplitInstrument>();
 			split->type = InstrumentType::Split;
-			unsigned int usedRegions = 0;
 			for(unsigned int region = 0; region < SplitInstrument::regionCount; ++region) {
 				std::uint8_t regionVal = reader.readByte();
 				split->regions[region] = regionVal;
-				if(regionVal != 0 && region != 0) {
-					++usedRegions;
+			}
+
+			unsigned int usedRegions = 8;
+			for(unsigned int region = 0; region < SplitInstrument::regionCount; ++region) {
+				if(split->regions[region] >= 127) {
+					usedRegions = region+1;
+					break;
 				}
 			}
 
