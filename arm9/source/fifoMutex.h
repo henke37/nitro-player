@@ -6,6 +6,7 @@
 class FifoMutex {
 public:
 	FifoMutex();
+	FifoMutex(const FifoMutex &) = delete;
 	FifoMutex(u32 channel);
 	~FifoMutex();
 

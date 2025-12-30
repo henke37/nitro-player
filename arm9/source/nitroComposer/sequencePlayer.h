@@ -28,6 +28,7 @@ namespace NitroComposer {
 	class SequencePlayer {
 	public:
 		SequencePlayer();
+		SequencePlayer(const SequencePlayer &) = delete;
 		~SequencePlayer();
 
 		void SetSdat(const SDatFile *sdat);
@@ -83,6 +84,7 @@ namespace NitroComposer {
 	class MusicEngine {
 	public:
 		MusicEngine();
+		MusicEngine(const MusicEngine &) = delete;
 		~MusicEngine();
 		void SetMainVolume(std::uint8_t volume);
 	private:

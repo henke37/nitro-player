@@ -70,6 +70,7 @@ namespace NitroComposer {
 	public:
 		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannel);
 		StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight);
+		StreamPlayer(const StreamPlayer &) = delete;
 		~StreamPlayer();
 
 		void SetSdat(const SDatFile *sdat);
