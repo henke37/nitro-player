@@ -143,6 +143,14 @@ namespace NitroComposer {
 	}
 
 	const InstrumentBank::LeafInstrument *SequencePlayer::Track::ResolveInstrumentForNote(std::uint8_t note) const {
+		if(instrumentId >= sequence->bank->instruments.size()) {
+#ifdef NITROCOMPOSER_LOG_TRACKS
+			consolePrintf("OOB instrument ID %d played!\n", (int)instrumentId);
+			consoleFlush();
+#endif
+			return nullptr;
+		}
+
 		auto currentInstrument = sequence->bank->instruments.at(instrumentId).get();
 
 		if(!currentInstrument) {
