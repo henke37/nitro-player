@@ -8,6 +8,7 @@
 #define NITROCOMPOSER_LOG_EFFECTS
 //#define NITROCOMPOSER_LOG_COMMON_EFFECTS
 #define NITROCOMPOSER_LOG_FLOW
+#define NITROCOMPOSER_LOG_VAR_WRITES
 
 namespace NitroComposer {
 
@@ -94,6 +95,11 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			sequence->SetVar(varId, val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d = %d\n", varId, val);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB1:
@@ -102,6 +108,11 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			sequence->SetVar(varId, sequence->GetVar(varId) + val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d += %d\n", varId, val);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB2:
@@ -110,6 +121,11 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			sequence->SetVar(varId, sequence->GetVar(varId) - val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d -= %d\n", varId, val);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB3:
@@ -118,6 +134,11 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			sequence->SetVar(varId, sequence->GetVar(varId) * val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d *= %d\n", varId, val);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB4:
@@ -125,6 +146,10 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d /= %d\n", varId, val);
+			consoleFlush();
+#endif
 			if(!val) break;
 			sequence->SetVar(varId, sequence->GetVar(varId) / val);
 		} break;
@@ -135,8 +160,17 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d >>= %d\n", varId, val);
+				consoleFlush();
+#endif
 				sequence->SetVar(varId, sequence->GetVar(varId) >> -val);
 			} else {
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d <<= %d\n", varId, val);
+				consoleFlush();
+#endif
 				sequence->SetVar(varId, sequence->GetVar(varId) << val);
 			}
 		} break;
@@ -147,8 +181,17 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d = -rand(%d)\n", varId, -val);
+				consoleFlush();
+#endif
 				sequence->SetVar(varId, -(std::rand() % (-val + 1)));
 			} else {
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d = rand(%d)\n", varId, val);
+				consoleFlush();
+#endif
 				sequence->SetVar(varId, std::rand() % (val + 1));
 			}
 		} break;
@@ -791,6 +834,11 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d = Var%d\n", dstVarId, srcVarId);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB1:
@@ -801,6 +849,11 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) + val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d += Var%d\n", dstVarId, srcVarId);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB2:
@@ -811,6 +864,11 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) - val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d -= Var%d\n", dstVarId, srcVarId);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB3:
@@ -821,6 +879,11 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) * val);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d *= Var%d\n", dstVarId, srcVarId);
+			consoleFlush();
+#endif
 		} break;
 
 		case 0xB4:
@@ -830,6 +893,11 @@ namespace NitroComposer {
 			assert(dstVarId < numVariables);
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+			consolePrintf("Var%d /= Var%d\n", dstVarId, srcVarId);
+			consoleFlush();
+#endif
 			if(!val) break;
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) / val);
 		} break;
@@ -842,8 +910,18 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			if(val < 0) {
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d >>= Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+#endif
 				sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) >> -val);
 			} else {
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d <<= Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+#endif
 				sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) << val);
 			}
 		} break;
@@ -856,8 +934,18 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			if(val < 0) {
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d = -rand(-Var%d)\n", dstVarId, srcVarId);
+				consoleFlush();
+#endif
 				sequence->SetVar(dstVarId, -(std::rand() % (-val + 1)));
 			} else {
+
+#ifdef NITROCOMPOSER_LOG_VAR_WRITES
+				consolePrintf("Var%d = rand(Var%d)\n", dstVarId, srcVarId);
+				consoleFlush();
+#endif
 				sequence->SetVar(dstVarId, std::rand() % (val + 1));
 			}
 		} break;

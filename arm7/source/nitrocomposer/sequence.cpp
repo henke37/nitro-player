@@ -4,8 +4,6 @@
 
 #include <cassert>
 
-#define NITROCOMPOSER_LOG_VAR_WRITES
-
 namespace NitroComposer {
 	SequencePlayer::PlayingSequence::PlayingSequence(std::int32_t id) : id(id), sequenceData(nullptr), sequenceDataLength(0), bank(nullptr), waveArchs{ nullptr } {
 		tracks[0] = std::make_unique<Track>(this);
@@ -78,20 +76,11 @@ namespace NitroComposer {
 	void SequencePlayer::PlayingSequence::SetVar(std::uint8_t var, std::int16_t val) {
 		if(var < localVariableCount) {
 			localVariables[var] = val;
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var #%d set to %d (local)\n", var, val);
-#endif
 		} else {
 			var -= localVariableCount;
 			assert(var < globalVariableCount);
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var #%d set to %d (global)\n", var + localVariableCount, val);
-#endif
 			sequencePlayer.globalVariables[var] = val;
 		}
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-		consoleFlush();
-#endif
 	}
 
 	std::int16_t SequencePlayer::PlayingSequence::GetVar(std::uint8_t var) const {
