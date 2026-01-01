@@ -29,11 +29,11 @@ namespace NitroComposer {
 		std::unique_ptr<SSEQ> OpenSequence(const std::unique_ptr<SequenceInfoRecord> &) const;
 		std::unique_ptr<SWAR> OpenWaveArchive(const std::unique_ptr<WaveArchiveInfoRecord> &) const;
 
-		bool IsValidSequence(unsigned int sequenceId) const;
-		bool IsValidBank(unsigned int bankId) const;
-		bool IsValidWaveArchive(unsigned int archiveId) const;
-		bool IsValidPlayer(unsigned int playerId) const;
-		bool IsValidStream(unsigned int streamId) const;
+		bool IsValidSequence(unsigned int sequenceId) const noexcept;
+		bool IsValidBank(unsigned int bankId) const noexcept;
+		bool IsValidWaveArchive(unsigned int archiveId) const noexcept;
+		bool IsValidPlayer(unsigned int playerId) const noexcept;
+		bool IsValidStream(unsigned int streamId) const noexcept;
 
 		const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(unsigned int sequenceId) const;
 		const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(const std::string &sequenceName) const;
@@ -63,7 +63,7 @@ namespace NitroComposer {
 		void Load();
 
 		std::unique_ptr<BinaryReadStream> OpenFile(unsigned int fileId) const;
-		bool IsValidFileId(unsigned int fileId) const {
+		bool IsValidFileId(unsigned int fileId) const noexcept {
 			return fileId < fat.size();
 		}
 
