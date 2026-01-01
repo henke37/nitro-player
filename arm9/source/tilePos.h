@@ -12,21 +12,21 @@ struct TilePos {
 	TilePos(const TilePos &) = default;
 	constexpr TilePos(std::int8_t x, std::int8_t y) : x(x), y(y) {}
 	
-	TilePos operator+(const TilePos &) const;
-	TilePos operator-(const TilePos &) const;
+	TilePos operator+(const TilePos &) const noexcept;
+	TilePos operator-(const TilePos &) const noexcept;
 	
-	TilePos operator-() const;
-	TilePos operator*(int8_t) const;
-	TilePos operator/(int8_t) const;
+	TilePos operator-() const noexcept;
+	TilePos operator*(int8_t) const noexcept;
+	TilePos operator/(int8_t) const noexcept;
 	
 	TilePos &operator=(const TilePos &) = default;
-	TilePos &operator+=(const TilePos &);
-	TilePos &operator-=(const TilePos &);
-	TilePos &operator*=(std::int8_t);
-	TilePos &operator/=(std::int8_t);
+	TilePos &operator+=(const TilePos &) noexcept;
+	TilePos &operator-=(const TilePos &) noexcept;
+	TilePos &operator*=(std::int8_t) noexcept;
+	TilePos &operator/=(std::int8_t) noexcept;
 	
-	bool operator==(const TilePos &) const;
-	bool operator!=(const TilePos &) const;
+	bool operator==(const TilePos &) const noexcept;
+	bool operator!=(const TilePos &) const noexcept;
 };
 
 #endif
