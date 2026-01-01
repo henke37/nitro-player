@@ -144,7 +144,6 @@ namespace NitroComposer {
 
 		private:
 			PlayingSequence *sequence;
-			std::uint32_t instrumentId;
 			Voice *tieVoice;
 
 			const std::uint8_t *nextCommand;
@@ -175,6 +174,8 @@ namespace NitroComposer {
 			std::int8_t pitchBend;
 			std::uint8_t pitchBendRange;
 
+			std::int8_t transpose;
+
 			std::uint8_t modDepth;
 			std::uint8_t modSpeed;
 			std::uint16_t modDelay;
@@ -185,7 +186,7 @@ namespace NitroComposer {
 			std::uint8_t lastPlayedNote;
 			std::uint8_t portaTime;
 
-			std::int8_t transpose;
+			std::uint16_t instrumentId;
 
 			enum class StackEntryType : std::uint8_t {
 				Call,
@@ -282,7 +283,7 @@ namespace NitroComposer {
 			void ResetLocalVars();
 			void ResetTracks();
 
-			std::int32_t id;
+			const std::int32_t id;
 
 			std::uint16_t tempo;
 			std::uint16_t tempoTimer;
