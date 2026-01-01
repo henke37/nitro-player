@@ -18,9 +18,9 @@ namespace NitroComposer {
 
 		virtual std::unique_ptr<StreamBlock> GetNextBlock() = 0;
 
-		virtual WaveEncoding GetEncoding() const = 0;
-		virtual std::uint8_t GetChannels() const = 0;
-		virtual std::uint16_t GetSampleRate() const = 0;
+		virtual WaveEncoding GetEncoding() const noexcept = 0;
+		virtual std::uint8_t GetChannels() const noexcept = 0;
+		virtual std::uint16_t GetSampleRate() const noexcept = 0;
 	};
 
 	class SingleStreamBlockSource : public IBlockSource {
@@ -30,13 +30,13 @@ namespace NitroComposer {
 		SingleStreamBlockSource(std::unique_ptr<STRM> &&stream);
 		~SingleStreamBlockSource();
 
-		std::uint32_t GetCurrentPos() const { return currentPos; }
+		std::uint32_t GetCurrentPos() const noexcept { return currentPos; }
 
 		std::unique_ptr<StreamBlock> GetNextBlock() override;
 
-		WaveEncoding GetEncoding() const override { return stream->GetEncoding(); }
-		std::uint8_t GetChannels() const override { return stream->GetChannels(); }
-		std::uint16_t GetSampleRate() const override { return stream->GetSampleRate(); }
+		WaveEncoding GetEncoding() const noexcept override { return stream->GetEncoding(); }
+		std::uint8_t GetChannels() const noexcept override { return stream->GetChannels(); }
+		std::uint16_t GetSampleRate() const noexcept override { return stream->GetSampleRate(); }
 	private:
 		std::unique_ptr<STRM> stream;
 		std::uint32_t currentPos = 0;
@@ -57,9 +57,9 @@ namespace NitroComposer {
 
 		std::unique_ptr<StreamBlock> GetNextBlock() override;
 
-		WaveEncoding GetEncoding() const override;
-		std::uint8_t GetChannels() const override;
-		std::uint16_t GetSampleRate() const override;
+		WaveEncoding GetEncoding() const noexcept override;
+		std::uint8_t GetChannels() const noexcept override;
+		std::uint16_t GetSampleRate() const noexcept override;
 
 		void AddStream(std::unique_ptr<STRM> &&stream);
 	private:

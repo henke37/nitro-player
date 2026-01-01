@@ -14,10 +14,10 @@ namespace NitroComposer {
 
 		struct WaveRecord : Wave {
 			std::uint32_t dataOffset;
-			size_t GetDataSize() const;
+			size_t GetDataSize() const noexcept;
 		};
 
-		size_t GetWaveCount() const { return waves.size(); }
+		size_t GetWaveCount() const noexcept { return waves.size(); }
 
 		const WaveRecord &GetWaveMetaData(unsigned int waveIndex) const;
 		std::unique_ptr<BinaryReadStream> GetWaveData(const WaveRecord &waveInfo) const;

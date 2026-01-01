@@ -23,17 +23,17 @@ namespace NitroComposer {
 
 		std::unique_ptr<StreamBlock> ReadBlock(std::uint32_t blockIndex);
 
-		WaveEncoding GetEncoding() const { return encoding; }
-		bool GetLoops() const { return loops; }
-		std::uint8_t GetChannels() const { return channels; }
-		std::uint16_t GetSampleRate() const { return sampleRate; }
-		std::uint32_t GetLoopOffset() const { return loopOffset; }
-		std::uint32_t GetSamples() const { return samples; }
-		std::uint32_t GetBlockCount() const { return blockCount; }
-		std::uint32_t GetBlockLen() const { return blockLen; }
-		std::uint32_t GetBlockSamples() const { return blockSamples; }
-		std::uint32_t GetLastBlockLen() const { return lastBlockLen; }
-		std::uint32_t GetLastBlockSamples() const { return lastBlockSamples; }
+		WaveEncoding GetEncoding() const noexcept { return encoding; }
+		bool GetLoops() const noexcept { return loops; }
+		std::uint8_t GetChannels() const noexcept { return channels; }
+		std::uint16_t GetSampleRate() const noexcept { return sampleRate; }
+		std::uint32_t GetLoopOffset() const noexcept { return loopOffset; }
+		std::uint32_t GetSamples() const noexcept { return samples; }
+		std::uint32_t GetBlockCount() const noexcept { return blockCount; }
+		std::uint32_t GetBlockLen() const noexcept { return blockLen; }
+		std::uint32_t GetBlockSamples() const noexcept { return blockSamples; }
+		std::uint32_t GetLastBlockLen() const noexcept { return lastBlockLen; }
+		std::uint32_t GetLastBlockSamples() const noexcept { return lastBlockSamples; }
 
 	private:
 		void Parse();
