@@ -25,15 +25,15 @@ template <class T> struct BitFieldPoke {
 		return *this;
 	}
 	
-	bool operator ==(const BitFieldPoke &p2) const {
+	bool operator ==(const BitFieldPoke &p2) const noexcept {
 		return value==p2.value && mask==p2.value;
 	}
 	
-	bool operator !=(const BitFieldPoke &p2) const {
+	bool operator !=(const BitFieldPoke &p2) const noexcept {
 		return value!=p2.value || mask!=p2.value;
 	}
 	
-	bool isCompatible(const BitFieldPoke &p2) const {
+	bool isCompatible(const BitFieldPoke &p2) const noexcept {
 		return (mask & p2.mask)==0;
 	}
 };

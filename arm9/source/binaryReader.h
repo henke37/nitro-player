@@ -37,11 +37,11 @@ public:
 	std::u16string readZeroTermLEUTF16String();
 	std::u16string readLEUTF16Line();
 	
-	bool isAtEnd() const;
+	bool isAtEnd() const noexcept;
 	
 	void skip(size_t len);
 	void setPos(size_t newPos);
-	size_t getPos() const;
+	size_t getPos() const noexcept;
 	
 private:
 	BinaryReadStream *stream;

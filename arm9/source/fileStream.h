@@ -26,8 +26,8 @@ public:
 	static std::unique_ptr<FileReadStream> tryOpen(const std::string &fileName);
 	
 	void setPos(size_t newPos) override { BaseFileStream::setPos(newPos); }
-	size_t getPos() const override { return BaseFileStream::getPos(); }
-	size_t getLength() const override { return BaseFileStream::getLength(); }
+	size_t getPos() const noexcept override { return BaseFileStream::getPos(); }
+	size_t getLength() const noexcept override { return BaseFileStream::getLength(); }
 
 	size_t read(uint8_t *buf, size_t size) override;
 	
@@ -43,8 +43,8 @@ public:
 	static std::unique_ptr<FileWriteStream> tryOpen(const std::string &fileName);
 
 	void setPos(size_t newPos) override { BaseFileStream::setPos(newPos); }
-	size_t getPos() const override { return BaseFileStream::getPos(); }
-	size_t getLength() const override { return BaseFileStream::getLength(); }
+	size_t getPos() const noexcept override { return BaseFileStream::getPos(); }
+	size_t getLength() const noexcept override { return BaseFileStream::getLength(); }
 
 	size_t write(const uint8_t *buff, size_t size) override;
 

@@ -16,9 +16,9 @@ public:
 	SubStream(const SubStream *old, size_t offset, size_t limit, bool ownsStream);
 	
 	virtual void setPos(size_t newPos);
-	virtual size_t getPos() const;
+	virtual size_t getPos() const noexcept;
 	size_t read(uint8_t *buf, size_t size);
-	size_t getLength() const;
+	size_t getLength() const noexcept;
 
 private:
 	BinaryReadStream * const realStream;

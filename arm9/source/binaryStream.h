@@ -13,9 +13,9 @@ public:
 	BinaryReadStream &operator=(const BinaryReadStream &)=delete;
 	
 	virtual void setPos(size_t newPos)=0;
-	virtual size_t getPos() const =0;
+	virtual size_t getPos() const noexcept =0;
 	virtual size_t read(uint8_t *buff, size_t size)=0;
-	virtual size_t getLength() const=0;
+	virtual size_t getLength() const noexcept =0;
 };
 
 class BinaryWriteStream {
@@ -27,15 +27,15 @@ public:
 	BinaryWriteStream &operator=(const BinaryWriteStream &)=delete;
 	
 	virtual void setPos(size_t newPos)=0;
-	virtual size_t getPos() const =0;
+	virtual size_t getPos() const noexcept =0;
 	virtual size_t write(const uint8_t *buff, size_t size)=0;
-	virtual size_t getLength() const=0;
+	virtual size_t getLength() const noexcept =0;
 };
 
 class ManualPosBinaryReadStream : public BinaryReadStream {
 public:
 	void setPos(size_t newPos) override;
-	size_t getPos() const override;
+	size_t getPos() const noexcept override;
 protected:
 	ManualPosBinaryReadStream();
 	size_t position;
@@ -44,7 +44,7 @@ protected:
 class ManualPosBinaryWriteStream : public BinaryWriteStream {
 public:
 	void setPos(size_t newPos) override;
-	size_t getPos() const override;
+	size_t getPos() const noexcept override;
 protected:
 	ManualPosBinaryWriteStream();
 	size_t position;

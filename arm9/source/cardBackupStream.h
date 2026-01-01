@@ -12,7 +12,7 @@ public:
 	~CardBackupReadStream();
 
 	size_t read(uint8_t *buff, size_t size) override;
-	size_t getLength() const override;
+	size_t getLength() const noexcept override;
 };
 
 class CardBackupWriteStream : public ManualPosBinaryWriteStream {
@@ -21,7 +21,7 @@ public:
 	~CardBackupWriteStream();
 
 	size_t write(const uint8_t *buff, size_t size) override;
-	size_t getLength() const override;
+	size_t getLength() const noexcept override;
 };
 
 #endif
