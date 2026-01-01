@@ -5,25 +5,25 @@
 
 class Point {
 public:
-	Point(std::int16_t x, std::int16_t y);
+	Point(std::int16_t x, std::int16_t y) noexcept;
 	~Point() = default;
 	Point(const Point&) = default;
 
-	Point operator-() const;
-	Point operator+(const Point&)const;
-	Point operator-(const Point&)const;
-	Point operator*(std::int16_t)const;
+	Point operator-() const noexcept;
+	Point operator+(const Point&) const noexcept;
+	Point operator-(const Point&) const noexcept;
+	Point operator*(std::int16_t) const noexcept;
 
-	Point& operator+=(const Point&);
-	Point& operator-=(const Point&);
-	Point& operator*=(std::int16_t);
+	Point& operator+=(const Point&) noexcept;
+	Point& operator-=(const Point&) noexcept;
+	Point& operator*=(std::int16_t) noexcept;
 
 	std::int16_t x, y;
 };
 
-Point abs(const Point&);
-Point turnCW(const Point&);
-Point turnCCW(const Point&);
-Point turn180(const Point&);
+Point abs(const Point&) noexcept;
+Point turnCW(const Point&) noexcept;
+Point turnCCW(const Point&) noexcept;
+Point turn180(const Point&) noexcept;
 
 #endif
