@@ -36,40 +36,40 @@ class Poke {
 	};
 	hwPtr addr;
 	union {
-		uint8_t value8;
-		uint16_t value16;
-		uint32_t value32;
-		std::unique_ptr<const uint8_t[]> valuePtr8;
-		std::unique_ptr<const uint16_t[]> valuePtr16;
-		std::unique_ptr<const uint32_t[]> valuePtr32;
-		const uint8_t *rawPtr8;
-		const uint16_t *rawPtr16;
-		const uint32_t *rawPtr32;
-		BitFieldPoke<uint8_t> bitField8;
-		BitFieldPoke<uint16_t> bitField16;
-		BitFieldPoke<uint32_t> bitField32;
+		std::uint8_t value8;
+		std::uint16_t value16;
+		std::uint32_t value32;
+		std::unique_ptr<const std::uint8_t[]> valuePtr8;
+		std::unique_ptr<const std::uint16_t[]> valuePtr16;
+		std::unique_ptr<const std::uint32_t[]> valuePtr32;
+		const std::uint8_t *rawPtr8;
+		const std::uint16_t *rawPtr16;
+		const std::uint32_t *rawPtr32;
+		BitFieldPoke<std::uint8_t> bitField8;
+		BitFieldPoke<std::uint16_t> bitField16;
+		BitFieldPoke<std::uint32_t> bitField32;
 	};
 	
 public:
 	Poke();
 	Poke(Poke &&);
-	Poke(uint8_t val, volatile uint8_t *addr);
-	Poke(uint16_t val, volatile uint16_t *addr);
-	Poke(uint32_t val, volatile uint32_t *addr);
-	Poke(std::unique_ptr<const uint8_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
-	Poke(std::unique_ptr<const uint16_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
-	Poke(std::unique_ptr<const uint32_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
-	Poke(const uint8_t* srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
-	Poke(const uint16_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
-	Poke(const uint32_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
-	Poke(uint8_t val, uint8_t mask, volatile uint8_t *addr);
-	Poke(uint16_t val, uint16_t mask, volatile uint16_t *addr);
-	Poke(uint32_t val, uint32_t mask, volatile uint32_t *addr);
+	Poke(std::uint8_t val, volatile std::uint8_t *addr);
+	Poke(std::uint16_t val, volatile std::uint16_t *addr);
+	Poke(std::uint32_t val, volatile std::uint32_t *addr);
+	Poke(std::unique_ptr<const std::uint8_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
+	Poke(std::unique_ptr<const std::uint16_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
+	Poke(std::unique_ptr<const std::uint32_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
+	Poke(const std::uint8_t* srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
+	Poke(const std::uint16_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
+	Poke(const std::uint32_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
+	Poke(std::uint8_t val, std::uint8_t mask, volatile std::uint8_t *addr);
+	Poke(std::uint16_t val, std::uint16_t mask, volatile std::uint16_t *addr);
+	Poke(std::uint32_t val, std::uint32_t mask, volatile std::uint32_t *addr);
 
 	void operator =(std::nullptr_t);
 	void operator =(Poke &&);
 	void operator ()();
-	operator bool() const;
+	operator bool() const noexcept;
 
 	void Clear();
 	
@@ -92,27 +92,27 @@ void swap(Poke &, Poke &);
 class BulkPoke {
 	hwPtr addr;
 
-	uint8_t firstScanline;
-	uint8_t lastPlusOneScanline;
+	std::uint8_t firstScanline;
+	std::uint8_t lastPlusOneScanline;
 
-	uint8_t size;
+	std::uint8_t size;
 
 	union {
-		std::unique_ptr<const uint8_t[]> valuePtr8;
-		std::unique_ptr<const uint16_t[]> valuePtr16;
-		std::unique_ptr<const uint32_t[]> valuePtr32;
+		std::unique_ptr<const std::uint8_t[]> valuePtr8;
+		std::unique_ptr<const std::uint16_t[]> valuePtr16;
+		std::unique_ptr<const std::uint32_t[]> valuePtr32;
 	};
 
 public:
 	BulkPoke();
-	BulkPoke(hwPtr addr, uint8_t firstScanline, uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint8_t[]> &&values);
-	BulkPoke(hwPtr addr, uint8_t firstScanline, uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint16_t[]> &&values);
-	BulkPoke(hwPtr addr, uint8_t firstScanline, uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint32_t[]> &&values);
+	BulkPoke(hwPtr addr, std::uint8_t firstScanline, std::uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint8_t[]> &&values);
+	BulkPoke(hwPtr addr, std::uint8_t firstScanline, std::uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint16_t[]> &&values);
+	BulkPoke(hwPtr addr, std::uint8_t firstScanline, std::uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint32_t[]> &&values);
 	~BulkPoke();
 
 	void Clear();
 
-	void Perform(uint8_t scanline) const;
+	void Perform(std::uint8_t scanline) const;
 
 	BulkPoke(BulkPoke &&);
 	BulkPoke &operator=(BulkPoke &&);

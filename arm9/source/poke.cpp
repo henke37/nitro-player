@@ -3,39 +3,39 @@
 #include <cassert>
 
 Poke::Poke() : size(0), type(PokeType::NOOP) {}
-Poke::Poke(uint8_t val, volatile uint8_t *addr_) : size(sizeof(uint8_t)), type(PokeType::INT), addr(addr_), value8(val) {
+Poke::Poke(std::uint8_t val, volatile std::uint8_t *addr_) : size(sizeof(std::uint8_t)), type(PokeType::INT), addr(addr_), value8(val) {
 }
-Poke::Poke(uint16_t val, volatile uint16_t *addr_) : size(sizeof(uint16_t)), type(PokeType::INT), addr(addr_), value16(val) {
+Poke::Poke(std::uint16_t val, volatile std::uint16_t *addr_) : size(sizeof(std::uint16_t)), type(PokeType::INT), addr(addr_), value16(val) {
 }
-Poke::Poke(uint32_t val, volatile uint32_t *addr_) : size(sizeof(uint32_t)), type(PokeType::INT), addr(addr_), value32(val) {
+Poke::Poke(std::uint32_t val, volatile std::uint32_t *addr_) : size(sizeof(std::uint32_t)), type(PokeType::INT), addr(addr_), value32(val) {
 }
-Poke::Poke(std::unique_ptr<const uint8_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_8), addr(addr_), valuePtr8(std::move(dataPtr)) {
+Poke::Poke(std::unique_ptr<const std::uint8_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_8), addr(addr_), valuePtr8(std::move(dataPtr)) {
 	checkBlobMode();
 }
-Poke::Poke(std::unique_ptr<const uint16_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_16), addr(addr_), valuePtr16(std::move(dataPtr)) {
+Poke::Poke(std::unique_ptr<const std::uint16_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_16), addr(addr_), valuePtr16(std::move(dataPtr)) {
 	checkBlobMode();
 }
-Poke::Poke(std::unique_ptr<const uint32_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_32), addr(addr_), valuePtr32(std::move(dataPtr)) {
-	checkBlobMode();
-}
-
-Poke::Poke(const uint8_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::RAWBLOB_8), addr(addr), rawPtr8(srcBuff) {
+Poke::Poke(std::unique_ptr<const std::uint32_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_32), addr(addr_), valuePtr32(std::move(dataPtr)) {
 	checkBlobMode();
 }
 
-Poke::Poke(const uint16_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::RAWBLOB_16), addr(addr), rawPtr16(srcBuff) {
+Poke::Poke(const std::uint8_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::RAWBLOB_8), addr(addr), rawPtr8(srcBuff) {
 	checkBlobMode();
 }
 
-Poke::Poke(const uint32_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::RAWBLOB_32), addr(addr), rawPtr32(srcBuff) {
+Poke::Poke(const std::uint16_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::RAWBLOB_16), addr(addr), rawPtr16(srcBuff) {
 	checkBlobMode();
 }
 
-Poke::Poke(uint8_t val, uint8_t mask, volatile uint8_t *addr_) : size(sizeof(uint8_t)), type(PokeType::BITFIELD), addr(addr_), bitField8(val, mask) {
+Poke::Poke(const std::uint32_t *srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::RAWBLOB_32), addr(addr), rawPtr32(srcBuff) {
+	checkBlobMode();
 }
-Poke::Poke(uint16_t val, uint16_t mask, volatile uint16_t *addr_) : size(sizeof(uint16_t)), type(PokeType::BITFIELD), addr(addr_), bitField16(val, mask) {
+
+Poke::Poke(std::uint8_t val, std::uint8_t mask, volatile std::uint8_t *addr_) : size(sizeof(std::uint8_t)), type(PokeType::BITFIELD), addr(addr_), bitField8(val, mask) {
 }
-Poke::Poke(uint32_t val, uint32_t mask, volatile uint32_t *addr_) : size(sizeof(uint32_t)), type(PokeType::BITFIELD), addr(addr_), bitField32(val,mask) {
+Poke::Poke(std::uint16_t val, std::uint16_t mask, volatile std::uint16_t *addr_) : size(sizeof(std::uint16_t)), type(PokeType::BITFIELD), addr(addr_), bitField16(val, mask) {
+}
+Poke::Poke(std::uint32_t val, std::uint32_t mask, volatile std::uint32_t *addr_) : size(sizeof(std::uint32_t)), type(PokeType::BITFIELD), addr(addr_), bitField32(val,mask) {
 }
 
 Poke::Poke(Poke &&p2) : size(p2.size), writeMode(p2.writeMode), type(p2.type), addr(p2.addr) {
@@ -120,13 +120,13 @@ void Poke::operator=(Poke &&p2) {
 			break;
 		case PokeType::INT:
 			switch (p2.size) {
-				case sizeof(uint8_t) :
+				case sizeof(std::uint8_t) :
 					value8 = p2.value8;
 					break;
-				case sizeof(uint16_t) :
+				case sizeof(std::uint16_t) :
 					value16 = p2.value16;
 					break;
-				case sizeof(uint32_t) :
+				case sizeof(std::uint32_t) :
 					value32 = p2.value32;
 					break;
 				default:
@@ -136,13 +136,13 @@ void Poke::operator=(Poke &&p2) {
 
 		case PokeType::BITFIELD:
 			switch (p2.size) {
-				case sizeof(uint8_t) :
+				case sizeof(std::uint8_t) :
 					std::construct_at(&bitField8, std::move(p2.bitField8));
 					break;
-				case sizeof(uint16_t) :
+				case sizeof(std::uint16_t) :
 					std::construct_at(&bitField16, std::move(p2.bitField16));
 					break;
-				case sizeof(uint32_t) :
+				case sizeof(std::uint32_t) :
 					std::construct_at(&bitField32, std::move(p2.bitField32));
 					break;
 				default:
@@ -228,11 +228,11 @@ void Poke::checkBlobMode() {
 
 BulkPoke::BulkPoke() : addr(nullptr), size(0) {}
 
-BulkPoke::BulkPoke(hwPtr addr, uint8_t firstScanline, uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint8_t[]> &&values) :
+BulkPoke::BulkPoke(hwPtr addr, std::uint8_t firstScanline, std::uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint8_t[]> &&values) :
 	addr(addr), firstScanline(firstScanline), lastPlusOneScanline(lastPlusOneScanline), size(8), valuePtr8(std::move(values)) {}
-BulkPoke::BulkPoke(hwPtr addr, uint8_t firstScanline, uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint16_t[]> &&values) :
+BulkPoke::BulkPoke(hwPtr addr, std::uint8_t firstScanline, std::uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint16_t[]> &&values) :
 	addr(addr), firstScanline(firstScanline), lastPlusOneScanline(lastPlusOneScanline), size(16), valuePtr16(std::move(values)) {}
-BulkPoke::BulkPoke(hwPtr addr, uint8_t firstScanline, uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint32_t[]> &&values) :
+BulkPoke::BulkPoke(hwPtr addr, std::uint8_t firstScanline, std::uint8_t lastPlusOneScanline, std::unique_ptr<const std::uint32_t[]> &&values) :
 	addr(addr), firstScanline(firstScanline), lastPlusOneScanline(lastPlusOneScanline), size(32), valuePtr32(std::move(values)) {}
 
 BulkPoke::~BulkPoke() {

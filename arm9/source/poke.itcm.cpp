@@ -21,7 +21,7 @@ ITCM_CODE void Poke::operator()() {
 
 ITCM_CODE void Poke::Perform() const {
 	if (type == PokeType::NOOP) return;
-	registerOverride<uint8_t> oldVRamMode;
+	registerOverride<std::uint8_t> oldVRamMode;
 
 	if(pointerInRange(addr, VRAM_E, VRAM_E_SIZE)) {
 		oldVRamMode.set(&VRAM_E_CR, VRAM_ENABLE | VRAM_E_LCD);
@@ -40,14 +40,14 @@ ITCM_CODE void Poke::Perform() const {
 		break;
 	case PokeType::INT:
 		switch(size) {
-		case sizeof(uint8_t) :
-			*((volatile uint8_t*)addr) = value8;
+		case sizeof(std::uint8_t) :
+			*((volatile std::uint8_t*)addr) = value8;
 			break;
-		case sizeof(uint16_t) :
-			*((volatile uint16_t*)addr) = value16;
+		case sizeof(std::uint16_t) :
+			*((volatile std::uint16_t*)addr) = value16;
 			break;
-		case sizeof(uint32_t) :
-			*((volatile uint32_t*)addr) = value32;
+		case sizeof(std::uint32_t) :
+			*((volatile std::uint32_t*)addr) = value32;
 			break;
 		default:
 			sassert(0,"Invalid size %i found for plain poke", size);
@@ -55,14 +55,14 @@ ITCM_CODE void Poke::Perform() const {
 		break;
 	case PokeType::BITFIELD:
 		switch(size) {
-		case sizeof(uint8_t) :
-			bitField8.Poke((volatile uint8_t*)addr);
+		case sizeof(std::uint8_t) :
+			bitField8.Poke((volatile std::uint8_t*)addr);
 			break;
-		case sizeof(uint16_t) :
-			bitField16.Poke((volatile uint16_t*)addr);
+		case sizeof(std::uint16_t) :
+			bitField16.Poke((volatile std::uint16_t*)addr);
 			break;
-		case sizeof(uint32_t) :
-			bitField32.Poke((volatile uint32_t*)addr);
+		case sizeof(std::uint32_t) :
+			bitField32.Poke((volatile std::uint32_t*)addr);
 			break;
 		default:
 			sassert(0,"Invalid size %i found for bitfield poke", size);
@@ -122,18 +122,18 @@ ITCM_CODE void Poke::PerformBlob() const {
 			break;
 		case PokeWriteMode::MEMCPY_8:
 		{
-			volatile const uint8_t *src = (volatile const uint8_t *)valuePtr;
-			std::copy(src, src + size, (uint8_t *)addr);
+			volatile const std::uint8_t *src = (volatile const std::uint8_t *)valuePtr;
+			std::copy(src, src + size, (std::uint8_t *)addr);
 		} break;
 		case PokeWriteMode::MEMCPY_16:
 		{
-			volatile const uint16_t *src = (volatile const uint16_t *)valuePtr;
-			std::copy(src, src + size / 2, (uint16_t *)addr);
+			volatile const std::uint16_t *src = (volatile const std::uint16_t *)valuePtr;
+			std::copy(src, src + size / 2, (std::uint16_t *)addr);
 		} break;
 		case PokeWriteMode::MEMCPY_32:
 		{
-			volatile const uint32_t *src = (volatile const uint32_t *)valuePtr;
-			std::copy(src, src + size / 4, (uint32_t *)addr);
+			volatile const std::uint32_t *src = (volatile const std::uint32_t *)valuePtr;
+			std::copy(src, src + size / 4, (std::uint32_t *)addr);
 		} break;
 		case PokeWriteMode::INVALID:
 		default:
@@ -141,21 +141,21 @@ ITCM_CODE void Poke::PerformBlob() const {
 	}
 }
 
-ITCM_CODE void BulkPoke::Perform(uint8_t scanline) const {
+ITCM_CODE void BulkPoke::Perform(std::uint8_t scanline) const {
 	if(scanline < firstScanline) return;
 	if(scanline >= lastPlusOneScanline) return;
 
-	uint8_t entryIndex = scanline - firstScanline;
+	std::uint8_t entryIndex = scanline - firstScanline;
 	switch(size) {
 	case 0: break;
 	case 8:
-		*static_cast<volatile uint8_t *>(addr) = valuePtr8[entryIndex];
+		*static_cast<volatile std::uint8_t *>(addr) = valuePtr8[entryIndex];
 		break;
 	case 16:
-		*static_cast<volatile uint16_t *>(addr) = valuePtr16[entryIndex];
+		*static_cast<volatile std::uint16_t *>(addr) = valuePtr16[entryIndex];
 		break;
 	case 32:
-		*static_cast<volatile uint32_t *>(addr) = valuePtr32[entryIndex];
+		*static_cast<volatile std::uint32_t *>(addr) = valuePtr32[entryIndex];
 		break;
 	default:
 		sassert(0, "Invalid bulk poke size %i", size);
