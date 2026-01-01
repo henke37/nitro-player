@@ -16,10 +16,10 @@ public:
 	std::unique_ptr<BinaryReadStream> OpenFile(std::uint16_t id) const;
 	std::unique_ptr<BinaryReadStream> OpenFile(const std::string &path) const;
 
-	const std::string &getGameCode() const { return gameCode; }
-	std::uint16_t getMakerCode() const { return makerCode; }
-	std::uint8_t getUnitCode() const { return unitCode; }
-	std::uint8_t getRegion() const { return region; }
+	const std::string &getGameCode() const noexcept { return gameCode; }
+	std::uint16_t getMakerCode() const noexcept { return makerCode; }
+	std::uint8_t getUnitCode() const noexcept { return unitCode; }
+	std::uint8_t getRegion() const noexcept { return region; }
 
 	class FileSystem {
 	public:
@@ -101,7 +101,7 @@ public:
 			void operator++();
 			bool operator==(const Iterator &other) const;
 			bool operator!=(const Iterator &other) const;
-			bool atEnd() const;
+			bool atEnd() const noexcept;
 
 			const std::string &getFileName() const { return dirItr->name; }
 			std::string getFullPath() const;
@@ -122,7 +122,7 @@ public:
 	};
 
 	FileSystem::Iterator getFileSystemIterator() const;
-	bool HasFileSystem() const { return fileSystem != nullptr; }
+	bool HasFileSystem() const noexcept { return fileSystem != nullptr; }
 
 	class Banner {
 	public:
@@ -156,7 +156,7 @@ public:
 	};
 
 	Banner GetBanner() const;
-	bool HasBanner() const { return bannerOffset != 0; }
+	bool HasBanner() const noexcept { return bannerOffset != 0; }
 
 private:	
 	std::unique_ptr<BinaryReadStream> stream;

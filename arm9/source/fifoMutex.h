@@ -10,7 +10,7 @@ public:
 	FifoMutex(u32 channel);
 	~FifoMutex();
 
-	bool isAquired() const;
+	bool isAquired() const noexcept;
 
 	void aquire(u32 channel);
 	bool tryAquire(u32 channel);
