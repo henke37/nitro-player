@@ -9,20 +9,20 @@ public:
 	~Rect() = default;
 	Rect(const Rect&) = default;
 
-	bool pointInside(const Point&) const;
-	bool overlaps(const Rect& other) const;
-	bool fullyContains(const Rect& other) const;
-	bool hasArea() const;
-	unsigned int getArea() const;
+	bool pointInside(const Point&) const noexcept;
+	bool overlaps(const Rect& other) const noexcept;
+	bool fullyContains(const Rect& other) const noexcept;
+	bool hasArea() const noexcept;
+	unsigned int getArea() const noexcept;
 	void expandToContain(const Rect&);
 	void expandToContain(const Point&);
 	Point distanceInside(const Point&);
 
 	Point getRandomPoint() const;
 
-	constexpr std::int16_t getRight() const { return x + w; }
-	constexpr std::int16_t getBottom() const { return y + h; }
-	Point getCenter() const { return Point(x + w / 2, y + h / 2); }
+	constexpr std::int16_t getRight() const noexcept { return x + w; }
+	constexpr std::int16_t getBottom() const noexcept { return y + h; }
+	Point getCenter() const noexcept { return Point(x + w / 2, y + h / 2); }
 
 	std::int16_t x, y;
 	std::uint16_t w, h;
