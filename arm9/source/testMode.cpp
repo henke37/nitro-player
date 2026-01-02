@@ -83,7 +83,11 @@ void TestMode::Update() {
 		}
 
 		if(buttonMan.claimButton(KEY_SELECT)) {
-			setNextGameMode(std::make_unique<TestSTRM>());
+			if(sdat->GetStreamCount() > 0) {
+				setNextGameMode(std::make_unique<TestSTRM>(std::move(sdat)));
+			} else {
+				puts("No Streams in this SDat!");
+			}
 		}
 	}
 }

@@ -2,23 +2,32 @@
 
 #include "globals.h"
 #include "buttonMan.h"
+#include "testNDS.h"
 
 #include <nds/input.h>
 
 TestSTRM::TestSTRM() : 
 	streamId(0),
-	player(4092, 1, 2, 3) {}
+	player(4092, 1, 2, 3) {
+
+	sdat = std::make_unique<NitroComposer::SDatFile>("sound_data.sdat");
+
+	player.SetSdat(sdat.get());
+}
+
+TestSTRM::TestSTRM(std::unique_ptr<NitroComposer::SDatFile> sdat) :
+	sdat(std::move(sdat)),
+	streamId(0),
+	player(4092, 1, 2, 3) {
+
+	player.SetSdat(sdat.get());
+}
 
 TestSTRM::~TestSTRM() {}
 
 void TestSTRM::Unload() {}
 
 void TestSTRM::Load() {
-	sdat = std::make_unique<NitroComposer::SDatFile>("sound_data.sdat");
-
-	player.SetSdat(sdat.get());
-
-	puts("Loaded SDAT.");
 }
 
 void TestSTRM::Update() {
@@ -45,6 +54,10 @@ void TestSTRM::Update() {
 				--streamId;
 			}
 			printf("%d: %s\n", streamId, sdat->GetNameForStream(streamId).c_str());
+		}
+
+		if(buttonMan.claimButton(KEY_START)) {
+			setNextGameMode(std::make_unique<TestNDS>());
 		}
 	}
 }

@@ -10,6 +10,7 @@
 class TestSTRM : public GameMode {
 public:
 	TestSTRM();
+	TestSTRM(std::unique_ptr<NitroComposer::SDatFile> sdat);
 	~TestSTRM();
 
 	void Load() override;
