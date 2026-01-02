@@ -100,6 +100,11 @@ namespace NitroComposer {
 			for(std::uint8_t note = drums->minNote; note < drums->maxNote + 1; ++note) {
 				uint8_t subType = reader.readByte();
 				reader.skip(1);
+				if(subType == 0) {
+					reader.skip(10);
+					drums->subInstruments.emplace_back(nullptr);
+					continue;
+				}
 				auto subInstrument = ParseInstrument(reader, subType);
 				drums->subInstruments.emplace_back(std::move(subInstrument));
 			}
@@ -125,6 +130,10 @@ namespace NitroComposer {
 			for(unsigned int region = 0; region < usedRegions; ++region) {
 				uint8_t subType = reader.readByte();
 				reader.skip(1);
+				if(subType == 0) {
+					reader.skip(10);
+					continue;
+				}
 				auto subInstrument = ParseInstrument(reader, subType);
 				split->subInstruments[region] = std::move(subInstrument);
 			}
