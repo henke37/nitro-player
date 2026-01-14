@@ -28,13 +28,6 @@
 #pragma section(".dtcm",read,write)
 #pragma section(".twl_bss",read,write)
 
-#pragma code_seg(".itcm.text")
-#pragma data_seg(".dtcm")
-#pragma bss_seg(".sbss")
-
-#pragma code_seg(".twl.text")
-#pragma data_seg(".twl.data")
-#pragma bss_seg(".twl_bss")
 #endif
 
 #endif // SEGMENTS_H
