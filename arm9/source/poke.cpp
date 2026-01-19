@@ -9,6 +9,10 @@ Poke::Poke(std::uint16_t val, volatile std::uint16_t *addr_) : size(sizeof(std::
 }
 Poke::Poke(std::uint32_t val, volatile std::uint32_t *addr_) : size(sizeof(std::uint32_t)), type(PokeType::INT), addr(addr_), value32(val) {
 }
+Poke::Poke(std::int8_t val, volatile std::int8_t *addr_) : size(sizeof(uint8_t)), type(PokeType::INT), addr(addr_), value8(val) {}
+Poke::Poke(std::int16_t val, volatile std::int16_t *addr_) : size(sizeof(uint16_t)), type(PokeType::INT), addr(addr_), value16(val) {}
+Poke::Poke(std::int32_t val, volatile std::int32_t *addr_) : size(sizeof(uint32_t)), type(PokeType::INT), addr(addr_), value32(val) {}
+
 Poke::Poke(std::unique_ptr<const std::uint8_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_8), addr(addr_), valuePtr8(std::move(dataPtr)) {
 	checkBlobMode();
 }

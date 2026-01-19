@@ -53,9 +53,15 @@ class Poke {
 public:
 	Poke();
 	Poke(Poke &&);
+	
 	Poke(std::uint8_t val, volatile std::uint8_t *addr);
 	Poke(std::uint16_t val, volatile std::uint16_t *addr);
 	Poke(std::uint32_t val, volatile std::uint32_t *addr);
+	
+	Poke(std::int8_t val, volatile std::int8_t *addr);
+	Poke(std::int16_t val, volatile std::int16_t *addr);
+	Poke(std::int32_t val, volatile std::int32_t *addr);
+	
 	Poke(std::unique_ptr<const std::uint8_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
 	Poke(std::unique_ptr<const std::uint16_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
 	Poke(std::unique_ptr<const std::uint32_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);

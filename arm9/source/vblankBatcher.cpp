@@ -24,6 +24,24 @@ void VBlankBatcher::AddPoke(uint16_t val, volatile uint16_t &ref) {
 void VBlankBatcher::AddPoke(uint32_t val, volatile uint32_t &ref) {
 	AddPoke(Poke(val, &ref));
 }
+void VBlankBatcher::AddPoke(int8_t val, volatile int8_t *addr) {
+	AddPoke(Poke(val, addr));
+}
+void VBlankBatcher::AddPoke(int16_t val, volatile int16_t *addr) {
+	AddPoke(Poke(val, addr));
+}
+void VBlankBatcher::AddPoke(int32_t val, volatile int32_t *addr) {
+	AddPoke(Poke(val, addr));
+}
+void VBlankBatcher::AddPoke(int8_t val, volatile int8_t &ref) {
+	AddPoke(Poke(val, &ref));
+}
+void VBlankBatcher::AddPoke(int16_t val, volatile int16_t &ref) {
+	AddPoke(Poke(val, &ref));
+}
+void VBlankBatcher::AddPoke(int32_t val, volatile int32_t &ref) {
+	AddPoke(Poke(val, &ref));
+}
 void VBlankBatcher::AddPoke(std::unique_ptr<const uint8_t[]> &&data, size_t dataSize, hwPtr addr, PokeWriteMode mode) {
 	AddPoke(Poke(std::move(data), dataSize, addr, mode));
 }
