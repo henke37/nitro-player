@@ -7,6 +7,7 @@ class TileManager;
 extern TileManager TileManMainBg0;
 extern TileManager TileManMainBg1;
 extern TileManager TileManMainBg2;
+extern TileManager TileManMainBg3;
 extern TileManager TileManMainObj;
 extern TileManager TileManSubBg0;
 extern TileManager TileManSubBg1;
