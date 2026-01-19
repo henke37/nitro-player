@@ -2,6 +2,7 @@
 #define FIXEDMATH_H
 
 #include <cstdint>
+#include <cassert>
 
 template <int Base> class FixedPoint;
 
@@ -16,7 +17,26 @@ public:
 	FixedPoint() noexcept {}
 
 	operator int() const noexcept { return raw >> Base; }
-	operator uint8_t() const noexcept { return raw >> Base; }
+	operator uint8_t() const { 
+		assert((raw >> Base) < 0x0FF);
+		assert((raw >> Base) >= 0);
+		return raw >> Base;
+	}
+	operator int8_t() const {
+		assert((raw >> Base) < 0x07F);
+		assert((raw >> Base) >= -0x07F);
+		return raw >> Base;
+	}
+	operator uint16_t() const {
+		assert((raw >> Base) < 0x0FFFF);
+		assert((raw >> Base) >= 0);
+		return raw >> Base;
+	}
+	operator int16_t() const {
+		assert((raw >> Base) < 0x07FFF);
+		assert((raw >> Base) >= -0x07FFF);
+		return raw >> Base;
+	}
 	operator bool() const noexcept { return (bool)raw; }
 	operator float() const noexcept { return ((float)raw) / ((float)(1 << Base)); }
 	
@@ -36,14 +56,10 @@ public:
 	FixedPoint<Base> operator +(const FixedPoint<Base> &f2) const noexcept { return FixedPoint(raw + f2.raw, Base); }
 	FixedPoint<Base> operator -(const FixedPoint<Base> &f2) const noexcept { return FixedPoint(raw - f2.raw, Base); }
 	FixedPoint<Base> operator *(const FixedPoint<Base> &f2) const noexcept { return FixedPoint(fixedMul(raw,f2.raw), Base); }
-	FixedPoint<Base> operator &(const FixedPoint<Base> &f2) const noexcept { return FixedPoint(raw & f2.raw, Base); }
-	FixedPoint<Base> operator |(const FixedPoint<Base> &f2) const noexcept { return FixedPoint(raw | f2.raw, Base); }
-	
+
 	FixedPoint<Base> operator +(const int x) const noexcept { return FixedPoint(raw + (x<<Base), Base); }
 	FixedPoint<Base> operator -(const int x) const noexcept { return FixedPoint(raw - (x<<Base), Base); }
 	FixedPoint<Base> operator *(const int x) const noexcept { return FixedPoint(fixedMul(raw,x<<Base), Base); }
-	FixedPoint<Base> operator &(const int x) const noexcept { return FixedPoint(raw & (x<<Base), Base); }
-	FixedPoint<Base> operator |(const int x) const noexcept { return FixedPoint(raw | (x<<Base), Base); }
 
 	FixedPoint<Base> &operator <<=(const unsigned sh) noexcept { raw <<= sh; return *this; }
 	FixedPoint<Base> &operator >>=(const unsigned sh) noexcept { raw >>= sh; return *this; }
