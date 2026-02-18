@@ -32,14 +32,16 @@ namespace NitroComposer {
 			auto offset = reader.readLE24Bit();
 			offset -= section->offset;
 
-			auto pos = reader.getPos();
+			auto oldPos = reader.getPos();
 
-			reader.setPos(offset);
+			{
+				reader.setPos(offset);
 
-			std::unique_ptr<SBNK::BaseInstrument> instrument = ParseInstrument(reader, type);
-			instruments.emplace_back(std::move(instrument));
+				std::unique_ptr<SBNK::BaseInstrument> instrument = ParseInstrument(reader, type);
+				instruments.emplace_back(std::move(instrument));
+			}
 
-			reader.setPos(pos);
+			reader.setPos(oldPos);
 		}
 	}
 
@@ -121,8 +123,12 @@ namespace NitroComposer {
 
 			unsigned int usedRegions = 8;
 			for(unsigned int region = 0; region < SplitInstrument::regionCount; ++region) {
-				if(split->regions[region] >= 127) {
+				std::uint8_t regionVal = split->regions[region];
+				if(regionVal >= 127) {
 					usedRegions = region+1;
+					break;
+				} else if(regionVal == 0 && region != 0) {
+					usedRegions = region;
 					break;
 				}
 			}
