@@ -187,6 +187,12 @@ namespace NitroComposer {
 						return static_cast<const InstrumentBank::LeafInstrument *>(split->subInstruments[region].get());
 					}
 				}
+
+#ifdef NITROCOMPOSER_LOG_TRACKS
+				consolePuts("OoB split note played!");
+				consoleFlush();
+#endif
+				return nullptr;
 			} break;
 		}
 		assert(0);
