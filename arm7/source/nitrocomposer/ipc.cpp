@@ -41,6 +41,12 @@ namespace NitroComposer {
 			setupTimer();
 		} break;
 
+		case BaseIPC::CommandType::SetDebugFlags:
+		{
+			SetDebugFlagsIPC *setDebugFlagsIpc = static_cast<SetDebugFlagsIPC *>(ipc);
+			debugFlags = setDebugFlagsIpc->flags;
+		} break;
+
 		case BaseIPC::CommandType::AllocSequencePlayer:
 		{
 			SequencePlayerIPC *allocIpc = static_cast<SequencePlayerIPC *>(ipc);

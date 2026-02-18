@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "nitroComposer/infoRecords.h"
+#include "nitroComposer/debugFlags.h"
 #include "nitroComposer/bank.h"
 #include "nitroComposer/wave.h"
 
@@ -18,6 +19,7 @@ namespace NitroComposer {
 			Invalid = 0,
 			PowerOn = 1,
 			SetMainVolume = 2,
+			SetDebugFlags = 42,
 			AllocSequencePlayer = 190,
 			DeallocSequencePlayer = 191,
 			LoadBank = 101,
@@ -52,6 +54,10 @@ namespace NitroComposer {
 		};
 
 		EventType eventId;
+	};
+
+	struct SetDebugFlagsIPC : BaseIPC {
+		DebugFlags flags;
 	};
 
 	struct SequenceStatusEventIPC : AsyncEventIPC {

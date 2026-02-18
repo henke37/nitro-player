@@ -4,6 +4,7 @@
 #include <nds/cothread.h>
 
 #include "nitroComposer/ipc.h"
+#include "nitroComposer/debugFlags.h"
 
 #include "sseq.h"
 #include "sbnk.h"
@@ -87,6 +88,7 @@ namespace NitroComposer {
 		MusicEngine(const MusicEngine &) = delete;
 		~MusicEngine();
 		void SetMainVolume(std::uint8_t volume);
+		void SetDebugFlags(DebugFlags flags);
 	private:
 		cosema_t asyncEvtSemaphore;
 

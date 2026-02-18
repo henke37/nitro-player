@@ -101,6 +101,7 @@
     <ClInclude Include="..\arm7\source\nitrocomposer\sequencePlayer.h" />
     <ClInclude Include="..\arm7\source\nitrocomposer\streamPlayer.h" />
     <ClInclude Include="..\common\nitrocomposer\bank.h" />
+    <ClInclude Include="..\common\nitroComposer\debugFlags.h" />
     <ClInclude Include="..\common\nitrocomposer\infoRecords.h" />
     <ClInclude Include="..\common\segments.h" />
   </ItemGroup>

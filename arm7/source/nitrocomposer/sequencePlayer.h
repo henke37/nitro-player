@@ -3,6 +3,7 @@
 
 #include "nitroComposer/bank.h"
 #include "nitroComposer/wave.h"
+#include "nitroComposer/debugFlags.h"
 
 #include <cstdint>
 #include <memory>
@@ -349,6 +350,8 @@ namespace NitroComposer {
 	const int ENVELOPE_KILL_THRESHOLD = -(AMPL_MIN << 7);
 
 	extern SequencePlayer sequencePlayer;
+
+	extern DebugFlags debugFlags;
 
 }
 

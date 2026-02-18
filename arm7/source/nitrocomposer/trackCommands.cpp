@@ -5,11 +5,6 @@
 
 #include <nds/arm7/console.h>
 
-#define NITROCOMPOSER_LOG_EFFECTS
-//#define NITROCOMPOSER_LOG_COMMON_EFFECTS
-#define NITROCOMPOSER_LOG_FLOW
-#define NITROCOMPOSER_LOG_VAR_WRITES
-
 namespace NitroComposer {
 
 	void SequencePlayer::Track::ExecuteNextCommand() {
@@ -37,20 +32,20 @@ namespace NitroComposer {
 			std::uint8_t trackId = readByteCommand();
 			std::uint32_t offset = readTriByteCommand();
 			sequence->StartTrack(trackId, offset);
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Start #%d at 0x%x\n", GetId(), trackId, (unsigned)offset);
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Start #%d at 0x%x\n", GetId(), trackId, (unsigned)offset);
+				consoleFlush();
+			}
 		} break;
 
 		case 0x94:
 		{
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Jump to 0x%x\n", GetId(), (unsigned)offset);
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Jump to 0x%x\n", GetId(), (unsigned)offset);
+				consoleFlush();
+			}
 		} break;
 
 		case 0x95:
@@ -58,10 +53,10 @@ namespace NitroComposer {
 			assert(stackPointer < 4);
 			std::uint32_t offset = readTriByteCommand();
 
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Call to 0x%x\n", GetId(), (unsigned)offset);
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Call to 0x%x\n", GetId(), (unsigned)offset);
+				consoleFlush();
+			}
 
 			auto &stackRecord = stack[stackPointer];
 			stackRecord.nextCommand = nextCommand;
@@ -96,10 +91,10 @@ namespace NitroComposer {
 			assert(varId < numVariables);
 			sequence->SetVar(varId, val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d = %d\n", varId, val);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d = %d\n", varId, val);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB1:
@@ -109,10 +104,10 @@ namespace NitroComposer {
 			assert(varId < numVariables);
 			sequence->SetVar(varId, sequence->GetVar(varId) + val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d += %d\n", varId, val);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d += %d\n", varId, val);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB2:
@@ -122,10 +117,10 @@ namespace NitroComposer {
 			assert(varId < numVariables);
 			sequence->SetVar(varId, sequence->GetVar(varId) - val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d -= %d\n", varId, val);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d -= %d\n", varId, val);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB3:
@@ -135,10 +130,10 @@ namespace NitroComposer {
 			assert(varId < numVariables);
 			sequence->SetVar(varId, sequence->GetVar(varId) * val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d *= %d\n", varId, val);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d *= %d\n", varId, val);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB4:
@@ -146,10 +141,10 @@ namespace NitroComposer {
 			std::uint8_t varId = readByteCommand();
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d /= %d\n", varId, val);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d /= %d\n", varId, val);
+				consoleFlush();
+			}
 			if(!val) break;
 			sequence->SetVar(varId, sequence->GetVar(varId) / val);
 		} break;
@@ -160,17 +155,17 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d >>= %d\n", varId, val);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d >>= %d\n", varId, val);
+					consoleFlush();
+				}
 				sequence->SetVar(varId, sequence->GetVar(varId) >> -val);
 			} else {
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d <<= %d\n", varId, val);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d <<= %d\n", varId, val);
+					consoleFlush();
+				}
 				sequence->SetVar(varId, sequence->GetVar(varId) << val);
 			}
 		} break;
@@ -181,17 +176,17 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d = -rand(%d)\n", varId, -val);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d = -rand(%d)\n", varId, -val);
+					consoleFlush();
+				}
 				sequence->SetVar(varId, -(std::rand() % (-val + 1)));
 			} else {
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d = rand(%d)\n", varId, val);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d = rand(%d)\n", varId, val);
+					consoleFlush();
+				}
 				sequence->SetVar(varId, std::rand() % (val + 1));
 			}
 		} break;
@@ -247,10 +242,10 @@ namespace NitroComposer {
 		case 0xC0:
 		{
 			pan = readByteCommand() - 64;
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("Pan %d\n", pan);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("Pan %d\n", pan);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xC1:
@@ -271,10 +266,10 @@ namespace NitroComposer {
 		case 0xC4:
 		{
 			pitchBend = readByteCommand();
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("Pitch Bend %d\n", pitchBend);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("Pitch Bend %d\n", pitchBend);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xC5:
@@ -296,10 +291,10 @@ namespace NitroComposer {
 		{
 			tieMode = readByteCommand() != 0;
 			ReleaseAllVoices();
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Tie Mode %s\n", tieMode ? "Y" : "N");
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Tie Mode %s\n", tieMode ? "Y" : "N");
+				consoleFlush();
+			}
 		} break;
 
 		case 0xC9:
@@ -307,10 +302,10 @@ namespace NitroComposer {
 			std::uint8_t note = readByteCommand();
 			lastPlayedNote = GetTransposedNote(note);
 			portamento = true;
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Porta Start %u\n", note);
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Porta Start %u\n", note);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xCA:
@@ -326,20 +321,20 @@ namespace NitroComposer {
 		case 0xCC:
 		{
 			modMode = ModulationMode(readByteCommand());
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			switch(modMode) {
-			case ModulationMode::Vibrato:
-				consolePuts("Mod: Vibrato\n");
-				break;
-			case ModulationMode::Tremolo:
-				consolePuts("Mod: Tremolo\n");
-				break;
-			case ModulationMode::Pan:
-				consolePuts("Mod: Pan\n");
-				break;
+			if(debugFlags.logUncommonEffects) {
+				switch(modMode) {
+				case ModulationMode::Vibrato:
+					consolePuts("Mod: Vibrato\n");
+					break;
+				case ModulationMode::Tremolo:
+					consolePuts("Mod: Tremolo\n");
+					break;
+				case ModulationMode::Pan:
+					consolePuts("Mod: Pan\n");
+					break;
+				}
+				consoleFlush();
 			}
-			consoleFlush();
-#endif
 		} break;
 
 		case 0xCD:
@@ -355,10 +350,10 @@ namespace NitroComposer {
 		case 0xCE:
 		{
 			portamento = readByteCommand() != 0;
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Porta %s\n", portamento?"Y":"N");
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Porta %s\n", portamento ? "Y" : "N");
+				consoleFlush();
+			}
 		} break;
 
 		case 0xCF:
@@ -396,48 +391,48 @@ namespace NitroComposer {
 			stackRecord.type = (loopCount>0) ? StackEntryType::Loop : StackEntryType::InfiniteLoop;
 			++stackPointer;
 
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Loop start x%d\n", GetId(), loopCount);
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Loop start x%d\n", GetId(), loopCount);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xD5:
 		{
 			expression = readByteCommand();
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("#%d Expression %d\n", GetId(), expression);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("#%d Expression %d\n", GetId(), expression);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xD6:
 		{
 			std::uint8_t varId = readByteCommand();
 			assert(varId < numVariables);
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
+				consoleFlush();
+			}
 		} break;
 
 		case 0xD7:
 		{
 			std::uint8_t val = readByteCommand();
 			this->SetMute(static_cast<MuteMode>(val));
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Mute Mode %d\n", val);
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Mute Mode %d\n", val);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xE1:
 		{
 			sequence->tempo = readShortCommand();
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Tempo set to %d\n", sequence->tempo);
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Tempo set to %d\n", sequence->tempo);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xE3:
@@ -459,25 +454,25 @@ namespace NitroComposer {
 				if(stackRecord.loopCounter) {
 					nextCommand = stackRecord.nextCommand;
 					++stackPointer;
-#ifdef NITROCOMPOSER_LOG_FLOW
-					consolePrintf("#%d Loop repeat, %d remaining\n", GetId(), stackRecord.loopCounter);
-					consoleFlush();
-#endif
+					if(debugFlags.logFlowControl) {
+						consolePrintf("#%d Loop repeat, %d remaining\n", GetId(), stackRecord.loopCounter);
+						consoleFlush();
+					}
 				} else {
-#ifdef NITROCOMPOSER_LOG_FLOW
-					consolePrintf("#%d Loop end\n", GetId());
-					consoleFlush();
-#endif
+					if(debugFlags.logFlowControl) {
+						consolePrintf("#%d Loop end\n", GetId());
+						consoleFlush();
+					}
 				}
 			} break;
 			case StackEntryType::InfiniteLoop:
 			{
 				nextCommand = stackRecord.nextCommand;
 				++stackPointer;
-#ifdef NITROCOMPOSER_LOG_FLOW
-				consolePrintf("#%d Loop repeat, infinite\n", GetId());
-				consoleFlush();
-#endif
+				if(debugFlags.logFlowControl) {
+					consolePrintf("#%d Loop repeat, infinite\n", GetId());
+					consoleFlush();
+				}
 			} break;
 
 			default:
@@ -493,20 +488,20 @@ namespace NitroComposer {
 			auto &stackRecord = stack[stackPointer];
 			assert(stackRecord.type == StackEntryType::Call);
 			nextCommand = stackRecord.nextCommand;
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Return from Call\n", GetId());
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Return from Call\n", GetId());
+				consoleFlush();
+			}
 		} break;
 
 		case 0xFE:
 		{
 			std::uint16_t tracksField = readShortCommand();
 
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Alloc %x\n", GetId(), tracksField);
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Alloc %x\n", GetId(), tracksField);
+				consoleFlush();
+			}
 
 			for(unsigned int trackId = 1; trackId < SequencePlayer::PlayingSequence::trackCount; ++trackId) {
 				if(tracksField & (1u << trackId)) {
@@ -520,10 +515,10 @@ namespace NitroComposer {
 		} break;
 
 		case 0xFF: {
-#ifdef NITROCOMPOSER_LOG_FLOW
-			consolePrintf("#%d Fin.\n", GetId());
-			consoleFlush();
-#endif
+			if(debugFlags.logFlowControl) {
+				consolePrintf("#%d Fin.\n", GetId());
+				consoleFlush();
+			}
 			StopPlaying();
 		} break;
 
@@ -679,10 +674,10 @@ namespace NitroComposer {
 		case 0xC0:
 		{
 			pan = readAndGetRandomCommandParam() - 64;
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("Pan %d\n", pan);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("Pan %d\n", pan);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xC1:
@@ -703,10 +698,10 @@ namespace NitroComposer {
 		case 0xC4:
 		{
 			pitchBend = readAndGetRandomCommandParam();
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("Pitch Bend %d\n", pitchBend);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("Pitch Bend %d\n", pitchBend);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xC5:
@@ -724,10 +719,10 @@ namespace NitroComposer {
 			std::uint8_t note = readAndGetRandomCommandParam();
 			lastPlayedNote = GetTransposedNote(note);
 			portamento = true;
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Porta Start %u\n", note);
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Porta Start %u\n", note);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xCA:
@@ -743,20 +738,20 @@ namespace NitroComposer {
 		case 0xCC:
 		{
 			modMode = ModulationMode(readAndGetRandomCommandParam());
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			switch(modMode) {
-			case ModulationMode::Vibrato:
-				consolePuts("Mod: Vibrato\n");
-				break;
-			case ModulationMode::Tremolo:
-				consolePuts("Mod: Tremolo\n");
-				break;
-			case ModulationMode::Pan:
-				consolePuts("Mod: Pan\n");
-				break;
+			if(debugFlags.logUncommonEffects) {
+				switch(modMode) {
+				case ModulationMode::Vibrato:
+					consolePuts("Mod: Vibrato\n");
+					break;
+				case ModulationMode::Tremolo:
+					consolePuts("Mod: Tremolo\n");
+					break;
+				case ModulationMode::Pan:
+					consolePuts("Mod: Pan\n");
+					break;
+				}
+				consoleFlush();
 			}
-			consoleFlush();
-#endif
 		} break;
 
 		case 0xCD:
@@ -773,20 +768,20 @@ namespace NitroComposer {
 		{
 			std::uint8_t varId = readAndGetRandomCommandParam();
 			assert(varId < numVariables);
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Var %d = %d\n", varId, sequence->GetVar(varId));
+				consoleFlush();
+			}
 		} break;
 
 		case 0xD7:
 		{
 			std::uint8_t val = readAndGetRandomCommandParam();
 			this->SetMute(static_cast<MuteMode>(val));
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Mute Mode %d\n", val);
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Mute Mode %d\n", val);
+				consoleFlush();
+			}
 		} break;
 
 		default:
@@ -835,10 +830,10 @@ namespace NitroComposer {
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d = Var%d\n", dstVarId, srcVarId);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d = Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB1:
@@ -850,10 +845,10 @@ namespace NitroComposer {
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) + val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d += Var%d\n", dstVarId, srcVarId);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d += Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB2:
@@ -865,10 +860,10 @@ namespace NitroComposer {
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) - val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d -= Var%d\n", dstVarId, srcVarId);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d -= Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB3:
@@ -880,10 +875,10 @@ namespace NitroComposer {
 			std::int16_t val = sequence->GetVar(srcVarId);
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) * val);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d *= Var%d\n", dstVarId, srcVarId);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d *= Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xB4:
@@ -894,10 +889,10 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-			consolePrintf("Var%d /= Var%d\n", dstVarId, srcVarId);
-			consoleFlush();
-#endif
+			if(debugFlags.logVarWrites) {
+				consolePrintf("Var%d /= Var%d\n", dstVarId, srcVarId);
+				consoleFlush();
+			}
 			if(!val) break;
 			sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) / val);
 		} break;
@@ -911,17 +906,17 @@ namespace NitroComposer {
 			std::int16_t val = sequence->GetVar(srcVarId);
 			if(val < 0) {
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d >>= Var%d\n", dstVarId, srcVarId);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d >>= Var%d\n", dstVarId, srcVarId);
+					consoleFlush();
+				}
 				sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) >> -val);
 			} else {
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d <<= Var%d\n", dstVarId, srcVarId);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d <<= Var%d\n", dstVarId, srcVarId);
+					consoleFlush();
+				}
 				sequence->SetVar(dstVarId, sequence->GetVar(dstVarId) << val);
 			}
 		} break;
@@ -935,17 +930,17 @@ namespace NitroComposer {
 			std::int16_t val = sequence->GetVar(srcVarId);
 			if(val < 0) {
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d = -rand(-Var%d)\n", dstVarId, srcVarId);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d = -rand(-Var%d)\n", dstVarId, srcVarId);
+					consoleFlush();
+				}
 				sequence->SetVar(dstVarId, -(std::rand() % (-val + 1)));
 			} else {
 
-#ifdef NITROCOMPOSER_LOG_VAR_WRITES
-				consolePrintf("Var%d = rand(Var%d)\n", dstVarId, srcVarId);
-				consoleFlush();
-#endif
+				if(debugFlags.logVarWrites) {
+					consolePrintf("Var%d = rand(Var%d)\n", dstVarId, srcVarId);
+					consoleFlush();
+				}
 				sequence->SetVar(dstVarId, std::rand() % (val + 1));
 			}
 		} break;
@@ -1015,10 +1010,10 @@ namespace NitroComposer {
 			std::uint8_t srcVarId = readByteCommand();
 			std::int16_t val = sequence->GetVar(srcVarId);
 			pan = val - 64;
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("Pan %d\n", pan);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("Pan %d\n", pan);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xC1:
@@ -1043,10 +1038,10 @@ namespace NitroComposer {
 		{
 			std::uint8_t srcVarId = readByteCommand();
 			pitchBend = sequence->GetVar(srcVarId);
-#ifdef NITROCOMPOSER_LOG_COMMON_EFFECTS
-			consolePrintf("Pitch Bend %d\n", pitchBend);
-			consoleFlush();
-#endif
+			if(debugFlags.logCommonEffects) {
+				consolePrintf("Pitch Bend %d\n", pitchBend);
+				consoleFlush();
+			}
 		} break;
 
 		case 0xD7:
@@ -1054,10 +1049,10 @@ namespace NitroComposer {
 			std::uint8_t srcVarId = readByteCommand();
 			std::int16_t val = sequence->GetVar(srcVarId);
 			this->SetMute(static_cast<MuteMode>(val));
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			consolePrintf("Mute Mode %d\n", val);
-			consoleFlush();
-#endif
+			if(debugFlags.logUncommonEffects) {
+				consolePrintf("Mute Mode %d\n", val);
+				consoleFlush();
+			}
 		} break;
 
 
@@ -1077,20 +1072,20 @@ namespace NitroComposer {
 		{
 			std::uint8_t srcVarId = readByteCommand();
 			modMode = ModulationMode(sequence->GetVar(srcVarId));
-#ifdef NITROCOMPOSER_LOG_EFFECTS
-			switch(modMode) {
-			case ModulationMode::Vibrato:
-				consolePuts("Mod: Vibrato\n");
-				break;
-			case ModulationMode::Tremolo:
-				consolePuts("Mod: Tremolo\n");
-				break;
-			case ModulationMode::Pan:
-				consolePuts("Mod: Pan\n");
-				break;
+			if(debugFlags.logUncommonEffects) {
+				switch(modMode) {
+				case ModulationMode::Vibrato:
+					consolePuts("Mod: Vibrato\n");
+					break;
+				case ModulationMode::Tremolo:
+					consolePuts("Mod: Tremolo\n");
+					break;
+				case ModulationMode::Pan:
+					consolePuts("Mod: Pan\n");
+					break;
+				}
+				consoleFlush();
 			}
-			consoleFlush();
-#endif
 		} break;
 
 		case 0xCD:

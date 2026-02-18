@@ -4,9 +4,6 @@
 #include <nds/arm7/console.h>
 #include <algorithm>
 
-#define NITROCOMPOSER_LOG_TRACKS
-#define NITROCOMPOSER_LOG_NOTES
-
 namespace NitroComposer {
 
 	SequencePlayer::Track::Track(PlayingSequence *sequence) : sequence(sequence), isPlaying(false), muted(false) {
@@ -94,23 +91,23 @@ namespace NitroComposer {
 		if(!muted) {
 			note = GetTransposedNote(note);
 			if(tieMode) {
-#ifdef NITROCOMPOSER_LOG_NOTES
-				consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
-#endif
+				if(debugFlags.logNotes) {
+					consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
+				}
 				if(tieVoice) {
 					tieVoice->NextTieNote(note, velocity);
 				} else {
 					tieVoice = NoteOnReal(note, velocity, 0);
 				}
 			} else {
-#ifdef NITROCOMPOSER_LOG_NOTES
-				consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
-#endif
+				if(debugFlags.logNotes) {
+					consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
+				}
 				NoteOnReal(note, velocity, length);
 			}
-#ifdef NITROCOMPOSER_LOG_NOTES
-			consoleFlush();
-#endif
+			if(debugFlags.logNotes) {
+				consoleFlush();
+			}
 			lastPlayedNote = note;
 		}
 		if(noteWait) {
@@ -144,20 +141,20 @@ namespace NitroComposer {
 
 	const InstrumentBank::LeafInstrument *SequencePlayer::Track::ResolveInstrumentForNote(std::uint8_t note) const {
 		if(instrumentId >= sequence->bank->instruments.size()) {
-#ifdef NITROCOMPOSER_LOG_TRACKS
-			consolePrintf("OOB instrument ID %d played!\n", (int)instrumentId);
-			consoleFlush();
-#endif
+			if(debugFlags.logBadData) {
+				consolePrintf("OOB instrument ID %d played!\n", (int)instrumentId);
+				consoleFlush();
+			}
 			return nullptr;
 		}
 
 		auto currentInstrument = sequence->bank->instruments.at(instrumentId).get();
 
 		if(!currentInstrument) {
-#ifdef NITROCOMPOSER_LOG_TRACKS
-			consolePuts("Null instrument played!");
-			consoleFlush();
-#endif
+			if(debugFlags.logBadData) {
+				consolePuts("Null instrument played!");
+				consoleFlush();
+			}
 			return nullptr;
 		}
 		
@@ -188,10 +185,10 @@ namespace NitroComposer {
 					}
 				}
 
-#ifdef NITROCOMPOSER_LOG_TRACKS
-				consolePuts("OoB split note played!");
-				consoleFlush();
-#endif
+				if(debugFlags.logBadData) {
+					consolePuts("OoB split note played!");
+					consoleFlush();
+				}
 				return nullptr;
 			} break;
 		}

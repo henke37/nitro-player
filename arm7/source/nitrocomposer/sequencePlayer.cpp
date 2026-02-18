@@ -16,6 +16,15 @@ namespace NitroComposer {
 
 	SequencePlayer sequencePlayer;
 
+	DebugFlags debugFlags {
+		.logNotes = true,
+		.logFlowControl = true,
+		.logVarWrites = true,
+		.logCommonEffects = false,
+		.logUncommonEffects = true,
+		.logBadData = true
+	};
+
 	void SequencePlayer::Init() {
 		for(unsigned int var = 0; var < globalVariableCount; ++var) {
 			globalVariables[var] = -1;

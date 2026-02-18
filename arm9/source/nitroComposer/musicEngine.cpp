@@ -128,6 +128,14 @@ namespace NitroComposer {
 		assert(success);
 	}
 
+	void MusicEngine::SetDebugFlags(DebugFlags flags) {
+		std::unique_ptr<SetDebugFlagsIPC> buff = std::make_unique<SetDebugFlagsIPC>();
+		buff->command = BaseIPC::CommandType::SetDebugFlags;
+		buff->flags = flags;
+		bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SetDebugFlagsIPC), (u8 *)buff.get());
+		assert(success);
+	}
+
 	FifoMutexLock::FifoMutexLock() {
 		mutex.aquire(FIFO_NITRO_COMPOSER);
 	}

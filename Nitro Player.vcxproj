@@ -207,6 +207,7 @@
     <ClInclude Include="arm9\source\tilePos.h" />
     <ClInclude Include="arm9\source\vblankBatcher.h" />
     <ClInclude Include="common\nitrocomposer\bank.h" />
+    <ClInclude Include="common\nitroComposer\debugFlags.h" />
     <ClInclude Include="common\nitrocomposer\infoRecords.h" />
     <ClInclude Include="common\nitrocomposer\ipc.h" />
     <ClInclude Include="common\nitrocomposer\wave.h" />
