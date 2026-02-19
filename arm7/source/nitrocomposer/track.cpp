@@ -68,6 +68,10 @@ namespace NitroComposer {
 	}
 
 	void SequencePlayer::Track::StartPlaying(std::ptrdiff_t offset) {
+		if(this->isPlaying && debugFlags.logBadData) {
+			consolePrintf("#%d duplicate start!\n", GetId());
+			consoleFlush();
+		}
 		this->isPlaying = true;
 		SetNextCommand(offset);
 	}
