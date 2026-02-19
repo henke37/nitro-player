@@ -155,8 +155,8 @@ namespace NitroComposer {
 		auto currentInstrument = sequence->bank->instruments.at(instrumentId).get();
 
 		if(!currentInstrument) {
-			if(debugFlags.logBadData) {
-				consolePuts("Null instrument played!");
+			if(debugFlags.logNullNotes) {
+				consolePuts("Null instrument played!\n");
 				consoleFlush();
 			}
 			return nullptr;
@@ -175,22 +175,38 @@ namespace NitroComposer {
 
 			case InstrumentBank::InstrumentType::Drumkit: {
 				auto drums = static_cast<const InstrumentBank::Drumkit *>(currentInstrument);
-				if(note > drums->maxNote || note < drums->minNote) return nullptr;
+				if(note > drums->maxNote || note < drums->minNote) {
+					if(debugFlags.logNullNotes) {
+						consolePuts("OoB drum note played!\n");
+						consoleFlush();
+					}
+					return nullptr;
+				}
 
 				std::uint8_t offset = note - drums->minNote;
-				return static_cast<const InstrumentBank::LeafInstrument *>(drums->subInstruments.at(offset).get());
+				auto leaf = static_cast<const InstrumentBank::LeafInstrument *>(drums->subInstruments.at(offset).get());
+				if(!leaf && debugFlags.logNullNotes) {
+					consolePuts("Null drum instrument played.\n");
+					consoleFlush();
+				}
+				return leaf;
 			} break;
 
 			case InstrumentBank::InstrumentType::Split: {
 				auto split = static_cast<const InstrumentBank::SplitInstrument *>(currentInstrument);
 				for(unsigned int region = 0; region < InstrumentBank::SplitInstrument::regionCount; ++region) {
 					if(note <= split->regions[region]) {
-						return static_cast<const InstrumentBank::LeafInstrument *>(split->subInstruments[region].get());
+						auto leaf = static_cast<const InstrumentBank::LeafInstrument *>(split->subInstruments[region].get());
+						if(!leaf && debugFlags.logNullNotes) {
+							consolePuts("Null leaf instrument played.\n");
+							consoleFlush();
+						}
+						return leaf;
 					}
 				}
 
-				if(debugFlags.logBadData) {
-					consolePuts("OoB split note played!");
+				if(debugFlags.logNullNotes) {
+					consolePuts("OoB split note played!\n");
 					consoleFlush();
 				}
 				return nullptr;

@@ -22,7 +22,8 @@ namespace NitroComposer {
 		.logVarWrites = true,
 		.logCommonEffects = false,
 		.logUncommonEffects = true,
-		.logBadData = true
+		.logBadData = true,
+		.logNullNotes = true
 	};
 
 	void SequencePlayer::Init() {

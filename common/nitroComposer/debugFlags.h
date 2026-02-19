@@ -9,6 +9,7 @@ namespace NitroComposer {
 		bool logCommonEffects : 1;
 		bool logUncommonEffects : 1;
 		bool logBadData : 1;
+		bool logNullNotes : 1;
 	};
 }
 
