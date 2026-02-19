@@ -50,7 +50,13 @@ namespace NitroComposer {
 
 		case 0x95:
 		{
-			assert(stackPointer < 4);
+			if(stackPointer >= 4) {
+				if(debugFlags.logBadData) {
+					consolePrintf("#%d Stack overflow!\n", GetId());
+					consoleFlush();
+				}
+				return;
+			}
 			std::uint32_t offset = readTriByteCommand();
 
 			if(debugFlags.logFlowControl) {
@@ -383,7 +389,13 @@ namespace NitroComposer {
 
 		case 0xD4:
 		{
-			assert(stackPointer < 4);
+			if(stackPointer >= 4) {
+				if(debugFlags.logBadData) {
+					consolePrintf("#%d Stack overflow!\n", GetId());
+					consoleFlush();
+				}
+				return;
+			}
 			std::uint8_t loopCount = readByteCommand();
 			auto &stackRecord = stack[stackPointer];
 			stackRecord.nextCommand = nextCommand;
@@ -442,7 +454,13 @@ namespace NitroComposer {
 
 		case 0xFC:
 		{
-			assert(stackPointer > 0);
+			if(stackPointer <= 0) {
+				if(debugFlags.logBadData) {
+					consolePrintf("#%d Stack underflow!\n", GetId());
+					consoleFlush();
+				}
+				return;
+			}
 			--stackPointer;
 			auto &stackRecord = stack[stackPointer];
 
@@ -475,6 +493,14 @@ namespace NitroComposer {
 				}
 			} break;
 
+			case StackEntryType::Call:
+			{
+				if(debugFlags.logBadData) {
+					consolePrintf("#%d Return from loop\n", GetId());
+					consoleFlush();
+				}
+			} break;
+
 			default:
 				assert(0);
 				break;
@@ -483,10 +509,23 @@ namespace NitroComposer {
 
 		case 0xFD:
 		{
-			assert(stackPointer > 0);
+			if(stackPointer <= 0) {
+				if(debugFlags.logBadData) {
+					consolePrintf("#%d Stack underflow!\n", GetId());
+					consoleFlush();
+				}
+				return;
+			}
 			--stackPointer;
 			auto &stackRecord = stack[stackPointer];
-			assert(stackRecord.type == StackEntryType::Call);
+
+			if(stackRecord.type != StackEntryType::Call) {
+				if(debugFlags.logBadData) {
+					consolePrintf("#%d Return from non-call stack entry!\n", GetId());
+					consoleFlush();
+				}
+			}
+
 			nextCommand = stackRecord.nextCommand;
 			if(debugFlags.logFlowControl) {
 				consolePrintf("#%d Return from Call\n", GetId());
