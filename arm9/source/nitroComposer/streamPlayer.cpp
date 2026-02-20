@@ -48,6 +48,7 @@ namespace NitroComposer {
 
 	void StreamPlayer::SetSdat(const SDatFile *sdat) {
 		assert(!this->IsPlaying());
+		assert(sdat);
 		this->sdat = sdat;
 	}
 
@@ -143,16 +144,19 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::PlayStream(unsigned int streamId) {
+		assert(sdat);
 		auto &info = sdat->GetStreamInfo(streamId);
 		PlayStream(info);
 	}
 
 	void StreamPlayer::PlayStream(const std::string &streamName) {
+		assert(sdat);
 		auto &info = sdat->GetStreamInfo(streamName);
 		PlayStream(info);
 	}
 
 	void StreamPlayer::PlayStream(const std::unique_ptr<StreamInfoRecord> &info) {
+		assert(sdat);
 		auto strm = sdat->OpenStream(info);
 		assert(strm->GetChannels() <= 2);
 
