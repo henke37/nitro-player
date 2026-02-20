@@ -15,12 +15,14 @@ TestSTRM::TestSTRM() :
 	player.SetSdat(sdat.get());
 }
 
-TestSTRM::TestSTRM(std::unique_ptr<NitroComposer::SDatFile> sdat) :
+TestSTRM::TestSTRM(
+	std::unique_ptr<NDSFile> &&nds, std::unique_ptr<NitroComposer::SDatFile> &&sdat) :
+	nds(std::move(nds)),
 	sdat(std::move(sdat)),
 	streamId(0),
 	player(4092, 1, 2, 3) {
 
-	player.SetSdat(sdat.get());
+	player.SetSdat(this->sdat.get());
 }
 
 TestSTRM::~TestSTRM() {}
