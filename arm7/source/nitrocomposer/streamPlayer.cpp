@@ -40,7 +40,6 @@ namespace NitroComposer {
 		sequencePlayer.ReserveChannel(hwChannelRight);
 	}
 	StreamPlayer::~StreamPlayer() {
-		assert(streamPlayer.get() == this);
 		sequencePlayer.UnreserveChannel(channels[0].GetHwChannel());
 		if(channels[1].IsAllocated()) {
 			sequencePlayer.UnreserveChannel(channels[1].GetHwChannel());
