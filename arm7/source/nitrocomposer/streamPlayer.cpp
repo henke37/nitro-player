@@ -8,8 +8,6 @@
 #include <algorithm>
 #include <cstring>
 
-#define NITROCOMPOSER_LOG_STREAM
-
 namespace NitroComposer {
 
 	std::unique_ptr<StreamPlayer> streamPlayer;
@@ -64,19 +62,18 @@ namespace NitroComposer {
 			default:
 				assert(false);
 		}
-#ifdef NITROCOMPOSER_LOG_STREAM
-		consolePuts("Stream Init.");
-		consoleFlush();
-#endif
+		if(debugFlags.logStreamMisc) {
+			consolePuts("Stream Init.");
+			consoleFlush();
+		}
 
 		playbackState = PlaybackState::InitialBuffering;
 	}
 	void StreamPlayer::Stop(bool instantly) {
-
-#ifdef NITROCOMPOSER_LOG_STREAM
-		consolePuts("Stream Stop.");
-		consoleFlush();
-#endif
+		if(debugFlags.logStreamMisc) {
+			consolePuts("Stream Stop.");
+			consoleFlush();
+		}
 
 		if(instantly) {
 			playbackState = PlaybackState::Stopped;
@@ -461,10 +458,11 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::blockAdded() {
-#ifdef NITROCOMPOSER_LOG_STREAM
-		consolePrintf("New block. %d %d", (int)playbackState,blocks.size());
-		consoleFlush();
-#endif
+		if(debugFlags.logStreamBlocks) {
+			consolePrintf("New block. %d %d", (int)playbackState, blocks.size());
+			consoleFlush();
+		}
+
 		switch(playbackState) {
 		case PlaybackState::InitialBuffering:
 		case PlaybackState::BufferingUnderrun_OutOfData:
@@ -494,10 +492,10 @@ namespace NitroComposer {
 		currentBlock = nullptr;
 		currentBlockReadPosition = 0;
 
-#ifdef NITROCOMPOSER_LOG_STREAM
-		consolePuts("Stream OOB!");
-		consoleFlush();
-#endif
+		if(debugFlags.logStreamMisc) {
+			consolePuts("Stream OOB!");
+			consoleFlush();
+		}
 
 		switch(playbackState) {
 		case PlaybackState::Playing:
@@ -546,17 +544,18 @@ namespace NitroComposer {
 	}
 
 	void StreamPlayer::setTimer() {
-#ifdef NITROCOMPOSER_LOG_STREAM
-		consolePuts("Stream Timer Start.");
-		consoleFlush();
-#endif
+		if(debugFlags.logStreamMisc) {
+			consolePuts("Stream Timer Start.");
+			consoleFlush();
+		}
+
 		timerStart(timerId, ClockDivider_256, TIMER_FREQ_SHIFT(sampleRate, 1, 8), timerCallback);
 	}
 	void StreamPlayer::clearTimer() {
-#ifdef NITROCOMPOSER_LOG_STREAM
-		consolePuts("Stream Timer Stop.");
-		consoleFlush();
-#endif
+		if(debugFlags.logStreamMisc) {
+			consolePuts("Stream Timer Stop.");
+			consoleFlush();
+		}
 
 		timerStop(timerId);
 	}

@@ -25,7 +25,9 @@ namespace NitroComposer {
 		.logCommonEffects = false,
 		.logUncommonEffects = true,
 		.logBadData = true,
-		.logNullNotes = true
+		.logNullNotes = true,
+		.logStreamBlocks = true,
+		.logStreamMisc = true
 	};
 
 	void SequencePlayer::Init() {
