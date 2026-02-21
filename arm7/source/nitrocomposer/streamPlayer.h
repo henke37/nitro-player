@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "adpcm.h"
+#include "channelReservation.h"
 
 #include "nitroComposer/wave.h"
 
@@ -82,7 +83,7 @@ namespace NitroComposer {
 			~StreamChannel();
 
 			std::uint8_t GetHwChannel() const { return hwChannel; }
-			bool IsAllocated() const { return hwChannel < 16; }
+			bool IsAllocated() const { return hwChannel.IsAllocated(); }
 			std::uint32_t GetBufferSize() const { return bufferSize; }
 			bool HWStillPlaying() const;
 
@@ -104,7 +105,7 @@ namespace NitroComposer {
 
 			AdpcmDecoder adpcmDecoder;
 
-			std::uint8_t hwChannel;
+			ChannelReservation hwChannel;
 
 			StereoChannel stereoChannel;
 

@@ -1,5 +1,7 @@
 #include "sequencePlayer.h"
 
+#include "channelReservation.h"
+
 #include <nds/timers.h>
 #include <nds/interrupts.h>
 #include <nds/arm7/console.h>
@@ -36,12 +38,14 @@ namespace NitroComposer {
 		setupFifo();
 	}
 
-	void SequencePlayer::ReserveChannel(std::uint8_t hwChannel) {
+	ChannelReservation SequencePlayer::ReserveChannel(std::uint8_t hwChannel) {
 		assert(hwChannel < voiceCount);
 		assert(!(externalChannelReservations & BIT(hwChannel)));
 		externalChannelReservations |= BIT(hwChannel);
 
 		voices[hwChannel].Kill();
+
+		return ChannelReservation(hwChannel);
 	}
 
 	void SequencePlayer::UnreserveChannel(std::uint8_t hwChannel) {
@@ -183,4 +187,27 @@ namespace NitroComposer {
 		return nullptr;
 	}
 
+	ChannelReservation::ChannelReservation(std::uint8_t channel) : channel(channel) {
+		assert(channel >= 0);
+		assert(channel < SequencePlayer::voiceCount);
+	}
+
+	ChannelReservation::~ChannelReservation() {
+		if(channel != 0xFF) {
+			sequencePlayer.UnreserveChannel(channel);
+		}
+	}
+	ChannelReservation::ChannelReservation(ChannelReservation &&old) : channel(old.channel) {
+		old.channel = 0xFF;
+	}
+
+	ChannelReservation &ChannelReservation::operator=(ChannelReservation &&old) {
+		if(this == &old) return *this;
+		assert(channel == 0xFF);
+
+		channel = old.channel;
+		old.channel = 0xFF;
+		
+		return *this;
+	}
 }

@@ -24,7 +24,6 @@ namespace NitroComposer {
 		}
 	{
 		assert(!streamPlayer);
-		sequencePlayer.ReserveChannel(hwChannel);
 	}
 	StreamPlayer::StreamPlayer(std::uint32_t playbackBuffSize, std::uint8_t timerId, std::uint8_t hwChannelLeft, std::uint8_t hwChannelRight) :
 		playbackState(PlaybackState::Uninitialized),
@@ -36,14 +35,8 @@ namespace NitroComposer {
 		}
 	{
 		assert(!streamPlayer);
-		sequencePlayer.ReserveChannel(hwChannelLeft);
-		sequencePlayer.ReserveChannel(hwChannelRight);
 	}
 	StreamPlayer::~StreamPlayer() {
-		sequencePlayer.UnreserveChannel(channels[0].GetHwChannel());
-		if(channels[1].IsAllocated()) {
-			sequencePlayer.UnreserveChannel(channels[1].GetHwChannel());
-		}
 	}
 
 	void StreamPlayer::Init(WaveEncoding encoding, bool stereo, std::uint16_t sampleRate) {
@@ -151,13 +144,13 @@ namespace NitroComposer {
 		assert(false);
 	}
 
-	StreamPlayer::StreamChannel::StreamChannel() : bufferSize(0), hwChannel(0xFF), stereoChannel(StereoChannel::Invalid) {}
+	StreamPlayer::StreamChannel::StreamChannel() : bufferSize(0), stereoChannel(StereoChannel::Invalid) {}
 
 	StreamPlayer::StreamChannel::StreamChannel(std::uint32_t bufferSize, std::uint8_t hwChannel, StereoChannel stereoChannel) :
 		bufferSize(bufferSize),
 		writePosition(0),
-		hwChannel(hwChannel),
 		stereoChannel(stereoChannel) {
+		this->hwChannel = sequencePlayer.ReserveChannel(hwChannel);
 		playbackBuffer = std::make_unique<std::uint8_t[]>(bufferSize);
 	}
 	StreamPlayer::StreamChannel::~StreamChannel() {}

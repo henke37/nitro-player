@@ -12,13 +12,13 @@ namespace NitroComposer {
 
 	class LoadedWaveArchive;
 	class StreamPlayer;
+	class ChannelReservation;
 
 	class SequencePlayer {
 	public:
 		void Init();
 
-		void ReserveChannel(std::uint8_t hwChannel);
-		void UnreserveChannel(std::uint8_t hwChannel);
+		ChannelReservation ReserveChannel(std::uint8_t hwChannel);
 	private:
 		void Update();
 		void UpdateVoices();
@@ -332,6 +332,10 @@ namespace NitroComposer {
 		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track);
 
 		bool isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const;
+
+		friend class ChannelReservation;
+
+		void UnreserveChannel(std::uint8_t hwChannel);
 	};
 
 	int Cnv_Attack(int attk);
