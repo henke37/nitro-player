@@ -264,6 +264,8 @@ namespace NitroComposer {
 
 		const std::uint8_t *data=GetBlockData(block);
 
+		assert(data);
+
 		switch(streamPlayer->streamEncoding) {
 			case WaveEncoding::PCM8: {
 				size_t dataSize = sampleCount;
@@ -413,6 +415,8 @@ namespace NitroComposer {
 				assert(0);
 				break;
 			}
+
+			assert(currentBlock);
 
 			std::uint32_t samplesLeftInBlock = currentBlock->blockSampleCount - currentBlockReadPosition;
 			std::uint32_t samplesToWrite = std::min(samplesLeftToWrite, samplesLeftInBlock);
