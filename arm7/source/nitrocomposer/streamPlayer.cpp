@@ -533,12 +533,19 @@ namespace NitroComposer {
 	void StreamPlayer::bufferNextBlock() {
 		getNextBlock();
 		assert(currentBlock);
+		assert(currentBlockReadPosition <= currentBlock->blockSampleCount);
 		std::uint32_t samplesLeftInBlock = currentBlock->blockSampleCount - currentBlockReadPosition;
+
+		assert(bufferedSampleCount <= channels[0].GetBufferSize());
 
 		std::uint32_t samplesToBuffer = std::min(
 			samplesLeftInBlock,
 			channels[0].GetBufferSize() - bufferedSampleCount
 		);
+
+		if(samplesToBuffer == 0) {
+			return;
+		}
 
 		writeToChannels(samplesToBuffer);
 	}
