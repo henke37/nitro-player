@@ -5,6 +5,9 @@
 #include <nds/arm9/sassert.h>
 #include <nds/arm9/cache.h>
 
+#include <ndsabi.h>
+#include <aeabi.h>
+
 #define VRAM_E_SIZE (64*1024)
 #define VRAM_F_SIZE (16*1024)
 #define VRAM_G_SIZE (16*1024)
@@ -123,17 +126,17 @@ ITCM_CODE void Poke::PerformBlob() const {
 		case PokeWriteMode::MEMCPY_8:
 		{
 			volatile const std::uint8_t *src = (volatile const std::uint8_t *)valuePtr;
-			std::copy(src, src + size, (std::uint8_t *)addr);
+			__ndsabi_memcpy1(const_cast<void *>(addr), (void *)(src), size);
 		} break;
 		case PokeWriteMode::MEMCPY_16:
 		{
 			volatile const std::uint16_t *src = (volatile const std::uint16_t *)valuePtr;
-			std::copy(src, src + size / 2, (std::uint16_t *)addr);
+			__ndsabi_memcpy2(const_cast<void *>(addr), (void *)(src), size);
 		} break;
 		case PokeWriteMode::MEMCPY_32:
 		{
 			volatile const std::uint32_t *src = (volatile const std::uint32_t *)valuePtr;
-			std::copy(src, src + size / 4, (std::uint32_t *)addr);
+			__aeabi_memcpy4(const_cast<void *>(addr), (void *)(src), size);
 		} break;
 		case PokeWriteMode::INVALID:
 		default:
