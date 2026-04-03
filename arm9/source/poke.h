@@ -16,7 +16,8 @@ enum class PokeType {
 	OWNBLOB_16 = 6,
 	OWNBLOB_32 = 7,
 	INT = 8,
-	BITFIELD = 9
+	BITFIELD = 9,
+	VOIDFUNC = 10
 };
 
 enum class PokeWriteMode {
@@ -29,6 +30,11 @@ enum class PokeWriteMode {
 };
 
 class Poke {
+public:
+	typedef void (*voidFuncPtr_t)(void *);
+
+private:
+
 	struct {
 		size_t size : 23;
 		PokeWriteMode writeMode : 4;
@@ -48,6 +54,7 @@ class Poke {
 		BitFieldPoke<std::uint8_t> bitField8;
 		BitFieldPoke<std::uint16_t> bitField16;
 		BitFieldPoke<std::uint32_t> bitField32;
+		voidFuncPtr_t voidFunc;
 	};
 	
 public:
@@ -71,6 +78,8 @@ public:
 	Poke(std::uint8_t val, std::uint8_t mask, volatile std::uint8_t *addr);
 	Poke(std::uint16_t val, std::uint16_t mask, volatile std::uint16_t *addr);
 	Poke(std::uint32_t val, std::uint32_t mask, volatile std::uint32_t *addr);
+
+	Poke(voidFuncPtr_t fun, void *arg);
 
 	void operator =(std::nullptr_t);
 	void operator =(Poke &&);

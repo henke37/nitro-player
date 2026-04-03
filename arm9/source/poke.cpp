@@ -42,6 +42,8 @@ Poke::Poke(std::uint16_t val, std::uint16_t mask, volatile std::uint16_t *addr_)
 Poke::Poke(std::uint32_t val, std::uint32_t mask, volatile std::uint32_t *addr_) : size(sizeof(std::uint32_t)), type(PokeType::BITFIELD), addr(addr_), bitField32(val,mask) {
 }
 
+Poke::Poke(voidFuncPtr_t fun, void *arg) : size(0), type(PokeType::VOIDFUNC), addr(arg), voidFunc(fun) {}
+
 Poke::Poke(Poke &&p2) : size(p2.size), writeMode(p2.writeMode), type(p2.type), addr(p2.addr) {
 	assert(&p2 != this);
 
@@ -97,6 +99,10 @@ Poke::Poke(Poke &&p2) : size(p2.size), writeMode(p2.writeMode), type(p2.type), a
 			break;
 		case PokeType::RAWBLOB_32:
 			std::construct_at(&rawPtr32, std::move(p2.rawPtr32));
+			break;
+
+		case PokeType::VOIDFUNC:
+			std::construct_at(&voidFunc, std::move(p2.voidFunc));
 			break;
 	}
 	p2.Clear();
@@ -171,6 +177,10 @@ void Poke::operator=(Poke &&p2) {
 			break;
 		case PokeType::RAWBLOB_32:
 			std::construct_at(&rawPtr32, std::move(p2.rawPtr32));
+			break;
+
+		case PokeType::VOIDFUNC:
+			std::construct_at(&voidFunc, std::move(p2.voidFunc));
 			break;
 	}
 	p2.Clear();

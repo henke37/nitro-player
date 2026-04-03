@@ -81,6 +81,10 @@ ITCM_CODE void Poke::Perform() const {
 		PerformBlob();
 	break;
 
+	case PokeType::VOIDFUNC:
+		voidFunc((void *)addr);
+	break;
+
 	default:
 		sassert(0, "Invalid poke type %i", (int)type);
 	}
