@@ -85,6 +85,10 @@ ITCM_CODE void Poke::Perform() const {
 		voidFunc((void *)addr);
 	break;
 
+	case PokeType::MEMSET:
+		PerformMemset();
+	break;
+
 	default:
 		sassert(0, "Invalid poke type %i", (int)type);
 	}
@@ -145,6 +149,28 @@ ITCM_CODE void Poke::PerformBlob() const {
 		case PokeWriteMode::INVALID:
 		default:
 			sassert(0, "Invalid writemode %i", (int)writeMode);
+	}
+}
+
+void Poke::PerformMemset() const {
+	switch(this->writeMode) {
+	case PokeWriteMode::MEMCPY_8:
+		std::fill(static_cast<std::uint8_t *>(const_cast<void *>(addr)), static_cast<std::uint8_t *>(const_cast<void *>(addr)) + size, value8);
+		break;
+	case PokeWriteMode::MEMCPY_16:
+		std::fill(static_cast<std::uint16_t *>(const_cast<void *>(addr)), static_cast<std::uint16_t *>(const_cast<void *>(addr)) + (size / 2), value16);
+		break;
+	case PokeWriteMode::MEMCPY_32:
+		std::fill(static_cast<std::uint32_t *>(const_cast<void *>(addr)), static_cast<std::uint32_t *>(const_cast<void *>(addr)) + (size / 4), value32);
+		break;
+	case PokeWriteMode::DMA_16:
+		dmaFillHalfWords(value16, const_cast<void *>(addr), size);
+		break;
+	case PokeWriteMode::DMA_32:
+		dmaFillWords(value32, const_cast<void *>(addr), size);
+		break;
+	default:
+		sassert(0,"Invalid write mode %i found for memset poke", size);
 	}
 }
 

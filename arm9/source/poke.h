@@ -17,7 +17,8 @@ enum class PokeType {
 	OWNBLOB_32 = 7,
 	INT = 8,
 	BITFIELD = 9,
-	VOIDFUNC = 10
+	VOIDFUNC = 10,
+	MEMSET = 11 
 };
 
 enum class PokeWriteMode {
@@ -69,6 +70,13 @@ public:
 	Poke(std::int16_t val, volatile std::int16_t *addr);
 	Poke(std::int32_t val, volatile std::int32_t *addr);
 	
+	Poke(std::uint8_t val, volatile std::uint8_t *addr, size_t size);
+	Poke(std::uint16_t val, volatile std::uint16_t *addr, size_t size, PokeWriteMode mode = PokeWriteMode::MEMCPY_16);
+	Poke(std::uint32_t val, volatile std::uint32_t *addr, size_t size, PokeWriteMode mode = PokeWriteMode::MEMCPY_32);
+	Poke(std::int8_t val, volatile std::int8_t *addr, size_t size);
+	Poke(std::int16_t val, volatile std::int16_t *addr, size_t size, PokeWriteMode mode = PokeWriteMode::MEMCPY_16);
+	Poke(std::int32_t val, volatile std::int32_t *addr, size_t size, PokeWriteMode mode = PokeWriteMode::MEMCPY_32);
+	
 	Poke(std::unique_ptr<const std::uint8_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
 	Poke(std::unique_ptr<const std::uint16_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
 	Poke(std::unique_ptr<const std::uint32_t[]> &&srcBuff, size_t dataSize, hwPtr addr, PokeWriteMode mode);
@@ -100,6 +108,7 @@ private:
 	bool ownsBlob() const;
 
 	void PerformBlob() const;
+	void PerformMemset() const;
 };
 
 void swap(Poke &, Poke &);

@@ -13,6 +13,22 @@ Poke::Poke(std::int8_t val, volatile std::int8_t *addr_) : size(sizeof(uint8_t))
 Poke::Poke(std::int16_t val, volatile std::int16_t *addr_) : size(sizeof(uint16_t)), type(PokeType::INT), addr(addr_), value16(val) {}
 Poke::Poke(std::int32_t val, volatile std::int32_t *addr_) : size(sizeof(uint32_t)), type(PokeType::INT), addr(addr_), value32(val) {}
 
+Poke::Poke(std::uint8_t val, volatile std::uint8_t *addr, size_t size) : size(size), writeMode(PokeWriteMode::MEMCPY_8), type(PokeType::MEMSET), addr(addr), value8(val) {}
+Poke::Poke(std::uint16_t val, volatile std::uint16_t *addr, size_t size, PokeWriteMode mode) : size(size), writeMode(mode), type(PokeType::MEMSET), addr(addr), value16(val) {
+	assert(mode == PokeWriteMode::MEMCPY_16 || mode == PokeWriteMode::DMA_16);
+}
+Poke::Poke(std::uint32_t val, volatile std::uint32_t *addr, size_t size, PokeWriteMode mode) : size(size), writeMode(mode), type(PokeType::MEMSET), addr(addr), value32(val) {
+	assert(mode == PokeWriteMode::MEMCPY_32 || mode == PokeWriteMode::DMA_32);
+}
+
+Poke::Poke(std::int8_t val, volatile std::int8_t *addr, size_t size) : size(size), writeMode(PokeWriteMode::MEMCPY_8), type(PokeType::MEMSET), addr(addr), value8(val) {}
+Poke::Poke(std::int16_t val, volatile std::int16_t *addr, size_t size, PokeWriteMode mode) : size(size), writeMode(mode), type(PokeType::MEMSET), addr(addr), value16(val) {
+	assert(mode == PokeWriteMode::MEMCPY_16 || mode == PokeWriteMode::DMA_16);
+}
+Poke::Poke(std::int32_t val, volatile std::int32_t *addr, size_t size, PokeWriteMode mode) : size(size), writeMode(mode), type(PokeType::MEMSET), addr(addr), value32(val) {
+	assert(mode == PokeWriteMode::MEMCPY_32 || mode == PokeWriteMode::DMA_32);
+}
+
 Poke::Poke(std::unique_ptr<const std::uint8_t[]> &&dataPtr, size_t dataSize, hwPtr addr_, PokeWriteMode mode) : size(dataSize), writeMode(mode), type(PokeType::OWNBLOB_8), addr(addr_), valuePtr8(std::move(dataPtr)) {
 	checkBlobMode();
 }
@@ -104,6 +120,26 @@ Poke::Poke(Poke &&p2) : size(p2.size), writeMode(p2.writeMode), type(p2.type), a
 		case PokeType::VOIDFUNC:
 			std::construct_at(&voidFunc, std::move(p2.voidFunc));
 			break;
+
+		case PokeType::MEMSET:
+			switch(this->writeMode) {
+			case PokeWriteMode::MEMCPY_8:
+				value8 = p2.value8;
+				break;
+
+			case PokeWriteMode::MEMCPY_16:
+			case PokeWriteMode::DMA_16:
+				value16 = p2.value16;
+				break;
+
+			case PokeWriteMode::MEMCPY_32:
+			case PokeWriteMode::DMA_32:
+				value32 = p2.value32;
+				break;
+			default:
+				sassert(0, "Invalid write mode %i found for memset poke", (int)this->writeMode);
+			}
+			break;
 	}
 	p2.Clear();
 }
@@ -181,6 +217,26 @@ void Poke::operator=(Poke &&p2) {
 
 		case PokeType::VOIDFUNC:
 			std::construct_at(&voidFunc, std::move(p2.voidFunc));
+			break;
+
+		case PokeType::MEMSET:
+			switch(this->writeMode) {
+			case PokeWriteMode::MEMCPY_8:
+				value8 = p2.value8;
+				break;
+
+			case PokeWriteMode::MEMCPY_16:
+			case PokeWriteMode::DMA_16:
+				value16 = p2.value16;
+				break;
+
+			case PokeWriteMode::MEMCPY_32:
+			case PokeWriteMode::DMA_32:
+				value32 = p2.value32;
+				break;
+			default:
+				sassert(0, "Invalid write mode %i found for memset poke", (int)this->writeMode);
+			}
 			break;
 	}
 	p2.Clear();
