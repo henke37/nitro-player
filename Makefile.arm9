@@ -7,5 +7,5 @@ BLOCKSDS	?= /opt/blocksds/core
 include $(BLOCKSDS)/sys/default_makefiles/rom_arm9arm7/Makefile.arm9
 
 CFLAGS    += -fstack-protector-strong -g -Wall -Wextra -Werror
-CXXFLAGS  += -fstack-protector-strong -g -std=c++20 -Icommon -Wall -Wextra -Werror
+CXXFLAGS  += -fstack-protector-strong -g -fexceptions -std=c++20 -Icommon -Wall -Wextra -Werror
 LIBS      += -lnds9d

@@ -157,7 +157,20 @@ namespace NitroComposer {
 		sbnk = sdat->OpenBank(bankInfo);
 		//printf("Loaded bank %s.\n", sdat->GetNameForBank(bankId).c_str());
 
-		LoadWaveFormsForCurrentBank();
+		try {
+			LoadWaveFormsForCurrentBank();
+		} catch(const std::bad_alloc &) {
+			UnloadWaveArchiveWaveForms(0);
+			UnloadWaveArchiveWaveForms(1);
+			UnloadWaveArchiveWaveForms(2);
+			UnloadWaveArchiveWaveForms(3);
+
+			try {
+				LoadWaveFormsForCurrentBank();
+			} catch(const std::bad_alloc &) {
+				sassert(0, "Out of waveform memory for bank %u", bankId);
+			}
+		}
 
 		LoadBankIPC buff;
 		buff.command = BaseIPC::CommandType::LoadBank;
@@ -227,7 +240,7 @@ namespace NitroComposer {
 		auto stream = swar->GetWaveData(info);
 		auto dataLen = info.GetDataSize();
 		loadedWave.waveData = malloc(dataLen);
-		sassert(loadedWave.waveData, "Not enough ram for wave data! %i", dataLen);
+		if(!loadedWave.waveData) throw std::bad_alloc();
 		auto readLen = stream->read((uint8_t *)loadedWave.waveData, dataLen);
 		sassert(readLen == dataLen, "Only read %d/%d bytes!", readLen, dataLen);
 
