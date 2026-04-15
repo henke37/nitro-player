@@ -91,8 +91,10 @@ public:
 
 	void operator =(std::nullptr_t);
 	void operator =(Poke &&);
-	void operator ()();
-	operator bool() const noexcept;
+	void operator ()() { Perform(); };
+	operator bool() const noexcept {
+		return type != PokeType::NOOP;
+	}
 
 	void Clear();
 	

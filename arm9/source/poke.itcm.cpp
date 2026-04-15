@@ -18,24 +18,27 @@
 
 ITCM_CODE static constexpr bool pointerInRange(volatile void *needle, volatile void *base, size_t size);
 
-ITCM_CODE void Poke::operator()() {
-	Perform();
-}
-
 ITCM_CODE void Poke::Perform() const {
+	size_t size = this->size;
+	PokeType type = this->type;
+	//PokeWriteMode writeMode = this->writeMode;
+
 	if (type == PokeType::NOOP) return;
 	registerOverride<std::uint8_t> oldVRamMode;
 
-	if(pointerInRange(addr, VRAM_E, VRAM_E_SIZE)) {
-		oldVRamMode.set(&VRAM_E_CR, VRAM_ENABLE | VRAM_E_LCD);
-	} else if(pointerInRange(addr, VRAM_F, VRAM_F_SIZE)) {
-		oldVRamMode.set(&VRAM_F_CR, VRAM_ENABLE | VRAM_F_LCD);
-	} else if(pointerInRange(addr, VRAM_G, VRAM_G_SIZE)) {
-		oldVRamMode.set(&VRAM_G_CR, VRAM_ENABLE | VRAM_G_LCD);
-	} else if(pointerInRange(addr, VRAM_H, VRAM_H_SIZE)) {
-		oldVRamMode.set(&VRAM_H_CR, VRAM_ENABLE | VRAM_H_LCD);
-	} else if(pointerInRange(addr, VRAM_I, VRAM_I_SIZE)) {
-		oldVRamMode.set(&VRAM_I_CR, VRAM_ENABLE | VRAM_I_LCD);
+	{
+		hwPtr addr = this->addr;
+		if(pointerInRange(addr, VRAM_E, VRAM_E_SIZE)) {
+			oldVRamMode.set(&VRAM_E_CR, VRAM_ENABLE | VRAM_E_LCD);
+		} else if(pointerInRange(addr, VRAM_F, VRAM_F_SIZE)) {
+			oldVRamMode.set(&VRAM_F_CR, VRAM_ENABLE | VRAM_F_LCD);
+		} else if(pointerInRange(addr, VRAM_G, VRAM_G_SIZE)) {
+			oldVRamMode.set(&VRAM_G_CR, VRAM_ENABLE | VRAM_G_LCD);
+		} else if(pointerInRange(addr, VRAM_H, VRAM_H_SIZE)) {
+			oldVRamMode.set(&VRAM_H_CR, VRAM_ENABLE | VRAM_H_LCD);
+		} else if(pointerInRange(addr, VRAM_I, VRAM_I_SIZE)) {
+			oldVRamMode.set(&VRAM_I_CR, VRAM_ENABLE | VRAM_I_LCD);
+		}
 	}
 
 	switch(type) {
@@ -121,8 +124,12 @@ ITCM_CODE const void *Poke::getValuePtr() const {
 }
 
 ITCM_CODE void Poke::PerformBlob() const {
+	size_t size = this->size;
+	//PokeType type = this->type;
+	PokeWriteMode writeMode = this->writeMode;
+
 	const void *valuePtr = getValuePtr();
-	switch(this->writeMode) {
+	switch(writeMode) {
 		case PokeWriteMode::DMA_16:
 			DC_FlushRange(valuePtr, size);
 			dmaCopyHalfWords(0, valuePtr, (void *)addr, size);
@@ -153,7 +160,11 @@ ITCM_CODE void Poke::PerformBlob() const {
 }
 
 void Poke::PerformMemset() const {
-	switch(this->writeMode) {
+	size_t size = this->size;
+	//PokeType type = this->type;
+	PokeWriteMode writeMode = this->writeMode;
+
+	switch(writeMode) {
 	case PokeWriteMode::MEMCPY_8:
 		std::fill(static_cast<std::uint8_t *>(const_cast<void *>(addr)), static_cast<std::uint8_t *>(const_cast<void *>(addr)) + size, value8);
 		break;

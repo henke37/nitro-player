@@ -148,10 +148,6 @@ void Poke::operator=(std::nullptr_t) {
 	Clear();
 }
 
-Poke::operator bool() const {
-	return type != PokeType::NOOP;
-}
-
 void Poke::operator=(Poke &&p2) {
 	assert(this != &p2);
 	Clear();
