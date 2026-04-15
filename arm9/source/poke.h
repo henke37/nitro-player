@@ -7,7 +7,7 @@
 
 typedef volatile void *hwPtr;
 
-enum class PokeType {
+enum class PokeType : unsigned {
 	NOOP       = 0,
 	RAWBLOB_8  = 1,
 	RAWBLOB_16 = 2,
@@ -21,7 +21,7 @@ enum class PokeType {
 	MEMSET = 11 
 };
 
-enum class PokeWriteMode {
+enum class PokeWriteMode : unsigned {
 	INVALID = 0,
 	MEMCPY_8 = 1,
 	MEMCPY_16 = 2,
