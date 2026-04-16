@@ -29,11 +29,11 @@ void BinaryReader::setPos(size_t newPos) {
 	stream->setPos(newPos);
 }
 
-size_t BinaryReader::getPos() const {
+size_t BinaryReader::getPos() const noexcept {
 	return stream->getPos();
 }
 
-bool BinaryReader::isAtEnd() const {
+bool BinaryReader::isAtEnd() const noexcept {
 	return stream->getPos() == stream->getLength();
 }
 

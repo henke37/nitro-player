@@ -14,7 +14,7 @@ FifoMutex::~FifoMutex() {
 	if(isAquired()) release();
 }
 
-bool FifoMutex::isAquired() const {
+bool FifoMutex::isAquired() const noexcept {
 	return channel!=invalidFifoChannel;
 }
 

@@ -3,10 +3,10 @@
 #include <nds/arm9/trig_lut.h>
 #include <nds/arm9/sassert.h>
 
-fp8 operator "" _fp8(unsigned long long x) { return fp8((int)x); }
-fp12 operator "" _fp12(unsigned long long x) { return fp12((int)x); }
+fp8 operator "" _fp8(unsigned long long x) noexcept { return fp8((int)x); }
+fp12 operator "" _fp12(unsigned long long x)  noexcept { return fp12((int)x); }
 
-fp12 operator""_fp12(long double x) {
+fp12 operator""_fp12(long double x) noexcept {
 	return fp12((double)x);
 }
 
@@ -44,42 +44,42 @@ fp12 &operator %=(fp12 &x, const fp12 &y) {
 }
 
 
-FixedAngle operator "" _fixedAngle(unsigned long long x) {
+FixedAngle operator "" _fixedAngle(unsigned long long x) noexcept {
 	return FixedAngle(degreesToAngle(x));
 }
 
 FixedAngle::FixedAngle() {}
 FixedAngle::FixedAngle(int16_t rawAngle) : raw(rawAngle) {}
 
-FixedAngle::operator bool() const { return (bool)raw; }
-FixedAngle::operator float() const {
+FixedAngle::operator bool() const noexcept { return (bool)raw; }
+FixedAngle::operator float() const noexcept {
 	return angleToDegrees((float)(raw));
 };
 
-FixedAngle &FixedAngle::operator =(const FixedAngle &f2) { raw = f2.raw; return *this; }
-FixedAngle &FixedAngle::operator +=(const FixedAngle &f2) { raw += f2.raw; return *this; }
-FixedAngle &FixedAngle::operator -=(const FixedAngle &f2) { raw -= f2.raw; return *this; }
-FixedAngle &FixedAngle::operator *=(const FixedAngle &f2) { raw = raw * f2.raw; return *this; }
-FixedAngle &FixedAngle::operator &=(const FixedAngle &f2) { raw &= f2.raw; return *this; }
-FixedAngle &FixedAngle::operator |=(const FixedAngle &f2) { raw |= f2.raw; return *this; }
+FixedAngle &FixedAngle::operator =(const FixedAngle &f2) noexcept { raw = f2.raw; return *this; }
+FixedAngle &FixedAngle::operator +=(const FixedAngle &f2) noexcept { raw += f2.raw; return *this; }
+FixedAngle &FixedAngle::operator -=(const FixedAngle &f2) noexcept { raw -= f2.raw; return *this; }
+FixedAngle &FixedAngle::operator *=(const FixedAngle &f2) noexcept { raw = raw * f2.raw; return *this; }
+FixedAngle &FixedAngle::operator &=(const FixedAngle &f2) noexcept { raw &= f2.raw; return *this; }
+FixedAngle &FixedAngle::operator |=(const FixedAngle &f2) noexcept { raw |= f2.raw; return *this; }
 
-FixedAngle FixedAngle::operator +(const FixedAngle &f2) const { return FixedAngle(raw + f2.raw); }
-FixedAngle FixedAngle::operator -(const FixedAngle &f2) const { return FixedAngle(raw - f2.raw); }
-FixedAngle FixedAngle::operator *(const FixedAngle &f2) const { return FixedAngle(raw * f2.raw); }
-FixedAngle FixedAngle::operator &(const FixedAngle &f2) const { return FixedAngle(raw & f2.raw); }
-FixedAngle FixedAngle::operator |(const FixedAngle &f2) const { return FixedAngle(raw | f2.raw); }
+FixedAngle FixedAngle::operator +(const FixedAngle &f2) const noexcept { return FixedAngle(raw + f2.raw); }
+FixedAngle FixedAngle::operator -(const FixedAngle &f2) const noexcept { return FixedAngle(raw - f2.raw); }
+FixedAngle FixedAngle::operator *(const FixedAngle &f2) const noexcept { return FixedAngle(raw * f2.raw); }
+FixedAngle FixedAngle::operator &(const FixedAngle &f2) const noexcept { return FixedAngle(raw & f2.raw); }
+FixedAngle FixedAngle::operator |(const FixedAngle &f2) const noexcept { return FixedAngle(raw | f2.raw); }
 
-FixedAngle &FixedAngle::operator <<=(const unsigned sh) { raw <<= sh; return *this; }
-FixedAngle &FixedAngle::operator >>=(const unsigned sh) { raw >>= sh; return *this; }
-FixedAngle FixedAngle::operator <<(const unsigned sh) const { return FixedAngle(raw << sh); }
-FixedAngle FixedAngle::operator >>(const unsigned sh) const { return FixedAngle(raw >> sh); }
+FixedAngle &FixedAngle::operator <<=(const unsigned sh) noexcept { raw <<= sh; return *this; }
+FixedAngle &FixedAngle::operator >>=(const unsigned sh) noexcept { raw >>= sh; return *this; }
+FixedAngle FixedAngle::operator <<(const unsigned sh) const noexcept { return FixedAngle(raw << sh); }
+FixedAngle FixedAngle::operator >>(const unsigned sh) const noexcept { return FixedAngle(raw >> sh); }
 
-bool FixedAngle::operator <(const FixedAngle &f2) const { return raw < f2.raw; }
-bool FixedAngle::operator <=(const FixedAngle &f2) const { return raw <= f2.raw; }
-bool FixedAngle::operator >(const FixedAngle &f2) const { return raw > f2.raw; }
-bool FixedAngle::operator >=(const FixedAngle &f2) const { return raw >= f2.raw; }
-bool FixedAngle::operator !=(const FixedAngle &f2) const { return raw != f2.raw; }
-bool FixedAngle::operator ==(const FixedAngle &f2) const { return raw == f2.raw; }
+bool FixedAngle::operator <(const FixedAngle &f2) const noexcept { return raw < f2.raw; }
+bool FixedAngle::operator <=(const FixedAngle &f2) const noexcept { return raw <= f2.raw; }
+bool FixedAngle::operator >(const FixedAngle &f2) const noexcept { return raw > f2.raw; }
+bool FixedAngle::operator >=(const FixedAngle &f2) const noexcept { return raw >= f2.raw; }
+bool FixedAngle::operator !=(const FixedAngle &f2) const noexcept { return raw != f2.raw; }
+bool FixedAngle::operator ==(const FixedAngle &f2) const noexcept { return raw == f2.raw; }
 
 
 fp12 sin(const FixedAngle &x) {

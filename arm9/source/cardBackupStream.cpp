@@ -18,7 +18,7 @@ size_t CardBackupReadStream::read(uint8_t *buff, size_t size) {
 	return size;
 }
 
-size_t CardBackupReadStream::getLength() const {
+size_t CardBackupReadStream::getLength() const noexcept {
 	return getBackupSize();
 }
 
@@ -34,7 +34,7 @@ size_t CardBackupWriteStream::write(const uint8_t *buff, size_t size) {
 	return size;
 }
 
-size_t CardBackupWriteStream::getLength() const {
+size_t CardBackupWriteStream::getLength() const noexcept {
 	return getBackupSize();
 }
 

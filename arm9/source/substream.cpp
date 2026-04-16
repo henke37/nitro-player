@@ -22,7 +22,7 @@ void SubStream::setPos(size_t newPos) {
 	virtualPos=newPos;
 	applyPos();
 }
-size_t SubStream::getPos() const {
+size_t SubStream::getPos() const noexcept {
 	return virtualPos;
 }
 size_t SubStream::read(uint8_t *buf, size_t size) {
@@ -41,7 +41,7 @@ size_t SubStream::read(uint8_t *buf, size_t size) {
 	
 	return readSize;
 }
-size_t SubStream::getLength() const {
+size_t SubStream::getLength() const noexcept {
 	size_t realLen=realStream->getLength();
 	if(realLen-offset>limit) return limit;
 	

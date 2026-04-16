@@ -29,7 +29,7 @@ namespace NitroComposer {
 		return std::make_unique<SubStream>(stream.release(), waveInfo.dataOffset, dataSize, true);
 	}
 
-	size_t SWAR::WaveRecord::GetDataSize() const {
+	size_t SWAR::WaveRecord::GetDataSize() const noexcept {
 		std::uint32_t sampleCount = loopStart + loopLength;
 		size_t dataSize = sampleCount * 4;
 

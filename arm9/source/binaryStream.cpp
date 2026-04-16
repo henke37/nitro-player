@@ -8,8 +8,8 @@ BinaryWriteStream::~BinaryWriteStream() {}
 
 ManualPosBinaryReadStream::ManualPosBinaryReadStream() : position(0) {}
 void ManualPosBinaryReadStream::setPos(size_t newPos) { position = newPos; }
-size_t ManualPosBinaryReadStream::getPos() const { return position; }
+size_t ManualPosBinaryReadStream::getPos() const noexcept { return position; }
 
 ManualPosBinaryWriteStream::ManualPosBinaryWriteStream() : position(0) {}
 void ManualPosBinaryWriteStream::setPos(size_t newPos) { position = newPos; }
-size_t ManualPosBinaryWriteStream::getPos() const { return position; }
+size_t ManualPosBinaryWriteStream::getPos() const noexcept { return position; }

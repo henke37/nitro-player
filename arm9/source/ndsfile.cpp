@@ -244,7 +244,7 @@ bool NDSFile::FileSystem::Iterator::operator!=(const Iterator &other) const {
 	return this->dirItr != other.dirItr;
 }
 
-bool NDSFile::FileSystem::Iterator::atEnd() const {
+bool NDSFile::FileSystem::Iterator::atEnd() const noexcept {
 	if(!fileSystem) return true;
 	if(!dir) return true;
 	if(!dir->isRoot()) return false;

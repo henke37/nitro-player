@@ -18,7 +18,7 @@ size_t BaseMemoryReadStream::read(uint8_t *buff, size_t size) {
 	return readCnt;
 }
 
-size_t BaseMemoryReadStream::getLength() const {
+size_t BaseMemoryReadStream::getLength() const noexcept {
 	return length;
 }
 
@@ -40,7 +40,7 @@ size_t BaseMemoryWriteStream::write(const uint8_t *buff, size_t size) {
 	return writeCnt;
 }
 
-size_t BaseMemoryWriteStream::getLength() const {
+size_t BaseMemoryWriteStream::getLength() const noexcept {
 	return length;
 }
 

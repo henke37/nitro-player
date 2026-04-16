@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-bool Rect::pointInside(const Point &p) const {
+bool Rect::pointInside(const Point &p) const noexcept {
 	if(p.x<this->x) return false;
 	if(p.x > (signed)(this->x + w)) return false;
 	if(p.y < this->y) return false;
@@ -10,7 +10,7 @@ bool Rect::pointInside(const Point &p) const {
 	return true;
 }
 
-bool Rect::overlaps(const Rect& other) const {
+bool Rect::overlaps(const Rect& other) const noexcept {
 	if(getRight() <= other.x) return false;
 	if(other.getRight() <= x) return false;
 	if(getBottom() <= other.y) return false;
@@ -18,11 +18,11 @@ bool Rect::overlaps(const Rect& other) const {
 	return true;
 }
 
-bool Rect::hasArea() const {
+bool Rect::hasArea() const noexcept {
 	return w>0 && h>0;
 }
 
-unsigned int Rect::getArea() const {
+unsigned int Rect::getArea() const noexcept {
 	return w*h;
 }
 

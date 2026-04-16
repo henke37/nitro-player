@@ -60,7 +60,7 @@ namespace NitroComposer {
 	}
 
 
-	bool SDatFile::IsValidSequence(unsigned int sequenceId) const {
+	bool SDatFile::IsValidSequence(unsigned int sequenceId) const noexcept {
 		auto &info = sequenceInfos[sequenceId];
 		if(!info) return false;
 		if(!IsValidFileId(info->fatId)) return false;
@@ -68,7 +68,7 @@ namespace NitroComposer {
 		return IsValidBank(info->bankId);
 	}
 
-	bool SDatFile::IsValidBank(unsigned int bankId) const {
+	bool SDatFile::IsValidBank(unsigned int bankId) const noexcept {
 		auto &info = bankInfos[bankId];
 		if(!info) return false;
 		if(!IsValidFileId(info->fatId)) return false;
@@ -80,18 +80,18 @@ namespace NitroComposer {
 		return true;
 	}
 
-	bool SDatFile::IsValidWaveArchive(unsigned int archiveId) const {
+	bool SDatFile::IsValidWaveArchive(unsigned int archiveId) const noexcept {
 		auto &info = waveArchInfos[archiveId];
 		if(!info) return false;
 		if(!IsValidFileId(info->fatId)) return false;
 		return true;
 	}
 
-	bool SDatFile::IsValidPlayer(unsigned int playerId) const {
+	bool SDatFile::IsValidPlayer(unsigned int playerId) const noexcept {
 		return playerId < playerInfos.size();
 	}
 
-	bool SDatFile::IsValidStream(unsigned int streamId) const {
+	bool SDatFile::IsValidStream(unsigned int streamId) const noexcept {
 		auto &info = streamInfos[streamId];
 		if(!info) return false;
 		if(!IsValidFileId(info->fatId)) return false;
