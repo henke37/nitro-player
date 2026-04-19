@@ -40,6 +40,8 @@ namespace NitroComposer {
 
 		void LoadSequence(unsigned int sequenceId);
 		void LoadSequence(const std::string &sequenceName);
+		void LoadSequenceArchive(unsigned int archiveId);
+		void LoadSequenceArchive(const std::string &archiveName);
 		const std::unique_ptr<SequenceInfoRecord> &GetLoadedSequenceInfo() const;
 
 		void LoadBank(unsigned int bankId);
@@ -65,6 +67,7 @@ namespace NitroComposer {
 		void UnloadSequenceData();
 
 		void LoadSequence(const std::unique_ptr<SequenceInfoRecord> &);
+		void LoadSequenceArchive(const std::unique_ptr<SequenceArchiveRecord> &);
 
 		unsigned int loadedBankIndex = 0xFFFFFFFF;
 
@@ -96,7 +99,10 @@ namespace NitroComposer {
 
 		void PlaySequence(unsigned int sequenceId);
 		void PlaySequence(const std::string &sequenceName);
-		void PlaySequence(const std::unique_ptr<SequenceInfoRecord> &);
+		void PlayArchiveSequence(unsigned int archiveId, unsigned int sequenceId);
+		void PlayArchiveSequence(unsigned int archiveId, const std::string &sequenceName);
+		void PlayArchiveSequence(const std::string &archiveName, unsigned int sequenceId);
+		void PlayArchiveSequence(const std::string &archiveName, const std::string &sequenceName);
 		void AbortSequence();
 		void KillSequence();
 
@@ -112,6 +118,8 @@ namespace NitroComposer {
 		std::int32_t playerId = -1;
 
 		SequencePlayerGroup *group;
+
+		void PlaySequence(const std::unique_ptr<SequenceInfoRecord> &sequenceInfo);
 
 		void sendLoadBankIPC(const NitroComposer::InstrumentBank *loadedBank);
 		void sendLoadWaveArchiveIPC(unsigned int archiveSlot, const NitroComposer::LoadedWaveArchive *loadedArchive);

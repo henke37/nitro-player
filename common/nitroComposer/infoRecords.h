@@ -8,6 +8,7 @@ namespace NitroComposer {
     struct SequenceInfoRecord {
         std::uint16_t fatId;
         std::uint16_t bankId;
+		std::uint32_t startOffset;
         std::uint8_t vol;
         std::uint8_t channelPriority;
         std::uint8_t playerPriority;

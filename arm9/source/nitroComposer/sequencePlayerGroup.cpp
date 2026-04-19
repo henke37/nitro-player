@@ -50,6 +50,23 @@ namespace NitroComposer {
 		LoadSequence(sequenceId);
 	}
 
+	void SequencePlayerGroup::LoadSequenceArchive(const std::string &archiveName) {
+		unsigned int archiveId = sdat->GetNamedSequenceArchiveIndex(archiveName);
+		sassert(archiveId != 0xFFFFFFFF, "Unknown sequence archive \"%s\"", archiveName.c_str());
+
+		LoadSequenceArchive(archiveId);
+	}
+
+	void SequencePlayerGroup::LoadSequenceArchive(unsigned int archiveId) {
+		assert(archiveId != 0xFFFFFFFF);
+		if(archiveId == loadedSequenceArchiveId) return;
+		const std::unique_ptr<SequenceArchiveRecord> &archiveInfo = sdat->GetSequenceArchiveInfo(archiveId);
+		sassert(archiveInfo, "Unknown sequence archive %u", archiveId);
+		UnloadSequenceData();
+		std::construct_at(&ssar, sdat->OpenSequenceArchive(archiveInfo));
+		loadedSequenceArchiveId = archiveId;
+	}
+
 	const std::unique_ptr<SequenceInfoRecord> &SequencePlayerGroup::GetLoadedSequenceInfo() const {
 		assert(loadedSequenceId != 0xFFFFFFFF);
 		return sdat->GetSequenceInfo(loadedSequenceId);
@@ -57,10 +74,22 @@ namespace NitroComposer {
 
 	void SequencePlayerGroup::LoadSequence(const std::unique_ptr<SequenceInfoRecord> &sequenceInfo) {
 		UnloadSequenceData();
-		LoadBank(sequenceInfo->bankId);
 		std::construct_at(&sseq, sdat->OpenSequence(sequenceInfo));
 
 		auto stream = sseq->GetCommandStream();
+		sequenceDataSize = stream->getLength();
+
+		sequenceData = std::make_unique<std::uint8_t[]>(sequenceDataSize);
+		auto readLen = stream->read(sequenceData.get(), sequenceDataSize);
+
+		sassert(readLen == sequenceDataSize, "failed reading sequence data");
+	}
+
+	void SequencePlayerGroup::LoadSequenceArchive(const std::unique_ptr<SequenceArchiveRecord> &archiveInfo) {
+		UnloadSequenceData();
+		std::construct_at(&ssar, sdat->OpenSequenceArchive(archiveInfo));
+
+		auto stream = ssar->GetCommandStream();
 		sequenceDataSize = stream->getLength();
 
 		sequenceData = std::make_unique<std::uint8_t[]>(sequenceDataSize);

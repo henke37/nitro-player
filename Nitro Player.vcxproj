@@ -120,6 +120,7 @@
     <ClCompile Include="arm9\source\nitroComposer\sdatFile.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sequencePlayer.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sequencePlayerGroup.cpp" />
+    <ClCompile Include="arm9\source\nitroComposer\ssar.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\sseq.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\streamPlayer.cpp" />
     <ClCompile Include="arm9\source\nitroComposer\strm.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="arm9\source\nitroComposer\sbnk.h" />
     <ClInclude Include="arm9\source\nitroComposer\sdatFile.h" />
     <ClInclude Include="arm9\source\nitroComposer\sequencePlayer.h" />
+    <ClInclude Include="arm9\source\nitroComposer\ssar.h" />
     <ClInclude Include="arm9\source\nitroComposer\sseq.h" />
     <ClInclude Include="arm9\source\nitroComposer\streamPlayer.h" />
     <ClInclude Include="arm9\source\nitroComposer\strm.h" />

@@ -15,6 +15,7 @@ namespace NitroComposer {
 	class STRM;
 	class SSEQ;
 	class SWAR;
+	class SSAR;
 
 	class SDatFile {
 	public:
@@ -28,33 +29,41 @@ namespace NitroComposer {
 		std::unique_ptr<STRM> OpenStream(const std::unique_ptr<StreamInfoRecord> &) const;
 		std::unique_ptr<SSEQ> OpenSequence(const std::unique_ptr<SequenceInfoRecord> &) const;
 		std::unique_ptr<SWAR> OpenWaveArchive(const std::unique_ptr<WaveArchiveInfoRecord> &) const;
+		std::unique_ptr<SSAR> OpenSequenceArchive(const std::unique_ptr<SequenceArchiveRecord> &) const;
 
 		bool IsValidSequence(unsigned int sequenceId) const noexcept;
 		bool IsValidBank(unsigned int bankId) const noexcept;
 		bool IsValidWaveArchive(unsigned int archiveId) const noexcept;
 		bool IsValidPlayer(unsigned int playerId) const noexcept;
 		bool IsValidStream(unsigned int streamId) const noexcept;
+		bool IsValidSequenceArchive(unsigned int archiveId) const noexcept;
 
 		const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(unsigned int sequenceId) const;
 		const std::unique_ptr<BankInfoRecord> &GetBankInfo(unsigned int bankId) const;
 		const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(unsigned int archiveId) const;
 		const std::unique_ptr<PlayerInfoRecord> &GetPlayerInfo(unsigned int playerId) const;
 		const std::unique_ptr<StreamInfoRecord> &GetStreamInfo(unsigned int streamId) const;
+		const std::unique_ptr<SequenceArchiveRecord> &GetSequenceArchiveInfo(unsigned int archiveId) const;
 
 		unsigned int GetNamedSequenceIndex(const std::string &sequenceName) const;
 		unsigned int GetNamedStreamIndex(const std::string &streamName) const;
+		unsigned int GetNamedSequenceArchiveIndex(const std::string &archiveName) const;
+		unsigned int GetNamedSubSequenceIndex(unsigned int archiveId, const std::string &sequenceName) const;
 
 		std::string GetNameForSequence(unsigned int sequenceId) const;
 		std::string GetNameForBank(unsigned int bankId) const;
 		std::string GetNameForWaveArchive(unsigned int archiveId) const;
 		std::string GetNameForPlayer(unsigned int playerId) const;
 		std::string GetNameForStream(unsigned int streamId) const;
+		std::string GetNameForSequenceArchive(unsigned int archiveId) const;
+		std::string GetNameForSubSequence(unsigned int archiveId, unsigned int sequenceId) const;
 
 		unsigned int GetSequenceCount() const { return static_cast<unsigned int>(sequenceInfos.size()); }
 		unsigned int GetBankCount() const { return static_cast<unsigned int>(bankInfos.size()); }
 		unsigned int GetWaveArchiveCount() const { return static_cast<unsigned int>(waveArchInfos.size()); }
 		unsigned int GetPlayerCount() const { return static_cast<unsigned int>(playerInfos.size()); }
 		unsigned int GetStreamCount() const { return static_cast<unsigned int>(streamInfos.size()); }
+		unsigned int GetSequenceArchiveCount() const { return static_cast<unsigned int>(sequenceArchInfos.size()); }
 
 	private:
 

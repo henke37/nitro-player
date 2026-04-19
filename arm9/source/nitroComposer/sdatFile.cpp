@@ -8,6 +8,7 @@
 #include "strm.h"
 #include "sbnk.h"
 #include "swar.h"
+#include "ssar.h"
 
 #include <nds/arm9/sassert.h>
 
@@ -45,6 +46,11 @@ namespace NitroComposer {
 		if(!info) return std::unique_ptr<SWAR>();
 
 		return std::make_unique<SWAR>(this->OpenFile(info->fatId));
+	}
+	std::unique_ptr<SSAR> SDatFile::OpenSequenceArchive(const std::unique_ptr<SequenceArchiveRecord> &info) const {
+		if(!info) return std::unique_ptr<SSAR>();
+
+		return std::make_unique<SSAR>(this->OpenFile(info->fatId));
 	}
 	std::unique_ptr<STRM> SDatFile::OpenStream(unsigned int streamId) const {
 		auto &info = streamInfos[streamId];
@@ -98,6 +104,13 @@ namespace NitroComposer {
 		return true;
 	}
 
+	bool SDatFile::IsValidSequenceArchive(unsigned int archiveId) const noexcept {
+		auto &info = sequenceArchInfos[archiveId];
+		if(!info) return false;
+		if(!IsValidFileId(info->fatId)) return false;
+		return true;
+	}
+
 	const std::unique_ptr<SequenceInfoRecord> &SDatFile::GetSequenceInfo(unsigned int sequenceId) const {
 		return sequenceInfos[sequenceId];
 	}
@@ -127,12 +140,25 @@ namespace NitroComposer {
 		return streamInfos.at(streamId);
 	}
 
+	const std::unique_ptr<SequenceArchiveRecord> &SDatFile::GetSequenceArchiveInfo(unsigned int archiveId) const {
+		return sequenceArchInfos.at(archiveId);
+	}
+
 	unsigned int SDatFile::GetNamedStreamIndex(const std::string &streamName) const {
 		for(std::size_t streamId = 0; streamId < streamNames.size(); ++streamId) {
 			if(streamName != streamNames[streamId]) continue;
 			return streamId;
 		}
 		sassert(0, "Unknown stream \"%s\"!", streamName.c_str());
+		return 0xFFFFFFFF;
+	}
+
+	unsigned int SDatFile::GetNamedSequenceArchiveIndex(const std::string &archiveName) const {
+		for(std::size_t archiveId = 0; archiveId < sequenceArchiveNames.size(); ++archiveId) {
+			if(archiveName != sequenceArchiveNames[archiveId].archiveName) continue;
+			return archiveId;
+		}
+		sassert(0, "Unknown sequence archive \"%s\"!", archiveName.c_str());
 		return 0xFFFFFFFF;
 	}
 
@@ -176,6 +202,17 @@ namespace NitroComposer {
 		std::string name = streamNames.at(streamId);
 		if(name.empty()) {
 			return std::string("STRM_") + std::to_string(streamId);
+		}
+		return name;
+	}
+
+	std::string SDatFile::GetNameForSequenceArchive(unsigned int archiveId) const {
+		if(archiveId >= sequenceArchiveNames.size()) {
+			return std::string("SEQARC_") + std::to_string(archiveId);
+		}
+		std::string name = sequenceArchiveNames.at(archiveId).archiveName;
+		if(name.empty()) {
+			return std::string("SEQARC_") + std::to_string(archiveId);
 		}
 		return name;
 	}
@@ -337,6 +374,7 @@ namespace NitroComposer {
 				reader.setPos(offset);
 
 				std::unique_ptr<SequenceInfoRecord> record = std::make_unique<SequenceInfoRecord>();
+				record->startOffset = 0;
 				record->fatId = reader.readLEShort();
 				reader.skip(2);
 				record->bankId = reader.readLEShort();

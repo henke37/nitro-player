@@ -61,13 +61,19 @@ namespace NitroComposer {
 		group->LoadSequence(sequenceId);
 		const std::unique_ptr<SequenceInfoRecord> &sequenceInfo = group->GetLoadedSequenceInfo();
 
+		group->LoadBank(sequenceInfo->bankId);
+
+		PlaySequence(sequenceInfo);
+	}
+
+	void SequencePlayer::PlaySequence(const std::unique_ptr<SequenceInfoRecord> &sequenceInfo) {
 		auto &player = group->sdat->GetPlayerInfo(sequenceInfo->player);
 
 		PlayTrackIPC buff;
 		buff.command = BaseIPC::CommandType::PlaySequence;
 		buff.playerId = playerId;
 		buff.sequenceData = group->sequenceData.get();
-		buff.startPos = 0;
+		buff.startPos = sequenceInfo->startOffset;
 		buff.length = group->sequenceDataSize;
 		buff.channelMask = player->channelMask;
 		buff.sequenceVolume = sequenceInfo->vol;
@@ -78,6 +84,31 @@ namespace NitroComposer {
 		assert(success);
 
 		isPlaying = true;
+	}
+
+	void SequencePlayer::PlayArchiveSequence(const std::string &archiveName, unsigned int sequenceId) {
+		unsigned int archiveId = group->sdat->GetNamedSequenceArchiveIndex(archiveName);
+		PlayArchiveSequence(archiveId, sequenceId);
+	}
+
+	void SequencePlayer::PlayArchiveSequence(unsigned int archiveId, const std::string &sequenceName) {
+		unsigned int sequenceId = group->sdat->GetNamedSubSequenceIndex(archiveId, sequenceName);
+		PlayArchiveSequence(archiveId, sequenceId);
+	}
+
+	void SequencePlayer::PlayArchiveSequence(const std::string &archiveName, const std::string &sequenceName) {
+		unsigned int archiveId = group->sdat->GetNamedSequenceArchiveIndex(archiveName);
+		unsigned int sequenceId = group->sdat->GetNamedSubSequenceIndex(archiveId, sequenceName);
+		PlayArchiveSequence(archiveId, sequenceId);
+	}
+
+	void SequencePlayer::PlayArchiveSequence(unsigned int archiveId, unsigned int sequenceId) {
+		group->LoadSequenceArchive(archiveId);
+
+		const std::unique_ptr<SequenceInfoRecord> &sequenceInfo = group->ssar->GetSequenceArchiveInfo(sequenceId);
+		group->LoadBank(sequenceInfo->bankId);
+
+		PlaySequence(sequenceInfo);
 	}
 
 	void SequencePlayer::AbortSequence() {
