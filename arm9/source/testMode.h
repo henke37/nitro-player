@@ -32,6 +32,7 @@ private:
 	void prevSequence();
 	void nextSequence();
 
+	NitroComposer::SequencePlayerGroup sequencePlayerGroup;
 	NitroComposer::SequencePlayer sequencePlayer;
 };
 

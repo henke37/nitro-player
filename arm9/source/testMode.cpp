@@ -8,7 +8,7 @@
 #include "testSTRM.h"
 #include "testNDS.h"
 
-TestMode::TestMode(const SDatEntry &sdatEntry) {
+TestMode::TestMode(const SDatEntry &sdatEntry) : sequencePlayerGroup(), sequencePlayer(&sequencePlayerGroup) {
 	LoadSDat(sdatEntry);
 }
 TestMode::~TestMode() {}
@@ -20,14 +20,15 @@ void TestMode::Load() {
 void TestMode::LoadSDat(const SDatEntry &sdatEntry) {
 	nds = std::make_unique<NDSFile>(sdatEntry.ndsFile);
 	sdat = std::make_unique<NitroComposer::SDatFile>(nds->OpenFile(sdatEntry.sdatFile));
+	sequencePlayerGroup.SetSdat(sdat.get());
 }
 
 void TestMode::LoadSDat(const std::string &fileName) {
 	sdat = std::make_unique<NitroComposer::SDatFile>(fileName);
+	sequencePlayerGroup.SetSdat(sdat.get());
 }
 
 void TestMode::InitSDat() {
-	sequencePlayer.SetSdat(sdat.get());
 	printf("Sdat loaded ok.\n");
 
 	if(sdat->GetSequenceCount()==0) {

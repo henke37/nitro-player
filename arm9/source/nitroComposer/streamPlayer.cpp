@@ -151,8 +151,8 @@ namespace NitroComposer {
 
 	void StreamPlayer::PlayStream(const std::string &streamName) {
 		assert(sdat);
-		auto &info = sdat->GetStreamInfo(streamName);
-		PlayStream(info);
+		unsigned int streamId = sdat->GetNamedStreamIndex(streamName);
+		PlayStream(streamId);
 	}
 
 	void StreamPlayer::PlayStream(const std::unique_ptr<StreamInfoRecord> &info) {

@@ -36,15 +36,13 @@ namespace NitroComposer {
 		bool IsValidStream(unsigned int streamId) const noexcept;
 
 		const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(unsigned int sequenceId) const;
-		const std::unique_ptr<SequenceInfoRecord> &GetSequenceInfo(const std::string &sequenceName) const;
 		const std::unique_ptr<BankInfoRecord> &GetBankInfo(unsigned int bankId) const;
-		const std::unique_ptr<BankInfoRecord> &GetBankInfo(const std::string &bankName) const;
 		const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(unsigned int archiveId) const;
-		const std::unique_ptr<WaveArchiveInfoRecord> &GetWaveArchiveInfo(const std::string &archiveName) const;
 		const std::unique_ptr<PlayerInfoRecord> &GetPlayerInfo(unsigned int playerId) const;
-		const std::unique_ptr<PlayerInfoRecord> &GetPlayerInfo(const std::string &playerName) const;
 		const std::unique_ptr<StreamInfoRecord> &GetStreamInfo(unsigned int streamId) const;
-		const std::unique_ptr<StreamInfoRecord> &GetStreamInfo(const std::string &streamName) const;
+
+		unsigned int GetNamedSequenceIndex(const std::string &sequenceName) const;
+		unsigned int GetNamedStreamIndex(const std::string &streamName) const;
 
 		std::string GetNameForSequence(unsigned int sequenceId) const;
 		std::string GetNameForBank(unsigned int bankId) const;

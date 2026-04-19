@@ -102,12 +102,13 @@ namespace NitroComposer {
 		return sequenceInfos[sequenceId];
 	}
 
-	const std::unique_ptr<SequenceInfoRecord> &SDatFile::GetSequenceInfo(const std::string &sequenceName) const {
+	unsigned int SDatFile::GetNamedSequenceIndex(const std::string &sequenceName) const {
 		for(std::size_t sequenceId = 0; sequenceId < sequenceNames.size(); ++sequenceId) {
 			if(sequenceName != sequenceNames[sequenceId]) continue;
-			return sequenceInfos[sequenceId];
+			return sequenceId;
 		}
 		sassert(0, "Unknown sequence \"%s\"!", sequenceName.c_str());
+		return 0xFFFFFFFF;
 	}
 
 	const std::unique_ptr<BankInfoRecord> &SDatFile::GetBankInfo(unsigned int bankId) const {
@@ -126,12 +127,13 @@ namespace NitroComposer {
 		return streamInfos.at(streamId);
 	}
 
-	const std::unique_ptr<StreamInfoRecord> &SDatFile::GetStreamInfo(const std::string &streamName) const {
+	unsigned int SDatFile::GetNamedStreamIndex(const std::string &streamName) const {
 		for(std::size_t streamId = 0; streamId < streamNames.size(); ++streamId) {
 			if(streamName != streamNames[streamId]) continue;
-			return streamInfos[streamId];
+			return streamId;
 		}
 		sassert(0, "Unknown stream \"%s\"!", streamName.c_str());
+		return 0xFFFFFFFF;
 	}
 
 	std::string SDatFile::GetNameForBank(unsigned int bankId) const {
