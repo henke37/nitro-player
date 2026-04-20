@@ -162,6 +162,16 @@ namespace NitroComposer {
 		return 0xFFFFFFFF;
 	}
 
+	unsigned int SDatFile::GetNamedSubSequenceIndex(unsigned int archiveId, const std::string &sequenceName) const {
+		auto &seqsymb = sequenceArchiveNames[archiveId];
+
+		for(std::size_t subSequenceId = 0; subSequenceId < seqsymb.sequenceNames.size(); ++subSequenceId) {
+			if(sequenceName != seqsymb.sequenceNames[subSequenceId]) continue;
+			return subSequenceId;
+		}
+		sassert(0, "Unknown sequence \"%s\" in archive \"%s\"!", sequenceName.c_str(), seqsymb.archiveName.c_str());
+	}
+
 	std::string SDatFile::GetNameForBank(unsigned int bankId) const {
 		if(bankId >= bankNames.size()) {
 			return std::string("BANK_") + std::to_string(bankId);
@@ -180,6 +190,17 @@ namespace NitroComposer {
 		std::string name = waveArchiveNames.at(archiveId);
 		if(name.empty()) {
 			return std::string("WAVE_") + std::to_string(archiveId);
+		}
+		return name;
+	}
+
+	std::string SDatFile::GetNameForPlayer(unsigned int playerId) const {
+		if(playerId >= playerNames.size()) {
+			return std::string("PLAYER_") + std::to_string(playerId);
+		}
+		std::string name = playerNames.at(playerId);
+		if(name.empty()) {
+			return std::string("PLAYER_") + std::to_string(playerId);
 		}
 		return name;
 	}
@@ -213,6 +234,21 @@ namespace NitroComposer {
 		std::string name = sequenceArchiveNames.at(archiveId).archiveName;
 		if(name.empty()) {
 			return std::string("SEQARC_") + std::to_string(archiveId);
+		}
+		return name;
+	}
+
+	std::string SDatFile::GetNameForSubSequence(unsigned int archiveId, unsigned int sequenceId) const {
+		if(archiveId >= sequenceArchiveNames.size()) {
+			return std::string("SEQ_") + std::to_string(sequenceId);
+		}
+		auto &seqsymb = sequenceArchiveNames.at(archiveId);
+		if(sequenceId >= seqsymb.sequenceNames.size()) {
+			return std::string("SEQ_") + std::to_string(sequenceId);
+		}
+		std::string name = seqsymb.sequenceNames.at(sequenceId);
+		if(name.empty()) {
+			return std::string("SEQ_") + std::to_string(sequenceId);
 		}
 		return name;
 	}
