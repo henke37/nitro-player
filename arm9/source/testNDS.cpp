@@ -97,6 +97,7 @@ void TestNDS::scanFileSystems() {
 	for(const auto &root : roots) {
 		int a=access(root.c_str(), 0);
 		if(a != 0) continue;
+		printf("Scanning %s...\n", root.c_str());
 		scanFolder(root);
 	}
 	sdatEntries.shrink_to_fit();
