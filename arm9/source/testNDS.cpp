@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <nds/arm9/console.h>
 #include <nds/input.h>
+#include <algorithm>
 
 #include "globals.h"
 #include "buttonMan.h"
@@ -100,6 +101,12 @@ void TestNDS::scanFileSystems() {
 		printf("Scanning %s...\n", root.c_str());
 		scanFolder(root);
 	}
+	std::sort(sdatEntries.begin(), sdatEntries.end(), [](const SDatEntry &a, const SDatEntry &b) {
+		if(a.gameTitle != b.gameTitle) {
+			return a.gameTitle < b.gameTitle;
+		}
+		return a.sdatFile < b.sdatFile;
+		});
 	sdatEntries.shrink_to_fit();
 }
 
