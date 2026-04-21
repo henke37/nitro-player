@@ -105,6 +105,9 @@ void TestNDS::scanFileSystems() {
 		if(a.gameTitle != b.gameTitle) {
 			return a.gameTitle < b.gameTitle;
 		}
+		if(a.gameCode != b.gameCode) {
+			return a.gameCode < b.gameCode;
+		}
 		return a.sdatFile < b.sdatFile;
 		});
 	sdatEntries.shrink_to_fit();
