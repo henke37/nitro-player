@@ -118,7 +118,7 @@ void NCLR::unload(int pal) {
 
 void NCLR::unload(int startPal, int palCnt) {
 	int endPal=startPal+palCnt;
-	for(int pal=startPal, i=0;pal<endPal;++pal,++i) {
+	for(int pal=startPal;pal<endPal;++pal) {
 		palReservs[pal].clear();
 	}
 }
