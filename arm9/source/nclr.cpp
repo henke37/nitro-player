@@ -81,8 +81,8 @@ void NCLR::uploadNow(PalMan *man, int startPal, int palCnt) {
 
 	int endPal=startPal+palCnt;
 	
-	assert(startPal>=0 && startPal<16);
-	assert(endPal>=0 && endPal<16);
+	sassert(startPal>=0 && startPal<16, "StartPal %d oob!",startPal);
+	sassert(endPal>=0 && endPal<16, "EndPal %d oob!",endPal);
 	
 	uint16_t *scratch=new uint16_t[palCnt * 16];
 	u8 *srcBuff=(u8*)/*memUncached*/(scratch);
@@ -124,8 +124,8 @@ void NCLR::unload(int startPal, int palCnt) {
 }
 
 void NCLR::readPal(uint16_t *palAddr, int pal) const {
-	assert(pal >= 0);
-	assert(pal <= 15);
+	sassert(pal >= 0, "Negative pal %d!", pal);
+	sassert(pal <= 15, "Pal %d too large!", pal);
 	colorData->setPos(palSize * pal);
 	size_t readCnt = colorData->read((u8 *)palAddr, palSize);
 
@@ -135,12 +135,9 @@ void NCLR::readPal(uint16_t *palAddr, int pal) const {
 
 int NCLR::getLoadedPalSlot(unsigned int pal) const {
 	if(fullPalReserv.isActive()) {
-		assert(fullPalReserv.getMan()->getPalCount()>pal);
+		sassert(fullPalReserv.getMan()->getPalCount()>pal, "Pal %d not loaded!", pal);
 		return pal;
 	}
-	if(!palReservs[pal].isActive()) {
-		printf("Pal not loaded %i", pal);
-	}
-	assert(palReservs[pal].isActive());
+	sassert(palReservs[pal].isActive(), "Pal not loaded %i", pal);
 	return palReservs[pal].getSlot();
 }
