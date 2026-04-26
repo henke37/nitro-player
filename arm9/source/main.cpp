@@ -109,7 +109,7 @@ int main(void) {
 	}
 }
 
-void onVBlank() {
+ITCM_CODE void onVBlank() {
 	bool irqLate = (REG_DISPSTAT & DISP_IN_VBLANK) != DISP_IN_VBLANK;
 	if(irqLate) {
 		slowVblankInterrupts = slowVblankInterrupts + 1;
