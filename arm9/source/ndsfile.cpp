@@ -7,6 +7,8 @@
 #include <cassert>
 #include <nds/arm9/sassert.h>
 
+#include <stdexcept>
+
 NDSFile::NDSFile(std::unique_ptr<BinaryReadStream> &&stream) : stream(std::move(stream)) {
 	assert(this->stream);
 	Parse();
@@ -20,18 +22,22 @@ NDSFile::NDSFile(const std::string &fileName) {
 NDSFile::~NDSFile() {}
 
 std::unique_ptr<BinaryReadStream> NDSFile::OpenFile(std::uint16_t id) const {
+	sassert(fileSystem, "No file system!");
 	return fileSystem->OpenFile(id);
 }
 
 std::unique_ptr<BinaryReadStream> NDSFile::OpenFile(const std::string &path) const {
+	sassert(fileSystem, "No file system!");
 	return fileSystem->OpenFile(path);
 }
 
 NDSFile::FileSystem::Iterator NDSFile::getFileSystemIterator() const {
+	sassert(fileSystem, "No file system!");
 	return fileSystem->getIterator();
 }
 
 NDSFile::Banner NDSFile::GetBanner() const {
+	sassert(bannerOffset != 0, "No banner!");
 	return Banner(std::make_unique<SubStream>(stream.get(), bannerOffset, 0x23C0, false));
 }
 
@@ -43,7 +49,7 @@ void NDSFile::Parse() {
 	makerCode = reader.readLEShort();
 	unitCode = reader.readByte();
 
-	if(unitCode > 3) return;
+	if(unitCode > 3) throw std::runtime_error("Bogus unitCode");
 
 	reader.skip(1 + 1 + 7 + 1);
 	region = reader.readByte();
@@ -70,7 +76,7 @@ void NDSFile::Parse() {
 	bannerOffset = reader.readLELong();
 
 	if(arm9.EntryPoint == 0 || arm7.EntryPoint == 0) {
-		return;
+		throw std::runtime_error("Missing entry point");
 	}
 
 	if(FNTOffset && FATOffset) {

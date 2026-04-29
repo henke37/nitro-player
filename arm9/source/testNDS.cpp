@@ -135,7 +135,11 @@ void TestNDS::scanFolder(const std::string &path) {
 }
 
 void TestNDS::scanNDSFile(const std::string &ndsPath) {
-	ndsFile = std::make_unique<NDSFile>(ndsPath);
+	try {
+		ndsFile = std::make_unique<NDSFile>(ndsPath);
+	} catch(...) {
+		return;
+	}
 
 	if(!ndsFile->HasFileSystem()) return;
 	if(!ndsFile->HasBanner()) return;
