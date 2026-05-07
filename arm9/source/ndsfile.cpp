@@ -3,6 +3,7 @@
 #include "binaryReader.h"
 #include "substream.h"
 #include "fileStream.h"
+#include "cachedReadStream.h"
 
 #include <cassert>
 #include <nds/arm9/sassert.h>
@@ -85,7 +86,11 @@ void NDSFile::Parse() {
 		std::unique_ptr<BinaryReadStream> FATData = std::make_unique<SubStream>
 			(stream.get(), FATOffset, FATSize, false);
 
-		fileSystem = std::make_unique<FileSystem>(std::move(FNTData), std::move(FATData), stream.get());
+		fileSystem = std::make_unique<FileSystem>(
+			std::make_unique<CachedReadStream>(std::move(FNTData), 0x8000),
+			std::make_unique<CachedReadStream>(std::move(FATData), 0x8000),
+			stream.get()
+		);
 	}
 }
 
