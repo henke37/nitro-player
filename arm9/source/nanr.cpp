@@ -4,6 +4,8 @@
 
 #include "substream.h"
 #include "binaryReader.h"
+#include "cachedReadStream.h"
+
 
 NANR::NANR(const std::string &filename) : sections(filename) {
 	readData();
@@ -15,7 +17,9 @@ NANR::NANR(std::unique_ptr<BinaryReadStream> &&stream) : sections(std::move(stre
 void NANR::readData() {
 	std::unique_ptr<BinaryReadStream> abnkData = sections.getSectionData("KNBA");	
 	assert(abnkData);	
-	parseABNKData(std::move(abnkData));
+	parseABNKData(std::make_unique<CachedReadStream>(
+		std::move(abnkData)
+	));
 }
 
 void NANR::parseABNKData(std::unique_ptr<BinaryReadStream> &&stream) {

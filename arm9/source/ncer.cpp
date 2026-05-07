@@ -2,6 +2,7 @@
 
 #include "binaryReader.h"
 #include "substream.h"
+#include "cachedReadStream.h"
 
 #include <cassert>
 
@@ -16,7 +17,10 @@ void NCER::readData() {
 	std::unique_ptr<BinaryReadStream> cebkData = sections.getSectionData("KBEC");
 	
 	assert(cebkData);
-	parseCEBKData(std::move(cebkData));
+	parseCEBKData(
+		std::make_unique<CachedReadStream>(
+		std::move(cebkData)
+	));
 }
 
 void NCER::parseCEBKData(std::unique_ptr<BinaryReadStream> &&stream) {	
