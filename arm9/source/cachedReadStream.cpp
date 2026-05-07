@@ -2,8 +2,9 @@
 
 #include <cassert>
 #include <cstring>
+#include <algorithm>
 
-CachedReadStream::CachedReadStream(BinaryReadStream *realStream, bool ownsStream, size_t maxCacheSize) : realStream(realStream), ownsStream(ownsStream), virtualPos(0), cache(nullptr), cacheStart(0), cacheMaxSize(maxCacheSize) {
+CachedReadStream::CachedReadStream(BinaryReadStream *realStream, bool ownsStream, size_t maxCacheSize) : realStream(realStream), ownsStream(ownsStream), virtualPos(0), cache(nullptr), cacheStart(0), cacheCurSize(0), cacheMaxSize(maxCacheSize) {
 	assert(this->realStream);
 
 	setupCache();
@@ -12,7 +13,7 @@ CachedReadStream::CachedReadStream(BinaryReadStream *realStream, bool ownsStream
 		cacheBlock(0);
 	}
 }
-CachedReadStream::CachedReadStream(std::unique_ptr<BinaryReadStream> &&realStream, size_t maxCacheSize) : realStream(realStream.release()), ownsStream(true), virtualPos(0), cache(nullptr), cacheStart(0), cacheMaxSize(maxCacheSize) {
+CachedReadStream::CachedReadStream(std::unique_ptr<BinaryReadStream> &&realStream, size_t maxCacheSize) : realStream(realStream.release()), ownsStream(true), virtualPos(0), cache(nullptr), cacheStart(0), cacheCurSize(0), cacheMaxSize(maxCacheSize) {
 	assert(this->realStream);
 
 	setupCache();
@@ -33,8 +34,6 @@ size_t CachedReadStream::getLength() const noexcept {
 }
 
 void CachedReadStream::invalidateCache() {
-	free(cache);
-	cache = nullptr;
 	cacheStart = 0;
 	cacheCurSize = 0;
 }
@@ -56,6 +55,7 @@ void CachedReadStream::setupCache() {
 	}
 
 	cache = malloc(cacheMaxSize);
+	cacheCurSize = 0;
 }
 
 void CachedReadStream::cacheBlock(size_t startPos) {
@@ -78,40 +78,80 @@ size_t CachedReadStream::getPos() const noexcept {
 
 size_t CachedReadStream::read(uint8_t *buf, size_t size) {
 
-	size_t readLen = 0;
-
-	//first read what already exists in the cache
-
-	if(virtualPos >= cacheStart && virtualPos < cacheStart + cacheCurSize) {
-		size_t cacheOffset = virtualPos - cacheStart;
-		size_t toReadFromCache = std::min(size, cacheCurSize - cacheOffset);
-		memcpy(buf, (uint8_t *)cache + cacheOffset, toReadFromCache);
-
-		readLen += toReadFromCache;
+	if(!cache) {
+		size_t readSize = readFromRealStream(buf, size, virtualPos);
+		virtualPos += readSize;
+		return readSize;
 	}
+
+	size_t readProgress = 0;
 
 	//was there anything before the cache that we needed to read?
 
 	if(virtualPos < cacheStart) {
 		size_t toReadFromRealStream = std::min(size, cacheStart - virtualPos);
 		size_t readSize = readFromRealStream(buf, toReadFromRealStream, virtualPos);
-		assert(readSize == toReadFromRealStream);
 
-		readLen += readSize;
+		readProgress += readSize;
+		virtualPos += readSize;
+
+		if(readSize < toReadFromRealStream) {
+			invalidateCache();
+			return readProgress;
+		}
 	}
 
-	//if there was anything after the cache, we read it into the cache and then read from the cache
 
-	if(virtualPos + size > cacheStart + cacheCurSize) {
-		cacheBlock(virtualPos);
+readFromCache:
+	if(readProgress == size) {
+		return readProgress;
+	}
+
+
+	assert(virtualPos >= cacheStart);
+
+	size_t cacheEnd = cacheStart + cacheCurSize;
+
+	if(virtualPos < cacheEnd) {
+		assert(size > readProgress);
 		size_t cacheOffset = virtualPos - cacheStart;
-		size_t toReadFromCache = std::min(size, cacheCurSize - cacheOffset);
-		memcpy(buf, (uint8_t *)cache + cacheOffset, toReadFromCache);
+		size_t cacheRemaining = cacheCurSize - cacheOffset;
+		size_t readSize = std::min(size - readProgress, cacheRemaining);
 
-		readLen += toReadFromCache;
+		memcpy(buf + readProgress, (uint8_t *)cache + cacheOffset, readSize);
+		readProgress += readSize;
+		virtualPos += readSize;
 	}
 
-	virtualPos += readLen;
+	size_t remainingSize = size - readProgress;
 
-	return readLen;
+	//cache read finished progress, we are done here
+	if(remainingSize == 0) {
+		return readProgress;
+	}
+
+	if(remainingSize > cacheMaxSize) {
+		//if we have more to read than the cache can hold, just read it directly
+		size_t toCache = remainingSize % cacheMaxSize;
+		assert(remainingSize >= toCache);
+		size_t readSize = remainingSize - toCache;
+
+		size_t readFromRealStreamSize = readFromRealStream(buf + readProgress, readSize, virtualPos);
+
+		readProgress += readFromRealStreamSize;
+		assert(readProgress <= size);
+		virtualPos += readFromRealStreamSize;
+
+		if(readFromRealStreamSize < readSize) {
+			return readProgress;
+		}
+	}
+
+	cacheBlock(virtualPos);
+
+	if(cacheCurSize == 0) {
+		return readProgress;
+	}
+
+	goto readFromCache;
 }

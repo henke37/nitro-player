@@ -9,12 +9,12 @@ class CachedReadStream : public BinaryReadStream {
 public:
 	CachedReadStream(BinaryReadStream *realStream, bool ownsStream, size_t maxCacheSize = 0);
 	CachedReadStream(std::unique_ptr<BinaryReadStream> &&realStream, size_t maxCacheSize = 0);
-	~CachedReadStream();
+	~CachedReadStream() override;
 
-	virtual void setPos(size_t newPos);
-	virtual size_t getPos() const noexcept;
-	size_t read(uint8_t *buf, size_t size);
-	size_t getLength() const noexcept;
+	void setPos(size_t newPos) override;
+	size_t getPos() const noexcept override;
+	size_t read(uint8_t *buf, size_t size) override;
+	size_t getLength() const noexcept override;
 
 	void invalidateCache();
 

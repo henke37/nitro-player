@@ -94,6 +94,7 @@
     <ClCompile Include="arm9\source\binaryWriter.cpp" />
     <ClCompile Include="arm9\source\bitIterator.cpp" />
     <ClCompile Include="arm9\source\buttonMan.cpp" />
+    <ClCompile Include="arm9\source\cachedReadStream.cpp" />
     <ClCompile Include="arm9\source\cardBackupStream.cpp" />
     <ClCompile Include="arm9\source\cellDisplay.cpp" />
     <ClCompile Include="arm9\source\charSet.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="arm9\source\bitFieldPoke.h" />
     <ClInclude Include="arm9\source\bitIterator.h" />
     <ClInclude Include="arm9\source\buttonMan.h" />
+    <ClInclude Include="arm9\source\cachedReadStream.h" />
     <ClInclude Include="arm9\source\cardBackupStream.h" />
     <ClInclude Include="arm9\source\cellDisplay.h" />
     <ClInclude Include="arm9\source\charSet.h" />
