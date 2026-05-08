@@ -8,19 +8,11 @@ CachedReadStream::CachedReadStream(BinaryReadStream *realStream, bool ownsStream
 	assert(this->realStream);
 
 	setupCache();
-
-	if(maxCacheSize == 0) {
-		cacheBlock(0);
-	}
 }
 CachedReadStream::CachedReadStream(std::unique_ptr<BinaryReadStream> &&realStream, size_t maxCacheSize) : realStream(realStream.release()), ownsStream(true), virtualPos(0), cache(nullptr), cacheStart(0), cacheCurSize(0), cacheMaxSize(maxCacheSize) {
 	assert(this->realStream);
 
 	setupCache();
-
-	if(maxCacheSize == 0) {
-		cacheBlock(0);
-	}
 }
 CachedReadStream::~CachedReadStream() {
 	if(ownsStream) {
@@ -54,8 +46,14 @@ void CachedReadStream::setupCache() {
 		cacheMaxSize = realLen;
 	}
 
+	if(cacheMaxSize == 0) {
+		return;
+	}
+
 	cache = malloc(cacheMaxSize);
 	cacheCurSize = 0;
+
+	cacheBlock(0);
 }
 
 void CachedReadStream::cacheBlock(size_t startPos) {
