@@ -1,6 +1,7 @@
 #include "sbnk.h"
 
 #include "../binaryReader.h"
+#include "../cachedReadStream.h"
 
 #include <nds/arm9/sassert.h>
 
@@ -19,7 +20,9 @@ namespace NitroComposer {
 
 		auto stream = sections.getSectionData(section);
 
-		BinaryReader reader(std::move(stream));
+		BinaryReader reader(std::make_unique<CachedReadStream>(
+			std::move(stream)
+		));
 
 		reader.skip(4 * 8);//"reserved for runtime use"
 		std::uint32_t instrumentCount = reader.readLELong();

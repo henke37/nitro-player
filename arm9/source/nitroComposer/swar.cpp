@@ -2,6 +2,7 @@
 
 #include "../binaryReader.h"
 #include "../substream.h"
+#include "../cachedReadStream.h"
 
 #include <nds/arm9/sassert.h>
 
@@ -55,7 +56,9 @@ namespace NitroComposer {
 		auto section = sections.getSectionInfo("DATA");
 		auto stream = sections.getSectionData(section);
 
-		BinaryReader reader(std::move(stream));
+		BinaryReader reader(std::make_unique<CachedReadStream>(
+			std::move(stream)
+		));
 		reader.skip(8 * 4);//"runtime reserved" nonsense
 		std::uint32_t waveCount = reader.readLELong();
 		waves.reserve(waveCount);

@@ -3,6 +3,7 @@
 #include "../fileStream.h"
 #include "../substream.h"
 #include "../binaryReader.h"
+#include "../cachedReadStream.h"
 
 #include "sseq.h"
 #include "strm.h"
@@ -295,7 +296,7 @@ namespace NitroComposer {
 
 	void SDatFile::parseSymb(std::uint32_t offset, std::uint32_t size) {
 		auto strm = std::make_unique<SubStream>(mainStream.get(), offset, size, false);
-		BinaryReader reader(std::move(strm));
+		BinaryReader reader(std::make_unique<CachedReadStream>(std::move(strm)));
 
 		std::string signature = reader.readString(4);
 		sassert(signature == "SYMB", "bad SYMB signature");
@@ -374,7 +375,7 @@ namespace NitroComposer {
 
 	void SDatFile::parseInfo(std::uint32_t offset, std::uint32_t size) {
 		auto strm = std::make_unique<SubStream>(mainStream.get(), offset, size, false);
-		BinaryReader reader(std::move(strm));
+		BinaryReader reader(std::make_unique<CachedReadStream>(std::move(strm)));
 
 		std::string signature = reader.readString(4);
 		sassert(signature == "INFO", "bad INFO signature");
@@ -558,7 +559,7 @@ namespace NitroComposer {
 
 	void SDatFile::parseFat(std::uint32_t offset, std::uint32_t size) {
 		auto strm = std::make_unique<SubStream>(mainStream.get(), offset, size, false);
-		BinaryReader reader(std::move(strm));
+		BinaryReader reader(std::make_unique<CachedReadStream>(std::move(strm)));
 
 		std::string signature = reader.readString(4);
 		sassert(signature == "FAT ", "bad FAT signature");
