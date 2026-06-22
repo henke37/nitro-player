@@ -350,6 +350,7 @@ BulkPoke::BulkPoke(BulkPoke &&old) :
 }
 
 BulkPoke &BulkPoke::operator=(BulkPoke &&old) {
+	if(&old == this) return *this;
 	Clear();
 
 	addr = old.addr;
