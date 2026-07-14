@@ -57,7 +57,8 @@ namespace NitroComposer {
 		auto stream = sections.getSectionData(section);
 
 		BinaryReader reader(std::make_unique<CachedReadStream>(
-			std::move(stream)
+			std::move(stream),
+			0x10
 		));
 		reader.skip(8 * 4);//"runtime reserved" nonsense
 		std::uint32_t waveCount = reader.readLELong();
