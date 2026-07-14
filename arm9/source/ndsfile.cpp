@@ -80,7 +80,7 @@ void NDSFile::Parse() {
 		throw std::runtime_error("Missing entry point");
 	}
 
-	if(FNTOffset && FATOffset) {
+	if(FNTOffset && FATOffset && FNTSize && FATSize) {
 		std::unique_ptr<BinaryReadStream> FNTData = std::make_unique<SubStream>
 			(stream.get(), FNTOffset, FNTSize, false);
 		std::unique_ptr<BinaryReadStream> FATData = std::make_unique<SubStream>
