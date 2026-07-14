@@ -53,6 +53,8 @@ void CachedReadStream::setupCache() {
 	cache = malloc(cacheMaxSize);
 	cacheCurSize = 0;
 
+	assert(cache);
+
 	cacheBlock(0);
 }
 
