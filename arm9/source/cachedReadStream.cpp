@@ -41,8 +41,9 @@ size_t CachedReadStream::readFromRealStream(uint8_t *buf, size_t size, size_t po
 void CachedReadStream::setupCache() {
 	size_t realLen = realStream->getLength();
 	if(cacheMaxSize == 0) {
-		cacheMaxSize = realLen;
-	} else if(cacheMaxSize > realLen) {
+		cacheMaxSize = 0x2000;
+	} 
+	if(cacheMaxSize > realLen) {
 		cacheMaxSize = realLen;
 	}
 
