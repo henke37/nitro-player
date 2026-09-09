@@ -5,8 +5,20 @@
 #include <cassert>
 
 namespace NitroComposer {
-	SequencePlayer::PlayingSequence::PlayingSequence(std::int32_t id) : id(id), sequenceData(nullptr), sequenceDataLength(0), bank(nullptr), waveArchs{ nullptr } {
+	SequencePlayer::PlayingSequence::PlayingSequence() : sequenceData(nullptr), sequenceDataLength(0), bank(nullptr), waveArchs{ nullptr } {
+		
+	}
+
+	void SequencePlayer::PlayingSequence::allocate() {
 		tracks[0] = std::make_unique<Track>(this);
+	}
+
+	void SequencePlayer::PlayingSequence::deallocate() {
+
+		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
+			auto &track = tracks[trackIndex];
+			track.reset();
+		}
 	}
 
 	void SequencePlayer::PlayingSequence::Reset() {
@@ -31,6 +43,13 @@ namespace NitroComposer {
 			if(!track) continue;
 			track->Reset();
 		}
+	}
+
+	unsigned int SequencePlayer::PlayingSequence::GetId() const {
+		for(unsigned int i = 0; i < sequenceCount; ++i) {
+			if(&sequencePlayer.playingSequences[i] == this) return i;
+		}
+		assert(0);
 	}
 
 	unsigned int SequencePlayer::PlayingSequence::IdForTrack(const Track *track) const {

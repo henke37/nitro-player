@@ -27,8 +27,8 @@ namespace NitroComposer {
 		class Track;
 		class Voice;
 
-		PlayingSequence *GetPlayingSequence(std::int32_t playerId);
-		const PlayingSequence *GetPlayingSequence(std::int32_t playerId) const;
+		PlayingSequence *GetPlayingSequence(unsigned int playerId);
+		const PlayingSequence *GetPlayingSequence(unsigned int playerId) const;
 
 		enum class VoiceState : std::uint8_t {
 			Free,
@@ -240,6 +240,7 @@ namespace NitroComposer {
 			friend class Voice;
 		};
 		static constexpr unsigned int voiceCount = 16;
+		static constexpr unsigned int sequenceCount = 8;
 
 		static constexpr unsigned int localVariableCount = 16;
 		static constexpr unsigned int globalVariableCount = 16;
@@ -249,8 +250,11 @@ namespace NitroComposer {
 
 		class PlayingSequence {
 		public:
-			PlayingSequence(std::int32_t id);
+			PlayingSequence();
 			PlayingSequence(const PlayingSequence &) = delete;
+
+			void allocate();
+			void deallocate();
 
 			void Reset();
 
@@ -269,6 +273,8 @@ namespace NitroComposer {
 
 			bool isVoiceAllowed(std::uint8_t voiceIndex) const;
 
+			unsigned int GetId() const;
+
 		private:
 			void StartTrack(std::uint8_t trackId, std::ptrdiff_t offset);
 
@@ -283,8 +289,6 @@ namespace NitroComposer {
 
 			void ResetLocalVars();
 			void ResetTracks();
-
-			const std::int32_t id;
 
 			std::uint16_t tempo;
 			std::uint16_t tempoTimer;
@@ -327,7 +331,11 @@ namespace NitroComposer {
 
 		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
-		std::vector<std::unique_ptr<PlayingSequence>> playingSequences;
+		PlayingSequence playingSequences[sequenceCount];
+		bool allocatedSequences[sequenceCount] = { false };
+
+		int allocatePlayingSequence();
+		void deallocatePlayingSequence(unsigned int playerId);
 
 		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track);
 

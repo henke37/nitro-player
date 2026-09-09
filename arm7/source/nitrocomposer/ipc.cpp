@@ -50,7 +50,7 @@ namespace NitroComposer {
 		case BaseIPC::CommandType::AllocSequencePlayer:
 		{
 			SequencePlayerIPC *allocIpc = static_cast<SequencePlayerIPC *>(ipc);
-			playingSequences.emplace_back(std::make_unique<PlayingSequence>(allocIpc->playerId));
+			allocIpc->playerId = allocatePlayingSequence();
 			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, allocIpc->playerId);
 			assert(success);
 		} break;
@@ -58,11 +58,7 @@ namespace NitroComposer {
 		{
 			SequencePlayerIPC *allocIpc = static_cast<SequencePlayerIPC *>(ipc);
 
-			auto it = std::find_if(playingSequences.begin(), playingSequences.end(),
-				[allocIpc](const std::unique_ptr<PlayingSequence> &seq) {
-					return seq->id == allocIpc->playerId;
-				});
-			playingSequences.erase(it);
+			deallocatePlayingSequence(allocIpc->playerId);
 			
 			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, allocIpc->playerId);
 			assert(success);
@@ -238,7 +234,7 @@ namespace NitroComposer {
 		bool success;
 		SequenceStatusEventIPC statusIpc;
 		statusIpc.eventId = AsyncEventIPC::EventType::SequenceEnded;
-		statusIpc.playerId = sequence.id;
+		statusIpc.playerId = sequence.GetId();
 		success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequenceStatusEventIPC), (u8 *)&statusIpc);
 		assert(success);
 		success = fifoSendAddress(FIFO_NITRO_COMPOSER, (void*)0x020C0DE0);//kludge for fifo system
