@@ -5,6 +5,8 @@
 #include "nitroComposer/wave.h"
 #include "nitroComposer/debugFlags.h"
 
+#include "lazyInitBank.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -253,9 +255,6 @@ namespace NitroComposer {
 			PlayingSequence();
 			PlayingSequence(const PlayingSequence &) = delete;
 
-			void allocate();
-			void deallocate();
-
 			void Reset();
 
 			void SetVar(std::uint8_t var, std::int16_t val);
@@ -331,8 +330,7 @@ namespace NitroComposer {
 
 		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
-		PlayingSequence playingSequences[sequenceCount];
-		bool allocatedSequences[sequenceCount] = { false };
+		LazyInitBank<PlayingSequence, sequenceCount> playingSequences;
 
 		int allocatePlayingSequence();
 		void deallocatePlayingSequence(unsigned int playerId);

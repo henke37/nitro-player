@@ -57,23 +57,11 @@ namespace NitroComposer {
 	}
 
 	int SequencePlayer::allocatePlayingSequence() {
-		for(unsigned int sequenceIndex = 0; sequenceIndex < sequenceCount; ++sequenceIndex) {
-			if(allocatedSequences[sequenceIndex]) continue;
-
-			auto &sequence = playingSequences[sequenceIndex];
-			sequence.allocate();
-			allocatedSequences[sequenceIndex] = true;
-			return sequenceIndex;
-		}
-		return -1;
+		return playingSequences.construct();
 	}
 
 	void SequencePlayer::deallocatePlayingSequence(unsigned int playerId) {
-		assert(playerId < sequenceCount);
-		auto &sequence = playingSequences[playerId];
-		sequence.deallocate();
-		assert(allocatedSequences[playerId]);
-		allocatedSequences[playerId] = false;
+		playingSequences.destruct(playerId);
 	}
 
 	signed int SequencePlayer::FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track) {
@@ -173,9 +161,9 @@ namespace NitroComposer {
 
 	void SequencePlayer::Update() {
 		for(unsigned int sequenceIndex = 0; sequenceIndex < sequenceCount; ++sequenceIndex) {
-			if(!allocatedSequences[sequenceIndex]) continue;
-			auto &val = playingSequences[sequenceIndex];
-			val.Update();
+			if(!playingSequences.isSlotAllocated(sequenceIndex)) continue;
+			auto val = playingSequences[sequenceIndex];
+			val->Update();
 		}
 
 		UpdateVoices();
@@ -189,13 +177,11 @@ namespace NitroComposer {
 	}
 
 	SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(unsigned int playerId) {
-		assert(playerId < sequenceCount);
-		return &playingSequences[playerId];
+		return playingSequences[playerId];
 	}
 
 	const SequencePlayer::PlayingSequence *SequencePlayer::GetPlayingSequence(unsigned int playerId) const {
-		assert(playerId < sequenceCount);
-		return &playingSequences[playerId];
+		return playingSequences[playerId];
 	}
 
 	ChannelReservation::ChannelReservation(std::uint8_t channel) : channel(channel) {

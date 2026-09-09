@@ -6,19 +6,8 @@
 
 namespace NitroComposer {
 	SequencePlayer::PlayingSequence::PlayingSequence() : sequenceData(nullptr), sequenceDataLength(0), bank(nullptr), waveArchs{ nullptr } {
-		
-	}
-
-	void SequencePlayer::PlayingSequence::allocate() {
 		tracks[0] = std::make_unique<Track>(this);
-	}
-
-	void SequencePlayer::PlayingSequence::deallocate() {
-
-		for(unsigned int trackIndex = 0; trackIndex < trackCount; ++trackIndex) {
-			auto &track = tracks[trackIndex];
-			track.reset();
-		}
+		
 	}
 
 	void SequencePlayer::PlayingSequence::Reset() {
@@ -46,10 +35,7 @@ namespace NitroComposer {
 	}
 
 	unsigned int SequencePlayer::PlayingSequence::GetId() const {
-		for(unsigned int i = 0; i < sequenceCount; ++i) {
-			if(&sequencePlayer.playingSequences[i] == this) return i;
-		}
-		assert(0);
+		return sequencePlayer.playingSequences.ptrToSlot(this);
 	}
 
 	unsigned int SequencePlayer::PlayingSequence::IdForTrack(const Track *track) const {
