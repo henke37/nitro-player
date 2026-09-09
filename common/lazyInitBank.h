@@ -12,11 +12,13 @@ template<class T, std::size_t N> class LazyInitBank {
 public:
     T* operator[](std::size_t index) {
         assert(index < N);
+		assert(isSlotAllocated(index));
         return storage[index].ptr();
 	}
 
     const T* operator[](std::size_t index) const {
         assert(index < N);
+        assert(isSlotAllocated(index));
         return storage[index].ptr();
     }
 
@@ -25,6 +27,7 @@ public:
         std::size_t freeSlot = getFreeSlot();
 		assert(freeSlot < N);
         storage[freeSlot].construct(std::forward<Args>(args)...);
+		markSlotAllocated(freeSlot);
 		return freeSlot;
     }
 

@@ -6,6 +6,51 @@
 
 namespace NitroComposer {
 
+	SequencePlayer::Track *SequencePlayer::TrackHandle::operator->() {
+		assert(trackIndex < trackCount);
+		return sequencePlayer.tracks[trackIndex];
+	}
+
+	const SequencePlayer::Track *SequencePlayer::TrackHandle::operator->() const {
+		assert(trackIndex < trackCount);
+		return sequencePlayer.tracks[trackIndex];
+	}
+
+	SequencePlayer::Track *SequencePlayer::TrackHandle::get() {
+		assert(trackIndex < trackCount);
+		return sequencePlayer.tracks[trackIndex];
+	}
+
+	const SequencePlayer::Track *SequencePlayer::TrackHandle::get() const {
+		assert(trackIndex < trackCount);
+		return sequencePlayer.tracks[trackIndex];
+	}
+
+	SequencePlayer::TrackHandle::TrackHandle(TrackHandle &&old) : trackIndex(old.trackIndex) {
+		old.trackIndex = UINT8_MAX;
+	}
+
+	SequencePlayer::TrackHandle &SequencePlayer::TrackHandle::operator=(TrackHandle &&old) {
+		if(this == &old) return *this;
+		assert(trackIndex == UINT8_MAX);
+		trackIndex = old.trackIndex;
+		old.trackIndex = UINT8_MAX;
+		return *this;
+	}
+
+	void SequencePlayer::TrackHandle::reset() {
+		if(trackIndex != UINT8_MAX) {
+			sequencePlayer.tracks.destruct(trackIndex);
+			trackIndex = UINT8_MAX;
+		}
+	}
+
+	SequencePlayer::TrackHandle::~TrackHandle() {
+		if(trackIndex != UINT8_MAX) {
+			sequencePlayer.tracks.destruct(trackIndex);
+		}
+	}
+
 	SequencePlayer::Track::Track(PlayingSequence *sequence) : sequence(sequence), isPlaying(false), muted(false) {
 		assert(sequence);
 
@@ -69,7 +114,7 @@ namespace NitroComposer {
 
 	void SequencePlayer::Track::StartPlaying(std::ptrdiff_t offset) {
 		if(this->isPlaying && debugFlags.logBadData) {
-			consolePrintf("#%d duplicate start!\n", GetId());
+			consolePrintf("#%d duplicate start!\n", GetLocalId());
 			consoleFlush();
 		}
 		this->isPlaying = true;
@@ -96,7 +141,7 @@ namespace NitroComposer {
 			note = GetTransposedNote(note);
 			if(tieMode) {
 				if(debugFlags.logNotes) {
-					consolePrintf("#%d Tie-Note on %d,%d\n", GetId(), note, velocity);
+					consolePrintf("#%d Tie-Note on %d,%d\n", GetLocalId(), note, velocity);
 				}
 				if(tieVoice) {
 					tieVoice->NextTieNote(note, velocity);
@@ -105,7 +150,7 @@ namespace NitroComposer {
 				}
 			} else {
 				if(debugFlags.logNotes) {
-					consolePrintf("#%d Note on %d,%d,%d\n", GetId(), note, velocity, length);
+					consolePrintf("#%d Note on %d,%d,%d\n", GetLocalId(), note, velocity, length);
 				}
 				NoteOnReal(note, velocity, length);
 			}
@@ -216,7 +261,7 @@ namespace NitroComposer {
 		return nullptr;
 	}
 
-	std::uint8_t SequencePlayer::Track::GetId() const {
+	std::uint8_t SequencePlayer::Track::GetLocalId() const {
 		return sequence->IdForTrack(this);
 	}
 

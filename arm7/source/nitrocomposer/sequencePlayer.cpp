@@ -56,6 +56,11 @@ namespace NitroComposer {
 		externalChannelReservations &= ~BIT(hwChannel);
 	}
 
+	NitroComposer::SequencePlayer::TrackHandle SequencePlayer::allocateTrack(PlayingSequence *sequence) {
+		auto id = tracks.construct(sequence);
+		return TrackHandle(id);
+	}
+
 	int SequencePlayer::allocatePlayingSequence() {
 		return playingSequences.construct();
 	}

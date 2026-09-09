@@ -33,7 +33,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			sequence->StartTrack(trackId, offset);
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Start #%d at 0x%x\n", GetId(), trackId, (unsigned)offset);
+				consolePrintf("#%d Start #%d at 0x%x\n", GetLocalId(), trackId, (unsigned)offset);
 				consoleFlush();
 			}
 		} break;
@@ -43,7 +43,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 			SetNextCommand(offset);
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Jump to 0x%x\n", GetId(), (unsigned)offset);
+				consolePrintf("#%d Jump to 0x%x\n", GetLocalId(), (unsigned)offset);
 				consoleFlush();
 			}
 		} break;
@@ -52,7 +52,7 @@ namespace NitroComposer {
 		{
 			if(stackPointer >= 4) {
 				if(debugFlags.logBadData) {
-					consolePrintf("#%d Stack overflow!\n", GetId());
+					consolePrintf("#%d Stack overflow!\n", GetLocalId());
 					consoleFlush();
 				}
 				return;
@@ -60,7 +60,7 @@ namespace NitroComposer {
 			std::uint32_t offset = readTriByteCommand();
 
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Call to 0x%x\n", GetId(), (unsigned)offset);
+				consolePrintf("#%d Call to 0x%x\n", GetLocalId(), (unsigned)offset);
 				consoleFlush();
 			}
 
@@ -391,7 +391,7 @@ namespace NitroComposer {
 		{
 			if(stackPointer >= 4) {
 				if(debugFlags.logBadData) {
-					consolePrintf("#%d Stack overflow!\n", GetId());
+					consolePrintf("#%d Stack overflow!\n", GetLocalId());
 					consoleFlush();
 				}
 				return;
@@ -404,7 +404,7 @@ namespace NitroComposer {
 			++stackPointer;
 
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Loop start x%d\n", GetId(), loopCount);
+				consolePrintf("#%d Loop start x%d\n", GetLocalId(), loopCount);
 				consoleFlush();
 			}
 		} break;
@@ -413,7 +413,7 @@ namespace NitroComposer {
 		{
 			expression = readByteCommand();
 			if(debugFlags.logCommonEffects) {
-				consolePrintf("#%d Expression %d\n", GetId(), expression);
+				consolePrintf("#%d Expression %d\n", GetLocalId(), expression);
 				consoleFlush();
 			}
 		} break;
@@ -456,7 +456,7 @@ namespace NitroComposer {
 		{
 			if(stackPointer <= 0) {
 				if(debugFlags.logBadData) {
-					consolePrintf("#%d Stack underflow!\n", GetId());
+					consolePrintf("#%d Stack underflow!\n", GetLocalId());
 					consoleFlush();
 				}
 				return;
@@ -473,12 +473,12 @@ namespace NitroComposer {
 					nextCommand = stackRecord.nextCommand;
 					++stackPointer;
 					if(debugFlags.logFlowControl) {
-						consolePrintf("#%d Loop repeat, %d remaining\n", GetId(), stackRecord.loopCounter);
+						consolePrintf("#%d Loop repeat, %d remaining\n", GetLocalId(), stackRecord.loopCounter);
 						consoleFlush();
 					}
 				} else {
 					if(debugFlags.logFlowControl) {
-						consolePrintf("#%d Loop end\n", GetId());
+						consolePrintf("#%d Loop end\n", GetLocalId());
 						consoleFlush();
 					}
 				}
@@ -488,7 +488,7 @@ namespace NitroComposer {
 				nextCommand = stackRecord.nextCommand;
 				++stackPointer;
 				if(debugFlags.logFlowControl) {
-					consolePrintf("#%d Loop repeat, infinite\n", GetId());
+					consolePrintf("#%d Loop repeat, infinite\n", GetLocalId());
 					consoleFlush();
 				}
 			} break;
@@ -496,7 +496,7 @@ namespace NitroComposer {
 			case StackEntryType::Call:
 			{
 				if(debugFlags.logBadData) {
-					consolePrintf("#%d Return from loop\n", GetId());
+					consolePrintf("#%d Return from loop\n", GetLocalId());
 					consoleFlush();
 				}
 			} break;
@@ -511,7 +511,7 @@ namespace NitroComposer {
 		{
 			if(stackPointer <= 0) {
 				if(debugFlags.logBadData) {
-					consolePrintf("#%d Stack underflow!\n", GetId());
+					consolePrintf("#%d Stack underflow!\n", GetLocalId());
 					consoleFlush();
 				}
 				return;
@@ -521,14 +521,14 @@ namespace NitroComposer {
 
 			if(stackRecord.type != StackEntryType::Call) {
 				if(debugFlags.logBadData) {
-					consolePrintf("#%d Return from non-call stack entry!\n", GetId());
+					consolePrintf("#%d Return from non-call stack entry!\n", GetLocalId());
 					consoleFlush();
 				}
 			}
 
 			nextCommand = stackRecord.nextCommand;
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Return from Call\n", GetId());
+				consolePrintf("#%d Return from Call\n", GetLocalId());
 				consoleFlush();
 			}
 		} break;
@@ -538,14 +538,14 @@ namespace NitroComposer {
 			std::uint16_t tracksField = readShortCommand();
 
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Alloc %x\n", GetId(), tracksField);
+				consolePrintf("#%d Alloc %x\n", GetLocalId(), tracksField);
 				consoleFlush();
 			}
 
-			for(unsigned int trackId = 1; trackId < SequencePlayer::PlayingSequence::trackCount; ++trackId) {
+			for(unsigned int trackId = 1; trackId < SequencePlayer::trackCount; ++trackId) {
 				if(tracksField & (1u << trackId)) {
 					if(!sequence->tracks[trackId]) {
-						sequence->tracks[trackId] = std::make_unique<SequencePlayer::Track>(sequence);
+						sequence->tracks[trackId] = sequencePlayer.allocateTrack(sequence);
 					}
 				} else {
 					sequence->tracks[trackId].reset();
@@ -555,14 +555,14 @@ namespace NitroComposer {
 
 		case 0xFF: {
 			if(debugFlags.logFlowControl) {
-				consolePrintf("#%d Fin.\n", GetId());
+				consolePrintf("#%d Fin.\n", GetLocalId());
 				consoleFlush();
 			}
 			StopPlaying();
 		} break;
 
 		default:
-			consolePrintf("#%d Skipping unknown command %x\n", GetId(), command);
+			consolePrintf("#%d Skipping unknown command %x\n", GetLocalId(), command);
 			consoleFlush();
 			skipCommandArgs(command);
 			break;
@@ -824,7 +824,7 @@ namespace NitroComposer {
 		} break;
 
 		default:
-			consolePrintf("#%d Skipping unknown rnd command %x\n", GetId(), command);
+			consolePrintf("#%d Skipping unknown rnd command %x\n", GetLocalId(), command);
 			consoleFlush();
 			skipCommandRandomArgs(command);
 		}
@@ -1141,7 +1141,7 @@ namespace NitroComposer {
 
 
 		default:
-			consolePrintf("#%d Skipping unknown var command %x\n", GetId(), command);
+			consolePrintf("#%d Skipping unknown var command %x\n", GetLocalId(), command);
 			consoleFlush();
 			skipCommandVarArgs(command);
 		}

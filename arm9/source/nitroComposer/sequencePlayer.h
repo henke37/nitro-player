@@ -115,7 +115,7 @@ namespace NitroComposer {
 		bool IsPlaying() const { return isPlaying; }
 
 	private:
-		std::int32_t playerId = -1;
+		std::size_t playerId = SIZE_MAX;
 
 		SequencePlayerGroup *group;
 
@@ -150,13 +150,12 @@ namespace NitroComposer {
 
 		struct RegisteredPlayer {
 			SequencePlayer *player;
-			std::int32_t id;
+			std::size_t id;
 		};
 		std::vector<RegisteredPlayer> registeredPlayers;
-		std::int32_t registerPlayer(SequencePlayer *player);
+		void registerPlayer(SequencePlayer *player, std::size_t playerId);
 		void unregisterPlayer(SequencePlayer *player);
-		SequencePlayer *findPlayerById(std::int32_t id);
-		std::int32_t nextPlayerId = 1;
+		SequencePlayer *findPlayerById(std::size_t id);
 
 		StreamPlayer *currentStreamPlayer = nullptr;
 

@@ -6,7 +6,7 @@
 
 namespace NitroComposer {
 	SequencePlayer::PlayingSequence::PlayingSequence() : sequenceData(nullptr), sequenceDataLength(0), bank(nullptr), waveArchs{ nullptr } {
-		tracks[0] = std::make_unique<Track>(this);
+		tracks[0] = sequencePlayer.allocateTrack(this);
 		
 	}
 

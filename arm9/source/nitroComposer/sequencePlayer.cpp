@@ -11,23 +11,23 @@ namespace NitroComposer {
 	SequencePlayer::SequencePlayer(SequencePlayerGroup *group) : group(group) {
 		assert(group);
 
-		playerId = musicEngine.registerPlayer(this);
-		group->RegisterPlayer(this);
-
-		SequencePlayerIPC buff;
+		BaseIPC buff;
 		buff.command = BaseIPC::CommandType::AllocSequencePlayer;
-		buff.playerId = playerId;
 
 		{
 			FifoMutexLock lock;
 
-			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(SequencePlayerIPC), (u8 *)&buff);
+			bool success = fifoSendDatamsg(FIFO_NITRO_COMPOSER, sizeof(BaseIPC), (u8 *)&buff);
 			assert(success);
 
 			fifoWaitValue32Async(FIFO_NITRO_COMPOSER);
-			std::uint32_t allocatedId = (fifoGetValue32(FIFO_NITRO_COMPOSER));
-			assert(allocatedId == (std::uint32_t)playerId);
+			playerId = (fifoGetValue32(FIFO_NITRO_COMPOSER));
+			assert(playerId != SIZE_MAX);
 		}
+
+
+		musicEngine.registerPlayer(this, playerId);
+		group->RegisterPlayer(this);
 	}
 	SequencePlayer::~SequencePlayer() {
 		KillSequence();

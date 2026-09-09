@@ -120,6 +120,9 @@ namespace NitroComposer {
 		public:
 			Track(PlayingSequence *sequence);
 			Track(const Track &) = delete;
+			Track(Track &&) = delete;
+			Track &operator=(const Track &) = delete;
+			Track &operator=(Track &&) = delete;
 			~Track();
 
 			void Reset();
@@ -221,7 +224,7 @@ namespace NitroComposer {
 
 			const InstrumentBank::LeafInstrument *ResolveInstrumentForNote(std::uint8_t note) const;
 
-			std::uint8_t GetId() const;
+			std::uint8_t GetLocalId() const;
 
 			void ReleaseAllVoices();
 			void KillAllVoices();
@@ -243,12 +246,40 @@ namespace NitroComposer {
 		};
 		static constexpr unsigned int voiceCount = 16;
 		static constexpr unsigned int sequenceCount = 8;
+		static constexpr unsigned int trackCount = 16;
 
 		static constexpr unsigned int localVariableCount = 16;
 		static constexpr unsigned int globalVariableCount = 16;
 		static constexpr unsigned int numVariables = localVariableCount + globalVariableCount;
 
 		std::int16_t globalVariables[globalVariableCount];
+
+		class TrackHandle {
+		public:
+			TrackHandle() : trackIndex(UINT8_MAX) {}
+			TrackHandle(const TrackHandle &) = delete;
+			TrackHandle(TrackHandle &&old);
+
+			TrackHandle &operator=(TrackHandle &&old);
+			TrackHandle &operator=(const TrackHandle &) = delete;
+
+			operator bool() const { return trackIndex != UINT8_MAX; }
+
+			~TrackHandle();
+
+			void reset();
+
+			Track *get();
+			const Track *get() const;
+
+			Track *operator->();
+			const Track *operator->() const;
+		private:
+			TrackHandle(std::uint8_t trackIndex) : trackIndex(trackIndex) {}
+			std::uint8_t trackIndex;
+
+			friend class SequencePlayer;
+		};
 
 		class PlayingSequence {
 		public:
@@ -307,8 +338,7 @@ namespace NitroComposer {
 
 			std::int16_t localVariables[localVariableCount];
 
-			static constexpr unsigned int trackCount = 16;
-			std::unique_ptr<Track> tracks[trackCount];
+			TrackHandle tracks[trackCount];
 			unsigned int IdForTrack(const Track *) const;
 
 			friend class Track;
@@ -329,6 +359,10 @@ namespace NitroComposer {
 		std::uint16_t externalChannelReservations;
 
 		Voice voices[voiceCount] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+		
+		LazyInitBank<Track, trackCount> tracks;
+
+		TrackHandle allocateTrack(PlayingSequence *sequence);
 
 		LazyInitBank<PlayingSequence, sequenceCount> playingSequences;
 

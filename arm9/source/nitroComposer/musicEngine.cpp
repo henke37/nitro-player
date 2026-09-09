@@ -93,9 +93,8 @@ namespace NitroComposer {
 		assert(success);
 	}
 
-	std::int32_t MusicEngine::registerPlayer(SequencePlayer *player) {
-		registeredPlayers.push_back({ player, nextPlayerId });
-		return nextPlayerId++;
+	void MusicEngine::registerPlayer(SequencePlayer *player, std::size_t playerId) {
+		registeredPlayers.push_back({ player, playerId });
 	}
 	
 	void MusicEngine::unregisterPlayer(SequencePlayer *player) {
@@ -108,8 +107,8 @@ namespace NitroComposer {
 		sassert(false, "Tried to unregister unregistered player");
 	}
 
-	SequencePlayer *MusicEngine::findPlayerById(std::int32_t id) {
-		assert(id > 0);
+	SequencePlayer *MusicEngine::findPlayerById(std::size_t id) {
+		assert(id < SIZE_MAX);
 		for(auto &regPlayer : registeredPlayers) {
 			if(regPlayer.id == id) {
 				return regPlayer.player;

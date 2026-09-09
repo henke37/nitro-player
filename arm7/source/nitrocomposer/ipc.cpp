@@ -49,9 +49,8 @@ namespace NitroComposer {
 
 		case BaseIPC::CommandType::AllocSequencePlayer:
 		{
-			SequencePlayerIPC *allocIpc = static_cast<SequencePlayerIPC *>(ipc);
-			allocIpc->playerId = allocatePlayingSequence();
-			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, allocIpc->playerId);
+			std::size_t playerId = allocatePlayingSequence();
+			bool success = fifoSendValue32(FIFO_NITRO_COMPOSER, playerId);
 			assert(success);
 		} break;
 		case BaseIPC::CommandType::DeallocSequencePlayer:
