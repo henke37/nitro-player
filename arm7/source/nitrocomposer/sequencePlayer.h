@@ -5,10 +5,11 @@
 #include "nitroComposer/wave.h"
 #include "nitroComposer/debugFlags.h"
 
-#include "lazyInitBank.h"
-
 #include <cstdint>
 #include <memory>
+#include <random>
+
+#include "lazyInitBank.h"
 
 namespace NitroComposer {
 
@@ -370,6 +371,8 @@ namespace NitroComposer {
 		void deallocatePlayingSequence(unsigned int playerId);
 
 		signed int FindFreeVoice(InstrumentBank::InstrumentType type, const Track *track);
+
+		std::default_random_engine rng;
 
 		bool isVoiceAllowed(std::uint8_t voiceIndex, const PlayingSequence *sequence) const;
 

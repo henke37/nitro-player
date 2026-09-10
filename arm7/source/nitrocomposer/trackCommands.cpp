@@ -182,18 +182,19 @@ namespace NitroComposer {
 			std::int16_t val = readShortCommand();
 			assert(varId < numVariables);
 			if(val < 0) {
+				std::uniform_int_distribution<> distrib(val, 0);
 				if(debugFlags.logVarWrites) {
 					consolePrintf("Var%d = -rand(%d)\n", varId, -val);
 					consoleFlush();
 				}
-				sequence->SetVar(varId, -(std::rand() % (-val + 1)));
+				sequence->SetVar(varId, distrib(sequencePlayer.rng));
 			} else {
-
+				std::uniform_int_distribution<> distrib(0, val);
 				if(debugFlags.logVarWrites) {
 					consolePrintf("Var%d = rand(%d)\n", varId, val);
 					consoleFlush();
 				}
-				sequence->SetVar(varId, std::rand() % (val + 1));
+				sequence->SetVar(varId, distrib(sequencePlayer.rng));
 			}
 		} break;
 
@@ -656,9 +657,11 @@ namespace NitroComposer {
 			std::int16_t val = readAndGetRandomCommandParam();
 			assert(varId < numVariables);
 			if(val < 0) {
-				sequence->SetVar(varId, -(std::rand() % (-val + 1)));
+				std::uniform_int_distribution<> distrib(val, 0);
+				sequence->SetVar(varId, distrib(sequencePlayer.rng));
 			} else {
-				sequence->SetVar(varId, std::rand() % (val + 1));
+				std::uniform_int_distribution<> distrib(0, val);
+				sequence->SetVar(varId, distrib(sequencePlayer.rng));
 			}
 		} break;
 
@@ -968,19 +971,19 @@ namespace NitroComposer {
 			assert(srcVarId < numVariables);
 			std::int16_t val = sequence->GetVar(srcVarId);
 			if(val < 0) {
-
+				std::uniform_int_distribution<> distrib(val, 0);
 				if(debugFlags.logVarWrites) {
 					consolePrintf("Var%d = -rand(-Var%d)\n", dstVarId, srcVarId);
 					consoleFlush();
 				}
-				sequence->SetVar(dstVarId, -(std::rand() % (-val + 1)));
+				sequence->SetVar(dstVarId, distrib(sequencePlayer.rng));
 			} else {
-
+				std::uniform_int_distribution<> distrib(0, val);
 				if(debugFlags.logVarWrites) {
 					consolePrintf("Var%d = rand(Var%d)\n", dstVarId, srcVarId);
 					consoleFlush();
 				}
-				sequence->SetVar(dstVarId, std::rand() % (val + 1));
+				sequence->SetVar(dstVarId, distrib(sequencePlayer.rng));
 			}
 		} break;
 
@@ -1389,6 +1392,7 @@ namespace NitroComposer {
 	std::int16_t SequencePlayer::Track::readAndGetRandomCommandParam() {
 		std::int16_t minVal = readShortCommand();
 		std::int16_t maxVal = readShortCommand();
-		return (std::rand() % (maxVal - minVal + 1)) + minVal;
+		std::uniform_int_distribution<> distribution(minVal, maxVal);
+		return distribution(sequencePlayer.rng);
 	}
 }
